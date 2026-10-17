@@ -9,9 +9,10 @@
 
 | Environment | URL / Command | Notes |
 |---|---|---|
-| **Production (Vercel HTTPS)** | Deployed via `npm run deploy` (`vercel --prod`) | Full HTTPS permissions for `getUserMedia` (Live Mic) & `getDisplayMedia` (System/Tab Audio) |
-| **Local Dev Server** | `npm start` $\to$ `http://localhost:3333` | Also binds `0.0.0.0:3333` for multi-device LAN / Wi-Fi demos |
-| **Legacy Studio Edition** | `/legacy-studio/index.html` | Preserved original multi-panel physics laboratory & variation runner |
+| **Production (Vercel HTTPS)** | [**`https://noether-resonance-core.vercel.app`**](https://noether-resonance-core.vercel.app) | Public HTTPS production deployment with `getUserMedia` (Live Mic) & `getDisplayMedia` (System/Tab Audio) |
+| **GitHub Repository** | [**`https://github.com/manutej/noether-resonance-core`**](https://github.com/manutej/noether-resonance-core) | Connected to Vercel for automatic Git CI/CD & external agent change tracking |
+| **Local Dev Server** | `npm start` $\to$ `http://localhost:3333` (`http://192.168.4.30:3333` on LAN) | Zero-dependency Node HTTP + LAN discovery server |
+| **Legacy Studio Edition** | [`https://noether-resonance-core.vercel.app/legacy-studio/`](https://noether-resonance-core.vercel.app/legacy-studio/) | Preserved original multi-panel physics laboratory & variation runner |
 
 ---
 

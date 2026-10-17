@@ -9,6 +9,8 @@
 
 | Surface / Artifact | Path / URL | Status |
 |---|---|---|
+| **Production Deployment (Vercel HTTPS)** | **`https://noether-resonance-core.vercel.app`** | **LIVE PRODUCTION** |
+| **GitHub Repository (Git Version Control)** | **`https://github.com/manutej/noether-resonance-core`** | **LIVE (CONNECTED TO VERCEL)** |
 | **Live Deployed Web Server (Local)** | `http://localhost:3333` | **LIVE DAEMON** |
 | **Live Deployed Web Server (LAN / Wi-Fi Demo)** | `http://192.168.4.30:3333` | **LIVE DAEMON** |
 | **Health Telemetry Endpoint** | `http://localhost:3333/health` | **LIVE JSON** |
@@ -17,7 +19,7 @@
 | **Local HTTP Server (`server.js`)** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/server.js` | **READY (LAN + CORS)** |
 | **Adversarial & Operadic Ledger** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/ADVERSARIAL-EVAL-LEDGER.md` | **COMPLETE** |
 | **Engineering Handoff & Roadmap** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/HANDOFF.md` | **COMPLETE** |
-| **Legacy Studio Edition (Preserved)** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/Noether Quantum Field Audio Synthesizer - Studio.html` | **PRESERVED** |
+| **Legacy Studio Edition (Preserved)** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/legacy-studio/index.html` | **PRESERVED** |
 
 ---
 
