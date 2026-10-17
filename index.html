@@ -409,14 +409,14 @@ body.ui-off .hud {
 .toast {
   left: 50%;
   transform: translateX(-50%);
-  top: calc(env(safe-area-inset-top, 0px) + 20px);
-  max-width: min(540px, calc(100vw - 32px));
-  font: 400 12px/1.5 var(--mono);
+  top: calc(env(safe-area-inset-top, 0px) + 64px);
+  max-width: min(560px, calc(100vw - 32px));
+  font: 400 11.5px/1.4 var(--mono);
   color: var(--fg);
   background: var(--ink-drawer);
   border: 1px solid var(--line-bright);
   border-radius: 10px;
-  padding: 10px 15px;
+  padding: 8px 14px;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s;
@@ -510,8 +510,103 @@ body.dragging .drop { opacity: 1; }
   font: 500 10px/1.2 var(--mono);
 }
 
+/* Top-Center Visualizer Exploration Tree Switcher Bar */
+.tree-bar {
+  top: calc(env(safe-area-inset-top, 0px) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 9px;
+  background: var(--ink-raise);
+  border: 1px solid var(--line-bright);
+  border-radius: 999px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  z-index: 3;
+  max-width: calc(100vw - 24px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tree-bar::-webkit-scrollbar { display: none; }
+.tree-bar .tree-tag {
+  font: 600 9.5px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 0 6px 0 4px;
+  border-right: 1px solid var(--line);
+  white-space: nowrap;
+}
+.tree-bar .btn {
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 11px;
+  min-height: 27px;
+}
+
+/* Interactive Agent Turn Sequencer Timeline Pill (ShowsListening -> Thinking -> Speaking -> Idle) */
+.turn-timeline {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 6px 9px;
+  background: var(--ink-raise);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  pointer-events: auto;
+  max-width: min(430px, 78vw);
+}
+.turn-steps {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: 500 10px/1 var(--mono);
+  color: var(--fg-dim);
+}
+.turn-step {
+  padding: 3px 6px;
+  border-radius: 5px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.turn-step:hover { color: var(--fg); background: rgba(255,255,255,0.06); }
+.turn-step.active {
+  color: var(--ink);
+  background: var(--accent);
+  font-weight: 600;
+}
+.turn-step.done {
+  color: var(--accent);
+  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.turn-bar-track {
+  height: 3px;
+  width: 100%;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.turn-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--accent);
+  transition: width 0.08s linear;
+}
+
 @media (max-width: 760px) {
   .meters, .q-telem { display: none; }
+  .tree-bar {
+    top: calc(env(safe-area-inset-top, 0px) + 78px);
+    padding: 4px 7px;
+  }
+  .turn-timeline { display: none; }
   .dock {
     width: calc(100vw - 20px);
     padding: 5px 6px;
@@ -540,17 +635,37 @@ body.dragging .drop { opacity: 1; }
 
 <canvas id="stage" aria-label="Noether Quantum Field 3D Audio Visualizer"></canvas>
 
-<!-- Top-Left Minimal State, Source & Practical Audio File Scrubber -->
+<!-- Top-Left Minimal State, Source, Live Turn Sequencer & Practical Audio File Scrubber -->
 <header class="hud id">
   <div class="mark">Noether Resonance</div>
   <div class="state"><span class="pip" id="pip"></span><span class="glyph" id="stateGlyph" aria-hidden="true">◎</span><span id="stateLabel">Idle</span></div>
   <div class="src" id="srcLabel">Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase</div>
+  <div class="turn-timeline" id="turnTimeline" title="Interactive Conversational Turn Sequencer — click 'Run agent turn' or click any stage directly">
+    <div class="turn-steps">
+      <span class="turn-step" data-turnstep="listening">1. Listen</span><span>▸</span>
+      <span class="turn-step" data-turnstep="thinking">2. Think</span><span>▸</span>
+      <span class="turn-step" data-turnstep="speaking">3. Speak</span><span>▸</span>
+      <span class="turn-step active" data-turnstep="idle">4. Idle</span>
+      <span id="turnTimer" style="margin-left:auto;font-variant-numeric:tabular-nums;opacity:0.85">Ready</span>
+    </div>
+    <div class="turn-bar-track"><div class="turn-bar-fill" id="turnProgFill"></div></div>
+  </div>
   <div class="media-scrub" id="mediaScrubWrap">
     <button class="btn" id="bMediaPause">Pause</button>
     <input id="mediaSeek" type="range" min="0" max="1000" step="1" value="0" title="Seek audio track">
     <span id="mediaTime">0:00 / 0:00</span>
   </div>
 </header>
+
+<!-- Top-Center Visualizer Exploration Tree Switcher (4 Distinct 3D Quantum Visualizer Archetypes) -->
+<nav class="hud tree-bar" id="treeBar" aria-label="Visualizer Exploration Tree">
+  <span class="tree-tag">Visualizer Tree</span>
+  <button class="btn" data-branch="orb" aria-pressed="true" title="Branch A: Genus-0 Spherical Harmonic Eigen-Orb + 32 Hopf Loops + 144 Spectrum Ring (Key: Q)">I · Eigen-Orb</button>
+  <button class="btn" data-branch="tokamak" aria-pressed="false" title="Branch B: Genus-1 Clifford Tokamak Torus + 40 Villarceau Coils + Z-Pinch Column + 72 Ribs (Key: W)">II · Clifford Tokamak</button>
+  <button class="btn" data-branch="cymatic" aria-pressed="false" title="Branch C: 3D Bessel/Chladni Wave-Tank Horizon + 72 Concentric Crystal Monoliths (Key: E)">III · Cymatic Horizon</button>
+  <button class="btn" data-branch="lattice" aria-pressed="false" title="Branch D: Nested Sacred Geodesic Polyhedra + 12 Dirac Double-Helix Spinor Strands + 72 Spires (Key: R)">IV · Spinor Lattice</button>
+  <button class="btn" id="bTreeCycle" aria-pressed="false" title="Auto-explore all 4 Visualizer Tree branches synchronized to the Demo Track">Tree Cycle ⟳</button>
+</nav>
 
 <!-- Top-Right Tempo & Harmonic Telemetry -->
 <section class="hud tempo" aria-label="Tempo and frequency levels">
@@ -683,6 +798,7 @@ body.dragging .drop { opacity: 1; }
   <h3><span>Noether Resonance · Controls & Symmetries</span><button class="btn" id="bCloseHelp">Close</button></h3>
   <div class="help-grid">
     <kbd>Space</kbd><span>Start / stop offline procedural quantum composition</span>
+    <kbd>Q / W / E / R</kbd><span>Switch Visualizer Exploration Tree (Orb · Tokamak · Cymatic · Lattice)</span>
     <kbd>1 – 4</kbd><span>Switch conversational state (Idle · Listening · Thinking · Speaking)</span>
     <kbd>5 – 9</kbd><span>Jump directly to Curated Showcase Scenes I – V</span>
     <kbd>A – L</kbd><span>Play polyphonic harmonic chimes & launch 3D vortex shockwaves</span>
@@ -696,6 +812,7 @@ body.dragging .drop { opacity: 1; }
 <div class="drop">Drop any audio file (.mp3, .wav, .ogg, .flac, .m4a) to visualize it</div>
 
 <script src="./three.global.js"></script>
+<script src="./sequencer.js"></script>
 <script>
 (() => {
 'use strict';
@@ -786,6 +903,9 @@ const STATES = {
 
 let stateName = 'idle';
 let paletteMode = 'wada_auto';
+let activeBranch = 'orb'; // 'orb' | 'tokamak' | 'cymatic' | 'lattice'
+let treeCycleOn = false;
+let treeCycleTimer = 0;
 let visMode = 0; // 0: Eigen-Orb, 1: Cymatic Chladni, 2: Hopf Torus, 3: Dirac Ferrofluid, 4: Superfluid Vortex
 let camMode = 'front'; // 'front' | 'iso' | 'orbit' | 'macro'
 let zoomOffset = 0.0;
@@ -797,17 +917,19 @@ let showcaseOn = false;
 let showcaseTimer = 0;
 let showcaseIdx = 0;
 let activeTrackIdx = 0;
+let turnActive = false;
+let turnStageStart = 0;
+let turnStageDur = 0;
 
 const K = { amp: 0.48, spin: 0.24, inward: 0, proc: 0.58, l: 3.0, m: 2.0, vis: 0.0, torusMorph: 0.0 };
 
-/* ── 2nd-Order Symplectic Hamiltonian Oscillator Bank for Conserved Energy Dynamics ──
-   Models d^2 q_k / dt^2 + 2*zeta*w_k * dq_k/dt + (w_k^2 / freeRoom) * q_k = F_audio_k(t) */
+/* ── 2nd-Order Symplectic Hamiltonian Oscillator Bank (Modular Coupler) ── */
 const HAM = {
   q: [0, 0, 0, 0], // Low, Mid, High, Radial Breathing coordinates
   v: [0, 0, 0, 0], // Canonical conjugate velocities
   omega: [8.5, 13.0, 19.5, 5.2],
   zeta: [0.34, 0.38, 0.42, 0.26],
-  energy: 0.42     // Conserved + driven Hamiltonian H = T + V
+  energy: 0.42
 };
 
 function stepHamiltonian(dt, forces, freeRoom) {
@@ -832,7 +954,7 @@ function stepHamiltonian(dt, forces, freeRoom) {
 }
 
 function getActivePaletteTarget() {
-  if (paletteMode === 'wada_auto') {
+  if (paletteMode === 'wada_auto' || turnActive) {
     return WADA_PALETTES['auto_' + stateName] || WADA_PALETTES.auto_idle;
   }
   return WADA_PALETTES[paletteMode] || WADA_PALETTES.wada_142;
@@ -841,6 +963,19 @@ function getActivePaletteTarget() {
 function applyAccentColor() {
   const p = getActivePaletteTarget();
   document.documentElement.style.setProperty('--accent', p.accent);
+}
+
+function updateTurnTimelineUI(activeStage, progress, timerLabel) {
+  const order = ['listening', 'thinking', 'speaking', 'idle'];
+  const idx = order.indexOf(activeStage);
+  $$('#turnTimeline .turn-step').forEach((el, i) => {
+    el.classList.toggle('active', el.dataset.turnstep === activeStage);
+    el.classList.toggle('done', turnActive && i < idx && activeStage !== 'idle');
+  });
+  const fill = $('#turnProgFill');
+  if (fill) fill.style.width = `${clamp(progress * 100, 0, 100).toFixed(1)}%`;
+  const tm = $('#turnTimer');
+  if (tm && timerLabel !== undefined) tm.textContent = timerLabel;
 }
 
 function setState(name) {
@@ -852,6 +987,9 @@ function setState(name) {
   if (gEl) gEl.textContent = s.glyph;
   applyAccentColor();
   $$('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === name)));
+  if (!turnActive) {
+    updateTurnTimelineUI(name, name === 'idle' ? 0 : 1, name === 'idle' ? 'Ready' : s.label);
+  }
 }
 
 /* ───────────────────────── WebAudio Graph & Spatial Panner Inputs ───────────────────────── */
@@ -908,9 +1046,13 @@ function setSource(kind, label) {
 }
 
 function stopAll(keepTurn) {
-  if (!keepTurn) turnId++;
+  if (!keepTurn) {
+    turnId++;
+    turnActive = false;
+  }
   stopDemo();
   stopVoice();
+  stopThinkingSynth();
   if (A.media) {
     A.media.pause();
     try { A.mediaNode.disconnect(); } catch (e) {}
@@ -921,11 +1063,14 @@ function stopAll(keepTurn) {
     try { A.streamNode.disconnect(); } catch (e) {}
     A.stream = null; A.streamNode = null;
   }
-  setSource('none', 'Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase');
+  if (!keepTurn) {
+    setSource('none', 'Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase');
+    updateTurnTimelineUI(stateName, 0, 'Ready');
+  }
 }
 
 /* ── 5 Built-In Procedural Quantum Compositions (100% Offline WebAudio Synth) ── */
-const TRACK_LIBRARY = [
+const TRACK_LIBRARY = (window.NoetherSoundSequencer && window.NoetherSoundSequencer.TRACK_LIBRARY) || [
   {
     name: 'I. Noether Progression · Harmonic & tempo shifts',
     sections: [{ bpm: 98, bars: 8 }, { bpm: 122, bars: 8 }, { bpm: 134, bars: 8 }, { bpm: 110, bars: 8 }],
@@ -970,10 +1115,11 @@ function startDemo() {
   const ctx = A.ctx;
   const trk = TRACK_LIBRARY[activeTrackIdx] || TRACK_LIBRARY[0];
   Demo.bus = ctx.createGain(); Demo.bus.gain.value = 0.82; Demo.bus.connect(A.master);
-  Object.assign(Demo, { on: true, next: ctx.currentTime + 0.08, step: 0, sec: 0, bar: 0 });
-  Demo.timer = setInterval(schedDemo, 25);
+  Object.assign(Demo, { on: true, next: ctx.currentTime + 0.06, step: 0, sec: 0, bar: 0 });
   setSource('demo', trk.name);
-  if (stateName === 'idle') setState('speaking');
+  setState('speaking');
+  schedDemo();
+  Demo.timer = setInterval(schedDemo, 25);
 }
 function stopDemo() {
   if (!Demo.on) return;
@@ -1011,6 +1157,14 @@ function playStep(s, t, trk, bpm) {
   const spb = 60 / bpm, st = spb / 4;
   const style = trk.style;
 
+  // Deterministic Clock Sync: lock BPM & bar phase immediately on every quarter-note beat!
+  if (s16 % 4 === 0) {
+    const delayMs = Math.max(0, (t - A.ctx.currentTime) * 1000);
+    setTimeout(() => {
+      if (Demo.on) lockDeterministicClock(bpm, A.ctx.currentTime, s16 === 0);
+    }, delayMs);
+  }
+
   if (style === 'cathedral') {
     if (s16 === 0) {
       kick(t, 0.65);
@@ -1039,7 +1193,6 @@ function playStep(s, t, trk, bpm) {
     if (s16 === 0) pad(t, trk.prog[ch], spb * 4);
     if (s16 % 3 !== 2) arp(t, trk.prog[ch][s16 % trk.prog[ch].length] + 12, st * 1.5);
   } else {
-    // Default I. Noether Progression
     const sec = Demo.sec;
     if (s16 % 4 === 0) kick(t, 1);
     if (sec === 2 && s16 === 14) kick(t, 0.55);
@@ -1097,7 +1250,6 @@ function playHarmonicChime(midiNote, lOrder, mOrder) {
   env(out, now, 0.28, 0.008, 1.45);
   out.connect(A.master);
 
-  // Additive harmonic overtones weighted by spherical harmonic numbers (l, m)
   [1, 1.5, 2, 2.5 + mOrder * 0.125, 3 + lOrder * 0.25].forEach((ratio, idx) => {
     const o = c.createOscillator();
     const g = c.createGain();
@@ -1116,8 +1268,66 @@ function playHarmonicChime(midiNote, lOrder, mOrder) {
   fireBeat(0.75, false, true);
 }
 
+/* ── Active Quantum Thinking Pulse Synth (132 BPM Neural Symmetry Search for Stage 2 of Agent Turn) ── */
+let ThinkSynth = null;
+function startThinkingSynth(dur = 2.7) {
+  ensureAudio(); stopThinkingSynth();
+  const c = A.ctx;
+  const bus = c.createGain(); bus.gain.value = 0.48; bus.connect(A.master);
+  const notes = [64, 69, 71, 76, 78, 81, 76, 71];
+  let stepIdx = 0;
+  let nextT = c.currentTime + 0.04;
+  const endAt = c.currentTime + dur;
+  const bpm = 132;
+  const stepDur = 60 / bpm / 2; // 8th-note crystalline neural pulses
+
+  const timer = setInterval(() => {
+    if (!ThinkSynth) return;
+    while (nextT < c.currentTime + 0.14) {
+      if (nextT > endAt) { clearInterval(timer); break; }
+      const t = nextT;
+      const note = notes[stepIdx % notes.length] + (stepIdx % 3 === 0 ? 12 : 0);
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = stepIdx % 2 === 0 ? 'sine' : 'triangle';
+      o.frequency.setValueAtTime(mtof(note), t);
+      env(g, t, 0.22, 0.004, stepDur * 1.15);
+      o.connect(g); g.connect(bus);
+      o.start(t); o.stop(t + stepDur * 1.25);
+
+      // Subtle low quantum sonar throb on each beat
+      if (stepIdx % 2 === 0) {
+        const sub = c.createOscillator(), sg = c.createGain();
+        sub.type = 'sine';
+        sub.frequency.setValueAtTime(110, t);
+        sub.frequency.exponentialRampToValueAtTime(55, t + 0.12);
+        env(sg, t, 0.34, 0.004, 0.18);
+        sub.connect(sg); sg.connect(bus);
+        sub.start(t); sub.stop(t + 0.22);
+        const sNow = stepIdx;
+        setTimeout(() => {
+          if (ThinkSynth) lockDeterministicClock(bpm, c.currentTime, sNow % 8 === 0);
+        }, Math.max(0, (t - c.currentTime) * 1000));
+      }
+      stepIdx++;
+      nextT += stepDur;
+    }
+  }, 25);
+
+  ThinkSynth = { bus, timer };
+}
+function stopThinkingSynth() {
+  if (!ThinkSynth) return;
+  const ts = ThinkSynth; ThinkSynth = null;
+  clearInterval(ts.timer);
+  if (A.ctx && ts.bus) {
+    ts.bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.04);
+    setTimeout(() => { try { ts.bus.disconnect(); } catch (e) {} }, 250);
+  }
+}
+
 /* ── Formant Speech Synthesizer for Agent / User Turns ── */
-const VOWELS = [
+const VOWELS = (window.NoetherSoundSequencer && window.NoetherSoundSequencer.VOWELS) || [
   [730, 1090, 2440, 2, 1],
   [530, 1840, 2480, 3, 2],
   [270, 2290, 3010, 4, 3],
@@ -1130,7 +1340,7 @@ let V = null;
 function startVoice(kind, dur) {
   ensureAudio(); stopVoice();
   const c = A.ctx;
-  const cfg = kind === 'user' ? { f0: 204, rate: 1.15, fs: 1.12, vol: 0.44 } : { f0: 124, rate: 1.0, fs: 1.0, vol: 0.56 };
+  const cfg = kind === 'user' ? { f0: 204, rate: 1.15, fs: 1.12, vol: 0.48 } : { f0: 124, rate: 1.0, fs: 1.0, vol: 0.58 };
   const bus = c.createGain(); bus.gain.value = cfg.vol; bus.connect(A.master);
   const out = c.createGain(); out.gain.value = 0; out.connect(bus);
   const osc = c.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = cfg.f0;
@@ -1146,7 +1356,8 @@ function startVoice(kind, dur) {
   const nf = c.createBiquadFilter(); nf.type = 'highpass'; nf.frequency.value = 3400;
   const ng = c.createGain(); ng.gain.value = 0; nz.connect(nf); nf.connect(ng); ng.connect(bus);
   osc.start(); vib.start(); nz.start();
-  V = { cfg, osc, out, ng, bus, forms, nodes: [osc, vib, nz], next: c.currentTime + 0.08, syl: 0, phraseLen: 7, endAt: dur ? c.currentTime + dur : Infinity, timer: 0 };
+  V = { cfg, osc, out, ng, bus, forms, nodes: [osc, vib, nz], next: c.currentTime + 0.06, syl: 0, phraseLen: 7, endAt: dur ? c.currentTime + dur : Infinity, timer: 0 };
+  schedVoice();
   V.timer = setInterval(schedVoice, 30);
 }
 function schedVoice() {
@@ -1157,19 +1368,23 @@ function schedVoice() {
     if (v.syl >= v.phraseLen) {
       v.out.gain.setTargetAtTime(0, t, 0.04);
       v.syl = 0; v.phraseLen = 6 + (Math.random() * 9 | 0);
-      v.next = t + (0.28 + Math.random() * 0.42) / v.cfg.rate; continue;
+      v.next = t + (0.26 + Math.random() * 0.36) / v.cfg.rate; continue;
     }
     const d = (0.11 + Math.random() * 0.13) / v.cfg.rate;
     const vw = VOWELS[Math.random() * VOWELS.length | 0];
     v.forms.forEach((f, i) => f.frequency.setTargetAtTime(vw[i] * v.cfg.fs, t, 0.025));
-    const pos = v.syl / v.phraseLen, stress = Math.random() < 0.25 ? 1.12 : 1;
+    const pos = v.syl / v.phraseLen, stress = Math.random() < 0.28 ? 1.15 : 1;
     v.osc.frequency.setTargetAtTime(v.cfg.f0 * (1.12 - 0.24 * pos) * stress * (0.95 + Math.random() * 0.1), t, 0.03);
-    const amp = (0.55 + Math.random() * 0.45) * stress;
-    v.out.gain.setTargetAtTime(amp, t, 0.018);
+    const amp = (0.58 + Math.random() * 0.42) * stress;
+    v.out.gain.setTargetAtTime(amp, t, 0.016);
     v.out.gain.setTargetAtTime(amp * 0.16, t + d * 0.7, 0.025);
     if (Math.random() < 0.35) {
       v.ng.gain.setTargetAtTime(0.16, Math.max(c.currentTime, t - 0.02), 0.008);
       v.ng.gain.setTargetAtTime(0, t + 0.03, 0.015);
+    }
+    // Trigger syllabic pulse on stressed vowels so visualizer shockwaves & clock respond to speech cadence
+    if (stress > 1.05) {
+      setTimeout(() => { if (V) fireBeat(0.68, false, false); }, Math.max(0, (t - c.currentTime) * 1000));
     }
     v.syl++; v.next = t + d;
   }
@@ -1196,7 +1411,6 @@ function attachStream(stream, kind, label) {
   ensureAudio(); stopAll();
   A.stream = stream;
   A.streamNode = A.ctx.createMediaStreamSource(stream);
-  // Connect strictly to analyser (never destination) to prevent speaker feedback loops
   A.streamNode.connect(A.analyser);
   setSource(kind, label);
   setState(kind === 'sys' ? 'speaking' : 'listening');
@@ -1230,7 +1444,7 @@ async function startMic(preferredDeviceId) {
     attachStream(s, 'mic', 'Mic · ' + trackLabel);
     refreshAudioDevices();
   } catch (e) {
-    toast('Microphone access requires http://localhost or HTTPS. Run `node server.js` in noether-resonance-app and open http://localhost:3333.');
+    toast('Microphone access requires http://localhost or HTTPS. Open http://localhost:3333 or https://noether-resonance-core.vercel.app.');
   }
 }
 
@@ -1255,36 +1469,83 @@ async function startSystemAudio() {
   }
 }
 
-/* ── Agent Turn Sequencing: Listening → Thinking → Speaking → Idle ── */
+/* ── Modular Conversational Agent Turn Sequencer: Listening (3.5s) → Thinking (2.7s) → Speaking (6.2s) → Idle ── */
 let turnId = 0;
 const wait = ms => new Promise(r => setTimeout(r, ms));
-async function agentTurn() {
-  ensureAudio(); stopAll();
+
+async function agentTurn(startStage = 'listening') {
+  ensureAudio();
+  stopAll(true);
   const id = ++turnId;
-  setState('listening'); setSource('voice', 'Agent turn · listening to user speech'); startVoice('user', 3.2);
-  await wait(3500); if (id !== turnId) return;
-  stopVoice(); setState('thinking'); setSource('none', 'Agent turn · quantum symmetry search');
-  await wait(2700); if (id !== turnId) return;
-  setState('speaking'); setSource('voice', 'Agent turn · harmonic response'); startVoice('agent', 6.2);
-  await wait(6600); if (id !== turnId) return;
-  stopVoice(); setSource('none', 'Agent turn complete · Quantum vacuum breathing'); setState('idle');
+  turnActive = true;
+  const nowSec = () => performance.now() / 1000;
+
+  if (startStage === 'listening') {
+    turnStageStart = nowSec(); turnStageDur = 3.5;
+    setState('listening');
+    setSource('voice', 'Agent turn (1/3) · Listening to user speech formants');
+    startVoice('user', 3.3);
+    await wait(3500);
+    if (id !== turnId) return;
+  }
+
+  if (startStage === 'listening' || startStage === 'thinking') {
+    stopVoice();
+    turnStageStart = nowSec(); turnStageDur = 2.7;
+    setState('thinking');
+    setSource('thinking', 'Agent turn (2/3) · Quantum symmetry search (132 BPM)');
+    startThinkingSynth(2.6);
+    await wait(2700);
+    if (id !== turnId) return;
+  }
+
+  if (startStage === 'listening' || startStage === 'thinking' || startStage === 'speaking') {
+    stopThinkingSynth();
+    turnStageStart = nowSec(); turnStageDur = 6.2;
+    setState('speaking');
+    setSource('voice', 'Agent turn (3/3) · Harmonic AI response synthesis');
+    startVoice('agent', 6.0);
+    await wait(6200);
+    if (id !== turnId) return;
+  }
+
+  stopVoice();
+  stopThinkingSynth();
+  turnActive = false;
+  setSource('none', 'Agent turn complete · Click Run agent turn, Demo track, or Mic');
+  setState('idle');
+  updateTurnTimelineUI('idle', 0, 'Complete');
 }
 
-/* ───────────────────────── Real-Time Spectral, Formant (F1/F2) & PLL Beat Analysis ───────────────────────── */
+/* ───────────────────────── Modular ClockSync & Spectral/Formant Analyser ───────────────────────── */
 const AN = {
   bands: [0, 0, 0], peaks: [0.25, 0.25, 0.25], level: 0, fullFlux: 0,
   fluxHist: [], f1: 0, f2: 0, t1: 0, lastOnset: -1, onsets: [],
-  bpm: 0, cand: 0, candSince: 0, conf: 0, locked: false,
+  bpm: 0, cand: 0, candSince: 0, conf: 0, locked: false, deterministicLock: false,
   nextBeat: 0, period: 0.5, beatCount: 0, accent: [0, 0, 0, 0], downOff: 0,
   centroid: 0.35, formantF1: 500, formantF2: 1500
 };
 
 function resetTempo() {
   Object.assign(AN, {
-    fluxHist: [], onsets: [], bpm: 0, cand: 0, conf: 0, locked: false,
+    fluxHist: [], onsets: [], bpm: 0, cand: 0, conf: 0, locked: false, deterministicLock: false,
     nextBeat: 0, beatCount: 0, accent: [0, 0, 0, 0], downOff: 0, lastOnset: -1
   });
 }
+
+function lockDeterministicClock(bpm, audioTime, isDownbeat) {
+  AN.bpm = bpm;
+  AN.period = 60 / bpm;
+  AN.conf = 1.0;
+  AN.locked = true;
+  AN.deterministicLock = true;
+  AN.lastOnset = audioTime;
+  AN.nextBeat = audioTime + AN.period;
+  if (isDownbeat) AN.downOff = AN.beatCount % 4;
+  fireBeat(isDownbeat ? 1.0 : 0.78, true, isDownbeat);
+  AN.beatCount++;
+}
+
 function binOf(hz) { return clamp(Math.round(hz / (A.ctx.sampleRate / A.analyser.fftSize)), 1, A.freq.length - 1); }
 function bandAvg(lo, hi) {
   const a = binOf(lo), b = binOf(hi); let s = 0;
@@ -1358,6 +1619,7 @@ function onOnset(t, strength) {
   AN.lastOnset = t;
   AN.onsets.push({ t, s: strength });
   while (AN.onsets.length && t - AN.onsets[0].t > 8) AN.onsets.shift();
+  if (AN.deterministicLock) return;
   estimateTempo(t);
   if (AN.locked) {
     const p = AN.period, prev = AN.nextBeat - p;
@@ -1371,6 +1633,7 @@ function onOnset(t, strength) {
 
 const HIST = new Float32Array(81);
 function estimateTempo(now) {
+  if (AN.deterministicLock) return;
   HIST.fill(0);
   const o = AN.onsets; let total = 0;
   for (let i = 0; i < o.length; i++) for (let j = i + 1; j < o.length; j++) {
@@ -1406,6 +1669,7 @@ function estimateTempo(now) {
 }
 
 function beatClock(now) {
+  if (AN.deterministicLock) return;
   if (AN.locked && now - AN.lastOnset > 2.5) AN.locked = false;
   if (!AN.locked || !AN.bpm) return;
   AN.period = 60 / AN.bpm;
@@ -1422,7 +1686,7 @@ function beatClock(now) {
 }
 function beatPhase(now) {
   if (AN.locked && AN.bpm) return clamp(1 - (AN.nextBeat - now) / AN.period, 0, 1);
-  return 0;
+  return (now % 0.5) / 0.5;
 }
 
 /* ───────────────────────── Three.js WebGL2 Quantum Field Scene ───────────────────────── */
@@ -2013,6 +2277,314 @@ function updateBarDots() {
   $$('#bar i').forEach((el, i) => el.classList.toggle('on', i === idx));
 }
 
+/* ───────────────────────── 9. EXPLORATION TREE: 3 NEW 3D VISUALIZER PROTOTYPES ───────────────────────── */
+
+/* ── Branch II: CLIFFORD TOKAMAK (Toroidal Magnetic Confinement Plasma + Villarceau Coils + Z-Pinch Core) ── */
+const branchTokamakGroup = new THREE.Group();
+branchTokamakGroup.visible = false;
+world.add(branchTokamakGroup);
+
+const tokamakU = {
+  uT: { value: 0 }, uBass: { value: 0 }, uMid: { value: 0 }, uTreb: { value: 0 },
+  uBeat: { value: 0 }, uHarmL: { value: 3.0 }, uHarmM: { value: 2.0 }, uSymBreak: { value: 0.18 },
+  uFibIntensity: { value: 0.92 }, uMono: { value: 0 },
+  uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }
+};
+
+const tokamakVert = `
+  uniform float uT, uBass, uMid, uTreb, uBeat, uHarmL, uHarmM, uSymBreak;
+  varying vec3 vN, vV, vPos;
+  varying float vHelix, vFlux;
+  void main() {
+    vPos = position;
+    float u = atan(position.y, position.x);
+    float rMaj = length(position.xy);
+    float v = atan(position.z, rMaj - 1.06);
+    float qWind = uHarmL * u + uHarmM * v;
+    float twist = sin(qWind - uT * 2.4) * (0.045 + uBass * 0.085 + uBeat * 0.06);
+    float pinch = cos(uHarmM * u * 2.0 + uT * 1.8) * sin(uHarmL * v - uT * 3.1) * (0.03 + uMid * 0.065);
+    float chiral = uSymBreak * 0.05 * sin(3.0 * u - 2.0 * v + uT * 2.2);
+    float disp = twist + pinch + chiral;
+    vec3 p = position + normal * disp;
+    vec4 mv = modelViewMatrix * vec4(p, 1.0);
+    vV = -mv.xyz;
+    vN = normalMatrix * normalize(normal + vec3(disp * 1.8));
+    vHelix = sin(uHarmL * 2.0 * u + uHarmM * 3.0 * v - uT * 3.2);
+    vFlux = clamp((disp + 0.12) / 0.24, 0.0, 1.0);
+    gl_Position = projectionMatrix * mv;
+  }
+`;
+
+const tokamakFrag = `
+  precision highp float;
+  uniform vec3 uCore, uMidC, uRim, uFib;
+  uniform float uT, uBass, uMid, uTreb, uBeat, uFibIntensity, uMono;
+  varying vec3 vN, vV, vPos;
+  varying float vHelix, vFlux;
+  void main() {
+    vec3 N = normalize(vN);
+    vec3 V = normalize(vV);
+    float fr = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 2.1);
+    vec3 col = mix(uCore * 0.45, uMidC, smoothstep(0.0, 0.85, vFlux));
+    col = mix(col, uRim, fr * 0.92 + uBeat * 0.22);
+    float fw = max(fwidth(vHelix), 0.015);
+    float line = (1.0 - smoothstep(0.0, fw * 1.8, abs(vHelix))) * uFibIntensity;
+    col += uFib * line * (0.58 + uTreb * 0.55 + uBeat * 0.35);
+    col += uRim * pow(fr, 3.2) * (0.65 + uBass * 0.45);
+    if (uMono > 0.5) {
+      float lum = dot(col, vec3(0.299, 0.587, 0.114));
+      col = mix(col, vec3(lum) * uRim, 0.85);
+    }
+    col = col / (1.0 + col * 0.36);
+    gl_FragColor = vec4(pow(col, vec3(0.92)), 0.94);
+  }
+`;
+
+const tokamakTorus = new THREE.Mesh(
+  new THREE.TorusGeometry(1.06, 0.36, 72, 180),
+  new THREE.ShaderMaterial({ uniforms: tokamakU, vertexShader: tokamakVert, fragmentShader: tokamakFrag, transparent: true })
+);
+branchTokamakGroup.add(tokamakTorus);
+
+// Central Z-Pinch Relativistic Plasma Column
+const zPinchMat = new THREE.ShaderMaterial({
+  uniforms: tokamakU,
+  transparent: true,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  vertexShader: `
+    uniform float uT, uBass, uBeat, uHarmL;
+    varying float vY, vPinch;
+    void main() {
+      vY = position.y;
+      float p = sin(position.y * uHarmL * 2.2 - uT * 4.5) * (0.35 + uBass * 0.45 + uBeat * 0.4);
+      vPinch = 0.5 + 0.5 * p;
+      vec3 pos = position;
+      pos.xz *= (1.0 + p * 0.55) * (1.0 - 0.25 * abs(position.y));
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+    }`,
+  fragmentShader: `
+    uniform vec3 uMidC, uRim, uFib;
+    varying float vY, vPinch;
+    void main() {
+      float fade = smoothstep(1.18, 0.15, abs(vY));
+      vec3 c = mix(uMidC, uFib, vPinch);
+      gl_FragColor = vec4(c * fade * (0.55 + 0.45 * vPinch), 0.85);
+    }`
+});
+const zPinchMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 2.35, 36, 48, true), zPinchMat);
+branchTokamakGroup.add(zPinchMesh);
+
+// 36 3D Villarceau / Helical Magnetic Flux Loops around the Tokamak
+const tokamakCoils = new THREE.Group();
+const TOK_COIL_N = 36, TOK_PTS = 140;
+for (let i = 0; i < TOK_COIL_N; i++) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(TOK_PTS * 3);
+  const seed = new Float32Array(TOK_PTS * 3);
+  const phi0 = (i / TOK_COIL_N) * Math.PI * 2;
+  const qRatio = (i % 2 === 0) ? 3 : -2;
+  for (let j = 0; j < TOK_PTS; j++) {
+    const t = (j / TOK_PTS) * Math.PI * 2;
+    const u = t + phi0;
+    const v = qRatio * t + phi0 * 1.618;
+    const R = 1.06, r = 0.41 + (i % 3) * 0.035;
+    const x = (R + r * Math.cos(v)) * Math.cos(u);
+    const y = (R + r * Math.cos(v)) * Math.sin(u);
+    const z = r * Math.sin(v);
+    pos[j * 3] = x; pos[j * 3 + 1] = y; pos[j * 3 + 2] = z;
+    seed[j * 3] = i / TOK_COIL_N; seed[j * 3 + 1] = j / TOK_PTS; seed[j * 3 + 2] = qRatio;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 3));
+  const line = new THREE.LineLoop(geo, orbitalFibMat);
+  tokamakCoils.add(line);
+}
+branchTokamakGroup.add(tokamakCoils);
+
+// 72 Instanced 3D Toroidal Confinement Spectrum Ribs
+const tokRibGeo = new THREE.BoxGeometry(0.028, 0.12, 0.028);
+const tokRibMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+const tokamakRibs = new THREE.InstancedMesh(tokRibGeo, tokRibMat, NB);
+tokamakRibs.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+for (let i = 0; i < NB; i++) tokamakRibs.setColorAt(i, new THREE.Color(1, 1, 1));
+branchTokamakGroup.add(tokamakRibs);
+
+/* ── Branch III: CYMATIC HORIZON (Dual 3D Bessel-Chladni Standing-Wave Horizon Membranes + 72 Crystal Monoliths) ── */
+const branchCymaticGroup = new THREE.Group();
+branchCymaticGroup.visible = false;
+world.add(branchCymaticGroup);
+
+const cymaticU = {
+  uT: { value: 0 }, uBass: { value: 0 }, uMid: { value: 0 }, uTreb: { value: 0 },
+  uBeat: { value: 0 }, uHarmL: { value: 3.0 }, uHarmM: { value: 2.0 }, uSymBreak: { value: 0.18 },
+  uFibIntensity: { value: 0.92 }, uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }
+};
+
+const cymaticPlaneVert = `
+  uniform float uT, uBass, uMid, uTreb, uBeat, uHarmL, uHarmM, uSymBreak;
+  varying float vWave, vRad, vNodal;
+  varying vec3 vN;
+  void main() {
+    vec2 xy = position.xy;
+    float r = length(xy);
+    float ang = atan(xy.y, xy.x);
+    float w1 = cos(r * (uHarmL * 2.2) - uT * 2.8) * cos(uHarmM * ang + uSymBreak * 2.0);
+    float w2 = sin(r * ((uHarmL + uHarmM) * 1.45) - uT * 1.9) * sin((uHarmM + 1.0) * ang - uT * 0.8);
+    float env = smoothstep(2.25, 0.15, r);
+    float zDisp = (w1 * (0.14 + uBass * 0.22 + uBeat * 0.14) + w2 * (0.08 + uMid * 0.15)) * env;
+    vec3 p = vec3(xy.x, xy.y, position.z + zDisp);
+    vWave = zDisp * 3.2;
+    vRad = r / 2.15;
+    vNodal = w1 + 0.65 * w2;
+    vN = normalize(vec3(-xy.x * zDisp * 1.8, -xy.y * zDisp * 1.8, 1.0));
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+  }
+`;
+
+const cymaticPlaneFrag = `
+  precision highp float;
+  uniform vec3 uCore, uMidC, uRim, uFib;
+  uniform float uTreb, uBeat, uFibIntensity;
+  varying float vWave, vRad, vNodal;
+  varying vec3 vN;
+  void main() {
+    float mask = smoothstep(1.02, 0.72, vRad);
+    if (mask <= 0.01) discard;
+    float fw = max(fwidth(vNodal), 0.012);
+    float contour = 1.0 - smoothstep(0.0, fw * 1.75, abs(vNodal));
+    float gridR = abs(fract(vRad * 8.0) - 0.5);
+    float ringLine = 1.0 - smoothstep(0.0, max(fwidth(vRad * 8.0), 0.015) * 1.3, gridR);
+    vec3 col = mix(uCore * 0.5, uMidC, clamp(0.5 + vWave, 0.0, 1.0));
+    col = mix(col, uRim, ringLine * 0.42);
+    col += uFib * contour * (0.75 + uTreb * 0.5 + uBeat * 0.4) * uFibIntensity;
+    float alpha = mask * (0.34 + contour * 0.55 + ringLine * 0.22);
+    gl_FragColor = vec4(col, alpha);
+  }
+`;
+
+const cymaticMat = new THREE.ShaderMaterial({
+  uniforms: cymaticU, vertexShader: cymaticPlaneVert, fragmentShader: cymaticPlaneFrag,
+  transparent: true, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, depthWrite: false
+});
+const cymaticFloor = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2, 108, 108), cymaticMat);
+cymaticFloor.rotation.x = -Math.PI / 2;
+cymaticFloor.position.y = -0.74;
+branchCymaticGroup.add(cymaticFloor);
+
+const cymaticCeiling = new THREE.Mesh(new THREE.PlaneGeometry(4.0, 4.0, 90, 90), cymaticMat);
+cymaticCeiling.rotation.x = Math.PI / 2;
+cymaticCeiling.position.y = 0.82;
+branchCymaticGroup.add(cymaticCeiling);
+
+// 72 Instanced 3D Harmonic Crystal Monoliths rising between the Cymatic Horizons
+const cymPillarGeo = new THREE.CylinderGeometry(0.018, 0.026, 1.0, 6);
+const cymPillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false });
+const cymaticPillars = new THREE.InstancedMesh(cymPillarGeo, cymPillarMat, NB);
+cymaticPillars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+for (let i = 0; i < NB; i++) cymaticPillars.setColorAt(i, new THREE.Color(1, 1, 1));
+branchCymaticGroup.add(cymaticPillars);
+
+// Central Suspended Quantum Singularity + 3 Gyroscopic Nodal Rings
+const cymCoreSphere = new THREE.Mesh(new THREE.IcosahedronGeometry(0.34, 4), orb.material);
+branchCymaticGroup.add(cymCoreSphere);
+
+const cymGyroRings = [];
+for (let r = 0; r < 3; r++) {
+  const rg = new THREE.Mesh(
+    new THREE.TorusGeometry(0.52 + r * 0.19, 0.009, 12, 120),
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending, depthWrite: false })
+  );
+  branchCymaticGroup.add(rg);
+  cymGyroRings.push(rg);
+}
+
+/* ── Branch IV: SPINOR LATTICE (Nested Geodesic Gauge Shells + 16 Dirac Spinor Ribbons + 72 Fibonacci Spires) ── */
+const branchLatticeGroup = new THREE.Group();
+branchLatticeGroup.visible = false;
+world.add(branchLatticeGroup);
+
+const latticeInnerCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.58, 2), orb.material);
+branchLatticeGroup.add(latticeInnerCore);
+
+const latticeWireMat1 = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending, depthWrite: false });
+const latticeWireMat2 = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.42, blending: THREE.AdditiveBlending, depthWrite: false });
+const latticeMidShell = new THREE.Mesh(new THREE.IcosahedronGeometry(1.06, 1), latticeWireMat1);
+const latticeOuterShell = new THREE.Mesh(new THREE.IcosahedronGeometry(1.52, 2), latticeWireMat2);
+branchLatticeGroup.add(latticeMidShell);
+branchLatticeGroup.add(latticeOuterShell);
+
+// 16 Intertwined 3D Dirac Spinor Double-Helix Ribbons
+const latticeRibbons = new THREE.Group();
+const LAT_RIB_N = 16, LAT_PTS = 128;
+for (let i = 0; i < LAT_RIB_N; i++) {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(LAT_PTS * 3);
+  const seed = new Float32Array(LAT_PTS * 3);
+  const a0 = (i / LAT_RIB_N) * Math.PI * 2;
+  const spinDir = i % 2 === 0 ? 1 : -1;
+  for (let j = 0; j < LAT_PTS; j++) {
+    const t = (j / LAT_PTS) * Math.PI * 2;
+    const rad = 0.72 + 0.58 * (0.5 + 0.5 * Math.sin(t * 2.0 + i * 0.7));
+    const theta = t * spinDir * 2.0 + a0;
+    const phi = Math.acos(clamp(Math.cos(t + a0 * 0.5) * 0.88, -1, 1));
+    pos[j * 3]     = rad * Math.sin(phi) * Math.cos(theta);
+    pos[j * 3 + 1] = rad * Math.cos(phi);
+    pos[j * 3 + 2] = rad * Math.sin(phi) * Math.sin(theta);
+    seed[j * 3] = i / LAT_RIB_N; seed[j * 3 + 1] = j / LAT_PTS; seed[j * 3 + 2] = spinDir;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('aSeed', new THREE.BufferAttribute(seed, 3));
+  latticeRibbons.add(new THREE.LineLoop(geo, orbitalFibMat));
+}
+branchLatticeGroup.add(latticeRibbons);
+
+// 72 Radial 3D Fibonacci-Sphere Spectrum Spires
+const spireGeo = new THREE.ConeGeometry(0.024, 1.0, 5);
+const spireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false });
+const latticeSpires = new THREE.InstancedMesh(spireGeo, spireMat, NB);
+latticeSpires.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+const spireDirs = [];
+const goldenPhi = Math.PI * (3 - Math.sqrt(5));
+const upVec = new THREE.Vector3(0, 1, 0);
+for (let i = 0; i < NB; i++) {
+  const y = 1 - (i / (NB - 1)) * 2;
+  const r = Math.sqrt(Math.max(0, 1 - y * y));
+  const th = goldenPhi * i;
+  spireDirs.push(new THREE.Vector3(Math.cos(th) * r, y, Math.sin(th) * r).normalize());
+  latticeSpires.setColorAt(i, new THREE.Color(1, 1, 1));
+}
+branchLatticeGroup.add(latticeSpires);
+
+function setActiveBranch(branchId) {
+  if (!['orb', 'tokamak', 'cymatic', 'lattice'].includes(branchId)) return;
+  activeBranch = branchId;
+  $$('[data-branch]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.branch === branchId)));
+  const names = {
+    orb: 'I · Eigen-Orb (Spherical Harmonics Yℓm + Hopf Fibroids)',
+    tokamak: 'II · Clifford Tokamak (Toroidal Magnetic Confinement + Villarceau Coils)',
+    cymatic: 'III · Cymatic Horizon (Dual Standing-Wave Membranes + 72 Crystal Monoliths)',
+    lattice: 'IV · Spinor Lattice (Nested SU(2) Geodesic Shells + Fibonacci Spires)'
+  };
+  toast(`Exploration Tree → ${names[branchId]}`);
+}
+
+function toggleTreeCycle(force) {
+  treeCycleOn = typeof force === 'boolean' ? force : !treeCycleOn;
+  const btn = $('#bTreeCycle');
+  if (btn) btn.setAttribute('aria-pressed', String(treeCycleOn));
+  clearInterval(treeCycleTimer);
+  if (treeCycleOn) {
+    const order = ['orb', 'tokamak', 'cymatic', 'lattice'];
+    if (!Demo.on && !turnActive && A.src === 'none') startDemo();
+    treeCycleTimer = setInterval(() => {
+      const nextIdx = (order.indexOf(activeBranch) + 1) % order.length;
+      setActiveBranch(order[nextIdx]);
+    }, 5200);
+    toast('Exploration Tree Auto-Cycle ON · Cycling all 4 3D visualizers every 5.2s');
+  }
+}
+
 /* ───────────────────────── Responsive Frustum & Non-Overlapping Camera ───────────────────────── */
 function syncDockHeight() {
   const dockEl = document.querySelector('.dock');
@@ -2059,6 +2631,15 @@ function tick() {
   tgt.core.set(...pTgt.core); tgt.mid.set(...pTgt.mid); tgt.rim.set(...pTgt.rim); tgt.fib.set(...pTgt.fib);
   pal.core.lerp(tgt.core, k); pal.mid.lerp(tgt.mid, k); pal.rim.lerp(tgt.rim, k); pal.fib.lerp(tgt.fib, k);
   orbU.uMono.value = pTgt.mono || 0;
+  tokamakU.uMono.value = pTgt.mono || 0;
+
+  // Live Agent Turn Timeline Progress Bar & Countdown
+  if (turnActive && turnStageDur > 0) {
+    const elapsed = Math.max(0, now - turnStageStart);
+    const prog = clamp(elapsed / turnStageDur, 0, 1);
+    const rem = Math.max(0, turnStageDur - elapsed);
+    updateTurnTimelineUI(stateName, prog, `${rem.toFixed(1)}s`);
+  }
 
   const live = A.ctx && A.src !== 'none';
   const gain = parseFloat(gainEl.value);
@@ -2120,7 +2701,7 @@ function tick() {
   tAcc += dt * (0.52 + level * 1.05 + mid * 0.42) * tempoK;
   spinAcc += dt * K.spin * tempoK * (reduceMotion ? 0.4 : 1);
 
-  // Update Orb & Fibroid Uniforms
+  // Update Shared Orb & Fibroid Uniforms
   orbU.uT.value = tAcc;
   orbU.uBass.value = bass;
   orbU.uMid.value = mid;
@@ -2136,9 +2717,6 @@ function tick() {
   orbU.uFibIntensity.value = fibInt;
   orbU.uShowSurfFib.value = showOnBlobFib ? 1.0 : 0.0;
   orbU.uSharp.value = stateName === 'listening' ? 8.0 : 6.2;
-
-  surfFibGroup.visible = showOnBlobFib && fibInt > 0.02;
-  orbitalFibGroup.visible = showOrbitalFib && fibInt > 0.02;
   orbitalFibMat.uniforms.uInward.value = K.inward;
 
   orbit.yaw = lerp(orbit.yaw, orbit.tyaw, 0.12);
@@ -2146,66 +2724,203 @@ function tick() {
 
   const rotY = spinAcc * 0.14 + orbit.yaw;
   const rotX = Math.sin(now * 0.21) * 0.22 + orbit.pitch;
-  orb.rotation.set(rotX, rotY, 0);
-  surfFibGroup.rotation.set(rotX, rotY, 0);
-  orbitalFibGroup.rotation.set(rotX * 0.65, -rotY * 0.8, Math.sin(now * 0.15) * 0.18);
+
+  // Compute 36-band log-spaced FFT spectrum bins (shared across all 4 Exploration Tree visualizers)
+  for (let b = 0; b < HALF; b++) {
+    let v;
+    if (live) {
+      const lo = binOf(edges[b]), hi = Math.max(lo, binOf(edges[b + 1]));
+      let s = 0; for (let i = lo; i <= hi; i++) s = Math.max(s, A.freq[i]);
+      v = Math.pow(s / 255, 1.55) * gain * (0.75 + (b / HALF) * 0.6);
+    } else v = 0;
+    const pv = 0.06 + 0.42 * Math.pow(0.5 + 0.5 * Math.sin(b * 0.23 - now * (stateName === 'thinking' ? 4.2 : 1.4)), 4);
+    v = lerp(v, pv, procW * 0.9) * K.amp;
+    barVal[b] += (v - barVal[b]) * (v > barVal[b] ? 0.6 : 0.14);
+  }
+
+  // Toggle Exploration Tree Branch Visibility
+  const isOrb = activeBranch === 'orb';
+  const isTokamak = activeBranch === 'tokamak';
+  const isCymatic = activeBranch === 'cymatic';
+  const isLattice = activeBranch === 'lattice';
+
+  orb.visible = isOrb;
+  surfFibGroup.visible = isOrb && showOnBlobFib && fibInt > 0.02;
+  orbitalFibGroup.visible = isOrb && showOrbitalFib && fibInt > 0.02;
+  bars.visible = isOrb && showSpectrumRing;
+  wave.visible = isOrb;
+  waveEcho.visible = isOrb;
+
+  branchTokamakGroup.visible = isTokamak;
+  branchCymaticGroup.visible = isCymatic;
+  branchLatticeGroup.visible = isLattice;
 
   halo.scale.setScalar(0.88 * (1.52 + level * 0.32 + beatEnv * 0.14));
-  haloU.uI.value = 0.34 + level * 0.52 + beatEnv * 0.35;
+  haloU.uI.value = (isTokamak ? 0.18 : 0.34) + level * (isTokamak ? 0.28 : 0.52) + beatEnv * 0.28;
 
-  // Spectrum Ring Bars
-  bars.visible = showSpectrumRing;
-  if (showSpectrumRing) {
-    for (let b = 0; b < HALF; b++) {
-      let v;
-      if (live) {
-        const lo = binOf(edges[b]), hi = Math.max(lo, binOf(edges[b + 1]));
-        let s = 0; for (let i = lo; i <= hi; i++) s = Math.max(s, A.freq[i]);
-        v = Math.pow(s / 255, 1.55) * gain * (0.75 + (b / HALF) * 0.6);
-      } else v = 0;
-      const pv = 0.06 + 0.42 * Math.pow(0.5 + 0.5 * Math.sin(b * 0.23 - now * (stateName === 'thinking' ? 4.2 : 1.4)), 4);
-      v = lerp(v, pv, procW * 0.9) * K.amp;
-      barVal[b] += (v - barVal[b]) * (v > barVal[b] ? 0.6 : 0.14);
-    }
-    const ringR = RING_R + beatEnv * 0.06;
-    for (let i = 0; i < NB; i++) {
-      const b = i < HALF ? i : NB - 1 - i;
-      const a = Math.PI / 2 + (i / NB) * Math.PI * 2 + spinAcc * 0.05;
-      const h = 0.03 + clamp(barVal[b], 0, 1.3) * 0.85;
-      dummy.position.set(Math.cos(a) * ringR, Math.sin(a) * ringR, 0);
-      dummy.rotation.set(0, 0, a - Math.PI / 2);
-      dummy.scale.set(0.022, h, 0.022);
-      dummy.updateMatrix();
-      bars.setMatrixAt(i, dummy.matrix);
-      const c = clamp(barVal[b] * 1.2, 0, 1);
-      tmpC.setRGB(lerp(pal.mid.x, pal.rim.x, c), lerp(pal.mid.y, pal.rim.y, c), lerp(pal.mid.z, pal.rim.z, c));
-      bars.setColorAt(i, tmpC);
-    }
-    bars.instanceMatrix.needsUpdate = true;
-    bars.instanceColor.needsUpdate = true;
-  }
+  if (isOrb) {
+    orb.rotation.set(rotX, rotY, 0);
+    surfFibGroup.rotation.set(rotX, rotY, 0);
+    orbitalFibGroup.rotation.set(rotX * 0.65, -rotY * 0.8, Math.sin(now * 0.15) * 0.18);
 
-  // Waveform & Echo Loops
-  const step = live ? Math.floor(A.time.length / WN) : 0;
-  for (let i = 0; i < WN; i++) {
-    const win = Math.sin((Math.PI * i) / WN);
-    let s = live ? A.time[i * step] * gain * 2.2 : 0;
-    s = lerp(s, 0.18 * Math.sin(i * 0.18 + now * 2.2) * Math.sin(i * 0.05 - now * 0.7), procW * 0.8);
-    echoBuf[i] = lerp(echoBuf[i], waveBuf[i], 0.18);
-    waveBuf[i] = s * win * K.amp;
+    if (showSpectrumRing) {
+      const ringR = RING_R + beatEnv * 0.06;
+      for (let i = 0; i < NB; i++) {
+        const b = i < HALF ? i : NB - 1 - i;
+        const a = Math.PI / 2 + (i / NB) * Math.PI * 2 + spinAcc * 0.05;
+        const h = 0.03 + clamp(barVal[b], 0, 1.3) * 0.85;
+        dummy.position.set(Math.cos(a) * ringR, Math.sin(a) * ringR, 0);
+        dummy.rotation.set(0, 0, a - Math.PI / 2);
+        dummy.scale.set(0.022, h, 0.022);
+        dummy.updateMatrix();
+        bars.setMatrixAt(i, dummy.matrix);
+        const c = clamp(barVal[b] * 1.2, 0, 1);
+        tmpC.setRGB(lerp(pal.mid.x, pal.rim.x, c), lerp(pal.mid.y, pal.rim.y, c), lerp(pal.mid.z, pal.rim.z, c));
+        bars.setColorAt(i, tmpC);
+      }
+      bars.instanceMatrix.needsUpdate = true;
+      bars.instanceColor.needsUpdate = true;
+    }
+
+    // Waveform & Echo Loops
+    const step = live ? Math.floor(A.time.length / WN) : 0;
+    for (let i = 0; i < WN; i++) {
+      const win = Math.sin((Math.PI * i) / WN);
+      let s = live ? A.time[i * step] * gain * 2.2 : 0;
+      s = lerp(s, 0.18 * Math.sin(i * 0.18 + now * 2.2) * Math.sin(i * 0.05 - now * 0.7), procW * 0.8);
+      echoBuf[i] = lerp(echoBuf[i], waveBuf[i], 0.18);
+      waveBuf[i] = s * win * K.amp;
+    }
+    const wp = wave.geometry.attributes.position.array, ep = waveEcho.geometry.attributes.position.array;
+    const wr = 1.52 + beatEnv * 0.04;
+    for (let i = 0; i < WN; i++) {
+      const a = (i / WN) * Math.PI * 2 + Math.PI / 2;
+      const r1 = wr + clamp(waveBuf[i], -0.35, 0.35), r2 = wr * 1.035 + clamp(echoBuf[i], -0.35, 0.35);
+      wp[i * 3] = Math.cos(a) * r1; wp[i * 3 + 1] = Math.sin(a) * r1; wp[i * 3 + 2] = 0;
+      ep[i * 3] = Math.cos(a) * r2; ep[i * 3 + 1] = Math.sin(a) * r2; ep[i * 3 + 2] = 0;
+    }
+    wave.geometry.attributes.position.needsUpdate = true;
+    waveEcho.geometry.attributes.position.needsUpdate = true;
+    wave.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
+    waveEcho.material.color.setRGB(pal.mid.x, pal.mid.y, pal.mid.z);
+  } else if (isTokamak) {
+    tokamakU.uT.value = tAcc;
+    tokamakU.uBass.value = bass;
+    tokamakU.uMid.value = mid;
+    tokamakU.uTreb.value = treb;
+    tokamakU.uBeat.value = beatEnv * K.amp;
+    tokamakU.uHarmL.value = K.l;
+    tokamakU.uHarmM.value = K.m;
+    tokamakU.uSymBreak.value = symBreak;
+    tokamakU.uFibIntensity.value = fibInt;
+
+    branchTokamakGroup.rotation.set(0.48 + rotX * 0.75, rotY * 0.9, Math.sin(now * 0.18) * 0.12);
+    tokamakCoils.visible = showOrbitalFib && fibInt > 0.02;
+    tokamakCoils.rotation.z = -spinAcc * 0.25;
+    tokamakRibs.visible = showSpectrumRing;
+
+    if (showSpectrumRing) {
+      const majR = 1.06;
+      for (let i = 0; i < NB; i++) {
+        const b = i < HALF ? i : NB - 1 - i;
+        const u = (i / NB) * Math.PI * 2 + spinAcc * 0.1;
+        const h = 0.05 + clamp(barVal[b], 0, 1.3) * 0.65;
+        const rad = majR + 0.42 + h * 0.22 + beatEnv * 0.05;
+        dummy.position.set(Math.cos(u) * rad, Math.sin(u) * rad, 0.18 * Math.sin(u * Math.round(K.m) + tAcc));
+        dummy.rotation.set(0, 0, u - Math.PI / 2);
+        dummy.scale.set(1.0, 1.0 + h * 4.2, 1.0 + bass * 1.5);
+        dummy.updateMatrix();
+        tokamakRibs.setMatrixAt(i, dummy.matrix);
+        const c = clamp(barVal[b] * 1.25, 0, 1);
+        tmpC.setRGB(lerp(pal.mid.x, pal.fib.x, c), lerp(pal.mid.y, pal.fib.y, c), lerp(pal.mid.z, pal.fib.z, c));
+        tokamakRibs.setColorAt(i, tmpC);
+      }
+      tokamakRibs.instanceMatrix.needsUpdate = true;
+      tokamakRibs.instanceColor.needsUpdate = true;
+    }
+  } else if (isCymatic) {
+    cymaticU.uT.value = tAcc;
+    cymaticU.uBass.value = bass;
+    cymaticU.uMid.value = mid;
+    cymaticU.uTreb.value = treb;
+    cymaticU.uBeat.value = beatEnv * K.amp;
+    cymaticU.uHarmL.value = K.l;
+    cymaticU.uHarmM.value = K.m;
+    cymaticU.uSymBreak.value = symBreak;
+    cymaticU.uFibIntensity.value = fibInt;
+
+    branchCymaticGroup.rotation.set(0.24 + orbit.pitch * 0.6, rotY * 0.65, 0);
+    cymCoreSphere.rotation.set(rotX * 1.4, -rotY * 1.6, 0);
+    cymCoreSphere.scale.setScalar(0.95 + bass * 0.22 + beatEnv * 0.14);
+
+    cymGyroRings.forEach((rg, idx) => {
+      rg.visible = showOrbitalFib;
+      rg.rotation.set(
+        tAcc * (0.55 + idx * 0.32) * (idx % 2 === 0 ? 1 : -1),
+        tAcc * (0.42 + idx * 0.25),
+        idx * 1.04
+      );
+      const colSrc = idx === 0 ? pal.fib : (idx === 1 ? pal.rim : pal.mid);
+      rg.material.color.setRGB(colSrc.x, colSrc.y, colSrc.z);
+    });
+
+    cymaticPillars.visible = showSpectrumRing;
+    if (showSpectrumRing) {
+      for (let i = 0; i < NB; i++) {
+        const b = i < HALF ? i : NB - 1 - i;
+        const ringIdx = i % 3;
+        const r = 0.88 + ringIdx * 0.42 + beatEnv * 0.04;
+        const a = (i / NB) * Math.PI * 2 + spinAcc * (0.08 - ringIdx * 0.03);
+        const h = 0.08 + clamp(barVal[b], 0, 1.35) * 1.05;
+        dummy.position.set(Math.cos(a) * r, -0.72 + h * 0.5, Math.sin(a) * r);
+        dummy.rotation.set(0, -a, 0);
+        dummy.scale.set(1.0 + beatEnv * 0.3, h, 1.0 + beatEnv * 0.3);
+        dummy.updateMatrix();
+        cymaticPillars.setMatrixAt(i, dummy.matrix);
+        const c = clamp(barVal[b] * 1.25, 0, 1);
+        tmpC.setRGB(lerp(pal.mid.x, pal.fib.x, c), lerp(pal.mid.y, pal.fib.y, c), lerp(pal.mid.z, pal.fib.z, c));
+        cymaticPillars.setColorAt(i, tmpC);
+      }
+      cymaticPillars.instanceMatrix.needsUpdate = true;
+      cymaticPillars.instanceColor.needsUpdate = true;
+    }
+  } else if (isLattice) {
+    branchLatticeGroup.rotation.set(rotX * 0.85, rotY * 0.85, 0);
+    latticeInnerCore.rotation.set(-tAcc * 0.65, tAcc * 0.9, 0);
+    latticeInnerCore.scale.setScalar(0.95 + bass * 0.25 + beatEnv * 0.15);
+
+    latticeMidShell.rotation.set(tAcc * 0.38, -tAcc * 0.52, Math.sin(now * 0.4) * 0.3);
+    latticeMidShell.scale.setScalar(1.0 + mid * 0.16 + beatEnv * 0.08);
+    latticeWireMat1.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
+    latticeWireMat1.opacity = (0.35 + treb * 0.45) * clamp(fibInt, 0.2, 1.3);
+
+    latticeOuterShell.rotation.set(-tAcc * 0.22, tAcc * 0.31, -Math.cos(now * 0.3) * 0.25);
+    latticeOuterShell.scale.setScalar(1.0 + level * 0.12 + Math.sin(phase * Math.PI * 2) * 0.03);
+    latticeWireMat2.color.setRGB(pal.rim.x, pal.rim.y, pal.rim.z);
+
+    latticeRibbons.visible = showOrbitalFib && fibInt > 0.02;
+    latticeRibbons.rotation.set(tAcc * 0.18, -tAcc * 0.28, 0);
+
+    latticeSpires.visible = showSpectrumRing;
+    if (showSpectrumRing) {
+      for (let i = 0; i < NB; i++) {
+        const b = i < HALF ? i : NB - 1 - i;
+        const dir = spireDirs[i];
+        const h = 0.08 + clamp(barVal[b], 0, 1.35) * 0.85;
+        const baseR = 1.06 + beatEnv * 0.06;
+        dummy.position.copy(dir).multiplyScalar(baseR + h * 0.5);
+        dummy.quaternion.setFromUnitVectors(upVec, dir);
+        dummy.scale.set(1.0 + bass * 0.6, h, 1.0 + bass * 0.6);
+        dummy.updateMatrix();
+        latticeSpires.setMatrixAt(i, dummy.matrix);
+        const c = clamp(barVal[b] * 1.3, 0, 1);
+        tmpC.setRGB(lerp(pal.mid.x, pal.fib.x, c), lerp(pal.mid.y, pal.fib.y, c), lerp(pal.mid.z, pal.fib.z, c));
+        latticeSpires.setColorAt(i, tmpC);
+      }
+      latticeSpires.instanceMatrix.needsUpdate = true;
+      latticeSpires.instanceColor.needsUpdate = true;
+    }
   }
-  const wp = wave.geometry.attributes.position.array, ep = waveEcho.geometry.attributes.position.array;
-  const wr = 1.52 + beatEnv * 0.04;
-  for (let i = 0; i < WN; i++) {
-    const a = (i / WN) * Math.PI * 2 + Math.PI / 2;
-    const r1 = wr + clamp(waveBuf[i], -0.35, 0.35), r2 = wr * 1.035 + clamp(echoBuf[i], -0.35, 0.35);
-    wp[i * 3] = Math.cos(a) * r1; wp[i * 3 + 1] = Math.sin(a) * r1; wp[i * 3 + 2] = 0;
-    ep[i * 3] = Math.cos(a) * r2; ep[i * 3 + 1] = Math.sin(a) * r2; ep[i * 3 + 2] = 0;
-  }
-  wave.geometry.attributes.position.needsUpdate = true;
-  waveEcho.geometry.attributes.position.needsUpdate = true;
-  wave.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
-  waveEcho.material.color.setRGB(pal.mid.x, pal.mid.y, pal.mid.z);
 
   // Particles
   pU.uT.value = now; pU.uSpin.value = spinAcc; pU.uBurst.value = burst;
@@ -2347,11 +3062,13 @@ function stepMicVad(dt, lvl) {
   }
 }
 
-[orb, halo, bars, wave, waveEcho, points].forEach(o => o.frustumCulled = false);
+[orb, halo, bars, wave, waveEcho, points, tokamakTorus, zPinchMesh, tokamakRibs, cymaticFloor, cymaticCeiling, cymaticPillars, cymCoreSphere, latticeInnerCore, latticeMidShell, latticeOuterShell, latticeSpires].forEach(o => o.frustumCulled = false);
 
 /* ───────────────────────── Curated Showcase Auto-Director & Scene Presets ───────────────────────── */
 function applyShowcaseScene(idx) {
   const sc = SHOWCASE_SCENES[idx % SHOWCASE_SCENES.length];
+  const branches = ['orb', 'tokamak', 'cymatic', 'lattice', 'orb'];
+  setActiveBranch(branches[idx % branches.length]);
   visMode = sc.mode;
   $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode)));
   paletteMode = sc.pal;
@@ -2389,7 +3106,7 @@ function downloadPngSnapshot() {
   const url = canvas.toDataURL('image/png');
   const a = document.createElement('a');
   a.href = url;
-  a.download = `noether-resonance-mode${visMode}-${paletteMode}.png`;
+  a.download = `noether-resonance-${activeBranch}-mode${visMode}-${paletteMode}.png`;
   a.click();
   toast('Downloaded high-resolution PNG snapshot');
 }
@@ -2437,6 +3154,7 @@ function toggleVideoRecord() {
 /* ───────────────────────── Preset Persistence (URL Hash + LocalStorage) ───────────────────────── */
 function saveAndSharePreset() {
   const params = new URLSearchParams();
+  params.set('branch', activeBranch);
   params.set('mode', String(visMode));
   params.set('pal', paletteMode);
   params.set('cam', camMode);
@@ -2464,6 +3182,7 @@ function loadPresetFromHashOrStorage() {
     const raw = location.hash.length > 1 ? location.hash.slice(1) : localStorage.getItem('noether_resonance_preset');
     if (!raw) return;
     const p = new URLSearchParams(raw);
+    if (p.has('branch')) setActiveBranch(p.get('branch'));
     if (p.has('mode')) {
       visMode = clamp(parseInt(p.get('mode'), 10) || 0, 0, 4);
       $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode)));
@@ -2520,13 +3239,38 @@ $('#bVoice').onclick = () => {
 };
 $('#bMic').onclick = () => A.src === 'mic' ? (stopAll(), setState('idle')) : startMic($('#micDeviceSelect').value);
 $('#bSysAudio').onclick = () => A.src === 'sys' ? (stopAll(), setState('idle')) : startSystemAudio();
-$('#bStop').onclick = () => { toggleShowcase(false); stopAll(); setState('idle'); };
-$('#bTurn').onclick = () => { toggleShowcase(false); agentTurn(); };
+$('#bStop').onclick = () => { toggleShowcase(false); toggleTreeCycle(false); stopAll(); setState('idle'); };
+$('#bTurn').onclick = () => { toggleShowcase(false); agentTurn('listening'); };
 $('#bShowcase').onclick = () => toggleShowcase();
 $('#bSharePreset').onclick = saveAndSharePreset;
 $('#bSnapPng').onclick = downloadPngSnapshot;
 $('#bRecVideo').onclick = toggleVideoRecord;
 $('#file').onchange = e => { const f = e.target.files[0]; if (f) { toggleShowcase(false); playFile(f); } e.target.value = ''; };
+
+// Exploration Tree Branch Switcher & Auto-Cycle
+$$('[data-branch]').forEach(b => {
+  b.onclick = () => {
+    toggleTreeCycle(false);
+    setActiveBranch(b.dataset.branch);
+  };
+});
+if ($('#bTreeCycle')) {
+  $('#bTreeCycle').onclick = () => toggleTreeCycle();
+}
+
+// Interactive Turn Timeline Step Buttons (click any step to jump directly to Listening, Thinking, Speaking, or Idle)
+$$('[data-turnstep]').forEach(b => {
+  b.onclick = () => {
+    const stg = b.dataset.turnstep;
+    if (stg === 'idle') {
+      stopAll();
+      setState('idle');
+    } else {
+      toggleShowcase(false);
+      agentTurn(stg);
+    }
+  };
+});
 
 $('#bMediaPause').onclick = () => {
   if (!A.media) return;
@@ -2543,7 +3287,7 @@ $('#micDeviceSelect').onchange = e => {
   if (A.src === 'mic') startMic(e.target.value);
 };
 
-$$('[data-state]').forEach(b => b.onclick = () => { turnId++; setState(b.dataset.state); });
+$$('[data-state]').forEach(b => b.onclick = () => { turnId++; turnActive = false; setState(b.dataset.state); });
 
 // Tweak Drawer toggle
 const tweakDrawer = $('#tweakDrawer');
@@ -2605,8 +3349,9 @@ $('#bAutoVad').onclick = function () {
   this.setAttribute('aria-pressed', String(autoVadOn));
 };
 
-// Musical Keyboard Chime Mapping (A S D F G H J K L) + Scene Shortcuts (5-9) + State Shortcuts (1-4, Space, T, U, ?)
+// Musical Keyboard Chime Mapping (A S D F G H J K L) + Exploration Tree (Q W E R) + Scene Shortcuts (5-9) + State Shortcuts (1-4, Space, T, U, ?)
 const KEY_NOTES = { a: 57, s: 60, d: 62, f: 64, g: 67, h: 69, j: 72, k: 74, l: 76 };
+const KEY_BRANCHES = { q: 'orb', w: 'tokamak', e: 'cymatic', r: 'lattice' };
 addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input, select')) return;
   const map = { '1': 'idle', '2': 'listening', '3': 'thinking', '4': 'speaking' };
@@ -2614,7 +3359,8 @@ addEventListener('keydown', e => {
   const kl = e.key.toLowerCase();
   if (e.key === 'Escape') { toggleHelp(false); }
   else if (e.key === '?' || e.key === '/') { toggleHelp(); }
-  else if (map[e.key]) { turnId++; setState(map[e.key]); }
+  else if (map[e.key]) { turnId++; turnActive = false; setState(map[e.key]); }
+  else if (KEY_BRANCHES[kl]) { toggleTreeCycle(false); setActiveBranch(KEY_BRANCHES[kl]); }
   else if (sceneMap[e.key] !== undefined) { applyShowcaseScene(sceneMap[e.key]); }
   else if (e.key === ' ') { e.preventDefault(); Demo.on ? stopAll() : startDemo(); }
   else if (kl === 't') bTweaks.click();
@@ -2660,9 +3406,13 @@ addEventListener('drop', e => {
   const f = e.dataTransfer.files[0]; if (f) { toggleShowcase(false); playFile(f); }
 });
 
-/* External Integration API for Real AI Voice / Audio Agents */
+/* External Integration API for Real AI Voice / Audio Agents & Repeatable Modular Sequencer */
 window.noetherResonance = {
   setState,
+  setBranch: setActiveBranch,
+  toggleTreeCycle,
+  runAgentTurn: (stage) => agentTurn(stage || 'listening'),
+  startDemo: () => startDemo(),
   setPalette: (p) => { if (WADA_PALETTES[p] || p === 'wada_auto') { paletteMode = p; applyAccentColor(); } },
   setFieldMode: (m) => { visMode = clamp(m, 0, 4); },
   setCamera: (c) => { if (['front', 'iso', 'orbit', 'macro'].includes(c)) { camMode = c; $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === c))); } },
@@ -2673,9 +3423,10 @@ window.noetherResonance = {
   playChime: (midi, l, m) => playHarmonicChime(midi || 64, l || K.l, m || K.m),
   connectStream: (stream, label) => attachStream(stream, 'mic', label || 'External stream'),
   connectNode: node => { ensureAudio(); node.connect(A.analyser); setSource('node', 'External audio node'); },
-  get telemetry() { return { state: stateName, visMode, paletteMode, camMode, showcaseOn, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
+  sequencer: window.NoetherSoundSequencer || null,
+  get telemetry() { return { branch: activeBranch, turnActive, state: stateName, visMode, paletteMode, camMode, showcaseOn, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
   get audioContext() { return ensureAudio(); },
-  stop: () => { toggleShowcase(false); stopAll(); setState('idle'); }
+  stop: () => { toggleShowcase(false); toggleTreeCycle(false); stopAll(); setState('idle'); }
 };
 })();
 </script>
