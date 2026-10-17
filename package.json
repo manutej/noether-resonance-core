@@ -1,0 +1,27 @@
+{
+  "name": "noether-resonance-core",
+  "version": "3.0.0",
+  "description": "Noether Resonance Core (v3.0 Operadic Diamond) — Quantum Field 3D WebGL Audio Synthesizer & Conversational AI Voice Orb with Sanzo Wada & Monotone Palettes",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js 3333",
+    "dev": "node server.js 3333 --open",
+    "deploy": "vercel --prod --yes"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/manutej/noether-resonance-core.git"
+  },
+  "keywords": [
+    "noether-theorem",
+    "quantum-field",
+    "webgl",
+    "threejs",
+    "webaudio",
+    "sanzo-wada",
+    "audio-visualizer",
+    "ai-voice-orb"
+  ],
+  "author": "Manu Mulaveesala",
+  "license": "MIT"
+}

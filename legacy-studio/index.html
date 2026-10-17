@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NOETHER // Quantum Field Audio Synthesizer &amp; Dual-Mode 3D Visualizer Studio</title>
+  <link rel="stylesheet" href="./noether-chrome.css">
+</head>
+<body>
+  <!-- Full-Bleed Three.js / WebGL2 3D Quantum Field Stage -->
+  <div class="webgl-stage-wrap" id="drop-stage-zone">
+    <canvas id="noether-webgl-canvas" class="webgl-stage-canvas" aria-label="3D Noetherian Quantum Field Audio Synthesizer and Dual-Mode Speech/Music Visualizer"></canvas>
+  </div>
+
+  <!-- Crisp 2D SVG Vector Telemetry Overlay (Angular Momentum L_z & Noether Current J) -->
+  <svg id="noether-svg-overlay" class="stage-svg-overlay" aria-hidden="true"></svg>
+
+  <!-- Architectural 1px Perimeter Frame with 12px Registration Crosses -->
+  <div class="noether-arch-frame" aria-hidden="true">
+    <span class="reg-cross tl"></span>
+    <span class="reg-cross tr"></span>
+    <span class="reg-cross bl"></span>
+    <span class="reg-cross br"></span>
+  </div>
+
+  <!-- Top Sticky Architectural Chrome Bar -->
+  <header class="noether-top-chrome">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <a href="./index.html" class="brand-lockup" title="Noether Quantum Field Audio Synthesizer Studio">
+        <span class="brand-glyph">Ψ</span>
+        <span class="brand-word">NOETHER // SYNTH</span>
+      </a>
+      <span class="brand-sub" id="top-subtitle-readout">GOOGLE DATA ARTS × DEEPMIND QUANTUM FIELD STUDIO</span>
+
+      <!-- Primary Dual-Mode Switcher: AI Speech Orb vs. Music Visualizer -->
+      <div class="mode-pill-group" role="group" aria-label="Primary Visualizer Mode">
+        <button type="button" class="mode-pill-btn is-active" data-mode="speech" id="btn-mode-speech">🗣️ AI Speech Orb</button>
+        <button type="button" class="mode-pill-btn" data-mode="music" id="btn-mode-music">🎵 Music &amp; Synth</button>
+      </div>
+    </div>
+
+    <nav class="chrome-controls" aria-label="Variation and Iteration Controls">
+      <button type="button" class="chrome-tab-btn gold-active is-active" data-var-btn="0" title="Converged Gold Standard (All 5 Layers Harmonized)">★ Converged Gold</button>
+      <button type="button" class="chrome-tab-btn" data-var-btn="1" title="Variation I: Spherical Harmonic Eigen-Orb">Var I · Eigen-Orb</button>
+      <button type="button" class="chrome-tab-btn" data-var-btn="2" title="Variation II: Hopf Fibration Gauge Cathedral">Var II · Hopf</button>
+      <button type="button" class="chrome-tab-btn" data-var-btn="3" title="Variation III: Gross-Pitaevskii Superfluid BEC">Var III · Superfluid</button>
+      <button type="button" class="chrome-tab-btn" data-var-btn="4" title="Variation IV: Chladni-Lagrangian Cymatics">Var IV · Cymatics</button>
+      <span style="width:1px;height:18px;background:var(--rule-hairline);margin:0 3px"></span>
+      <button type="button" class="chrome-tab-btn" data-iter-btn="1" title="Preview Iteration 1 (Blockout)">Iter 1</button>
+      <button type="button" class="chrome-tab-btn" data-iter-btn="2" title="Preview Iteration 2 (Physics Coupling)">Iter 2</button>
+      <button type="button" class="chrome-tab-btn is-active" data-iter-btn="3" title="Preview Iteration 3 (Gold Polish)">Iter 3 ★</button>
+      <button type="button" class="chrome-tab-btn" id="btn-toggle-stage-only" title="Toggle Full-Screen Unobstructed 3D Stage">👁 Stage Only</button>
+    </nav>
+  </header>
+
+  <!-- Right-Edge Noether Symmetry & Harmonic Preset Rail -->
+  <nav class="noether-preset-rail" aria-label="Noether Symmetry Law Presets">
+    <button type="button" class="rail-tick-btn" data-sym-preset="1">
+      <span>01 · U(1) Phase Unity</span><span class="rail-bar"></span>
+    </button>
+    <button type="button" class="rail-tick-btn is-active" data-sym-preset="2">
+      <span>02 · SO(3) Speech Multipole</span><span class="rail-bar"></span>
+    </button>
+    <button type="button" class="rail-tick-btn" data-sym-preset="3">
+      <span>03 · Hopf Gauge Free-Room</span><span class="rail-bar"></span>
+    </button>
+    <button type="button" class="rail-tick-btn" data-sym-preset="4">
+      <span>04 · Superfluid BEC Vortex</span><span class="rail-bar"></span>
+    </button>
+    <button type="button" class="rail-tick-btn" data-sym-preset="5">
+      <span>05 · Broken Symmetry (ε &gt; 0)</span><span class="rail-bar"></span>
+    </button>
+  </nav>
+
+  <!-- Studio Workbench Overlay -->
+  <main class="studio-workbench">
+    <div class="studio-grid-layout">
+
+      <!-- Left Dockable Control, Synth, Physics & Moodboard Drawer -->
+      <aside class="studio-drawer" aria-label="Synthesizer, Physics, Moodboard and Adversarial Controls">
+        <div>
+          <p class="eyebrow-mono" id="drawer-eyebrow">DUAL-MODE QUANTUM FIELD SYNTHESIZER · OFFLINE WEBGL2 + WEBAUDIO</p>
+          <h1 class="drawer-title">Symmetry gives harmony; gauge freedom gives sound room to dance.</h1>
+          <p class="drawer-desc">Derived from Emmy Noether’s 1918 First &amp; Second Theorems: global invariants ($Q, H, \mathbf{L}$) preserve organic unity while local gauge potentials $A_\mu(\mathbf{x},t)$ let speech formants and music vibrations sculpt 3D space.</p>
+        </div>
+
+        <!-- Drawer Sub-Tabs -->
+        <div class="studio-subtabs" role="tablist">
+          <button type="button" class="subtab-btn is-active" data-subtab="synth">🎛️ Synth &amp; Audio</button>
+          <button type="button" class="subtab-btn" data-subtab="physics">⚛️ Physics &amp; Tweaks</button>
+          <button type="button" class="subtab-btn" data-subtab="moodboard">🎨 Moodboard &amp; Plan</button>
+          <button type="button" class="subtab-btn" data-subtab="adversarial">⚔️ Adversarial Eval</button>
+        </div>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             PANEL 1: SYNTHESIZER, SPEECH ORB & AUDIO SOURCES
+             ══════════════════════════════════════════════════════════════════ -->
+        <section class="studio-panel is-open" id="panel-synth">
+
+          <!-- Mode-Specific Card: AI Speech Persona Controls -->
+          <div class="ctrl-card" id="speech-mode-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">🗣️ Mode A · AI Speech Persona &amp; Formant Orb</h2>
+              <span class="ctrl-badge" id="badge-ai-state">STATE: SPEAKING</span>
+            </div>
+            <p class="drawer-desc" style="font-size:12px">Select the AI’s conversational cognitive state or trigger vowel formant resonances ($F_1, F_2, F_3$) that map directly to 3D Spherical Harmonics $Y_\ell^m(\theta,\phi)$:</p>
+            <div class="btn-grid-2">
+              <button type="button" class="action-btn" data-ai-state="CONTEMPLATING"><span>01 · Contemplating</span><span>ℓ=2, m=0</span></button>
+              <button type="button" class="action-btn" data-ai-state="LISTENING"><span>02 · Listening (Inward)</span><span>Poynting −r̂</span></button>
+              <button type="button" class="action-btn" data-ai-state="REASONING"><span>03 · Symmetry Search</span><span>ℓ=5, m=4</span></button>
+              <button type="button" class="action-btn is-active" data-ai-state="SPEAKING"><span>04 · Speaking Resonance</span><span>Formant Y_ℓ^m</span></button>
+            </div>
+            <div class="param-label-line" style="margin-top:4px">
+              <span>TRIGGER VOWEL FORMANT HARMONICS (OFFLINE VOICE SYNTH)</span>
+              <span class="param-val" id="readout-vowel">/ɑ/ (730 / 1090 Hz)</span>
+            </div>
+            <div class="btn-grid-3">
+              <button type="button" class="action-btn" data-vowel-btn="0"><span>/ɑ/ Open</span><span>ℓ=2, m=0</span></button>
+              <button type="button" class="action-btn" data-vowel-btn="1"><span>/eɪ/ Gate</span><span>ℓ=3, m=2</span></button>
+              <button type="button" class="action-btn" data-vowel-btn="2"><span>/i/ Bright</span><span>ℓ=4, m=3</span></button>
+              <button type="button" class="action-btn" data-vowel-btn="3"><span>/oʊ/ Torus</span><span>ℓ=3, m=1</span></button>
+              <button type="button" class="action-btn" data-vowel-btn="4"><span>/u/ Zonal</span><span>ℓ=2, m=1</span></button>
+              <button type="button" class="action-btn mint-active" id="btn-speak-phrase"><span>🔊 Speak AI Insight</span><span>Full Phrase</span></button>
+            </div>
+          </div>
+
+          <!-- Built-In Procedural Audio Compositions, Live Mic & File Input -->
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">🎵 Offline Generative Audio Engine &amp; Inputs</h2>
+              <span class="ctrl-badge" id="badge-audio-status">READY (CLICK TO PLAY)</span>
+            </div>
+            <div class="btn-grid-2">
+              <button type="button" class="action-btn" data-track-btn="speech_dialog"><span>🗣️ AI Dialog · Noether</span><span>Formant Duplex</span></button>
+              <button type="button" class="action-btn" data-track-btn="speech_reasoning"><span>🧠 AI Reasoning Trace</span><span>4-State Cycle</span></button>
+              <button type="button" class="action-btn" data-track-btn="music_gottingen"><span>🎻 Göttingen 1918</span><span>D Dorian Choral</span></button>
+              <button type="button" class="action-btn" data-track-btn="music_hopf"><span>⚡ Hopf Cathedral</span><span>122 BPM IDM Arp</span></button>
+              <button type="button" class="action-btn" data-track-btn="music_superfluid"><span>🌊 Superfluid BEC Bass</span><span>88 BPM Sub-Dub</span></button>
+              <button type="button" class="action-btn" id="btn-stop-audio" style="border-color:rgba(255,107,91,0.45);color:var(--ac-coral)"><span>⏹ Stop Generative</span><span>Quiet Vacuum</span></button>
+            </div>
+
+            <div class="btn-grid-2" style="margin-top:4px">
+              <button type="button" class="action-btn" id="btn-mic-toggle"><span>🎙️ Live Microphone</span><span id="mic-status-lbl">Off</span></button>
+              <label class="action-btn" style="cursor:pointer;margin:0">
+                <span>📂 Load Audio File</span><span>MP3/WAV</span>
+                <input type="file" id="input-audio-file" accept="audio/*" style="display:none">
+              </label>
+            </div>
+          </div>
+
+          <!-- 2D Interactive XY Pad: Noether Free-Room × Symmetry Breaking + Live Synth Drone -->
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">⊹ 2D Noether Gauge Pad (Drag to Sculpt &amp; Sonify)</h2>
+              <span class="ctrl-badge" id="xy-readout">ε = 0.12 · η_free = 0.58</span>
+            </div>
+            <div class="xy-pad-wrap" id="noether-xy-pad">
+              <div class="xy-pad-grid"></div>
+              <span class="xy-axis-label" style="top:6px;left:8px">↑ HIGH FREE-ROOM GAUGE SLACK (η_free → 1.0)</span>
+              <span class="xy-axis-label" style="bottom:6px;left:8px">↓ TIGHT HAMILTONIAN CONFINEMENT (η_free → 0.1)</span>
+              <span class="xy-axis-label" style="bottom:6px;right:8px">SYMMETRY BREAKING ε →</span>
+              <div class="xy-pad-puck" id="noether-xy-puck" style="left:12%;top:42%"></div>
+            </div>
+          </div>
+
+          <!-- Playable 2-Octave Polyphonic Quantum Synthesizer Keyboard -->
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">🎹 Polyphonic Quantum Field Keyboard (Keys A–L)</h2>
+              <select id="select-synth-preset" style="background:#0b101b;color:var(--ac-cyan);border:1px solid var(--rule-hairline);font-family:var(--f-mono);font-size:10.5px;padding:3px 6px">
+                <option value="cerenkov_pad">Timbre: Cerenkov Harmonic Pad</option>
+                <option value="hopf_fm">Timbre: Hopf FM Bell &amp; Pluck</option>
+                <option value="bose_sub">Timbre: Bose-Einstein Sub-Bass</option>
+                <option value="ai_formant">Timbre: AI Vowel Formant Choir</option>
+              </select>
+            </div>
+            <div class="synth-keyboard" id="quantum-keyboard">
+              <button type="button" class="synth-key" data-note-freq="146.83" data-key="a"><span>D3</span></button>
+              <button type="button" class="synth-key" data-note-freq="164.81" data-key="w"><span>E3</span></button>
+              <button type="button" class="synth-key accidental" data-note-freq="174.61" data-key="s"><span>F3</span></button>
+              <button type="button" class="synth-key" data-note-freq="196.00" data-key="e"><span>G3</span></button>
+              <button type="button" class="synth-key" data-note-freq="220.00" data-key="d"><span>A3</span></button>
+              <button type="button" class="synth-key accidental" data-note-freq="246.94" data-key="f"><span>B3</span></button>
+              <button type="button" class="synth-key" data-note-freq="261.63" data-key="t"><span>C4</span></button>
+              <button type="button" class="synth-key" data-note-freq="293.66" data-key="g"><span>D4</span></button>
+              <button type="button" class="synth-key" data-note-freq="329.63" data-key="y"><span>E4</span></button>
+              <button type="button" class="synth-key accidental" data-note-freq="349.23" data-key="h"><span>F4</span></button>
+              <button type="button" class="synth-key" data-note-freq="392.00" data-key="u"><span>G4</span></button>
+              <button type="button" class="synth-key" data-note-freq="440.00" data-key="j"><span>A4</span></button>
+              <button type="button" class="synth-key" data-note-freq="523.25" data-key="k"><span>C5</span></button>
+              <button type="button" class="synth-key" data-note-freq="587.33" data-key="l"><span>D5</span></button>
+            </div>
+            <canvas id="noether-scope-canvas" class="scope-canvas" width="460" height="68"></canvas>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             PANEL 2: PHYSICS PARAMETERS, QUANTUM NUMBERS & VISUAL MIXER
+             ══════════════════════════════════════════════════════════════════ -->
+        <section class="studio-panel" id="panel-physics">
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">⚛️ Spherical Harmonic Quantum Numbers (SO(3))</h2>
+              <span class="ctrl-badge" id="badge-quantum-nums">Y_3^2(θ, φ)</span>
+            </div>
+
+            <div class="param-row">
+              <div class="param-label-line">
+                <span>Orbital Multipole Degree (ℓ) · Conserves L² = ℓ(ℓ+1)ħ²</span>
+                <span class="param-val" id="val-l">3</span>
+              </div>
+              <input type="range" id="slider-l" min="1" max="7" step="1" value="3">
+            </div>
+
+            <div class="param-row">
+              <div class="param-label-line">
+                <span>Azimuthal Magnetic Spin (m) · Conserves L_z = mħ</span>
+                <span class="param-val" id="val-m">2</span>
+              </div>
+              <input type="range" id="slider-m" min="-7" max="7" step="1" value="2">
+            </div>
+          </div>
+
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">🌀 Noether Dynamics &amp; "Free Room" Gauge Fiber</h2>
+              <span class="ctrl-badge">NOETHER I &amp; II</span>
+            </div>
+
+            <div class="param-row">
+              <div class="param-label-line">
+                <span>"Free Room" Local Gauge Slack (η_free) · Noether 2nd Thm</span>
+                <span class="param-val" id="val-freeroom">0.58</span>
+              </div>
+              <input type="range" class="gold-slider" id="slider-freeroom" min="0.05" max="1.00" step="0.01" value="0.58">
+            </div>
+
+            <div class="param-row">
+              <div class="param-label-line">
+                <span>Symmetry Breaking Warp (ε cos mφ) · Precesses L_z</span>
+                <span class="param-val" id="val-symbreak">0.12</span>
+              </div>
+              <input type="range" class="gold-slider" id="slider-symbreak" min="0.00" max="1.00" step="0.01" value="0.12">
+            </div>
+
+            <div class="param-row">
+              <div class="param-label-line">
+                <span>Hamiltonian Restorative Stiffness (ω₀) · Energy Balance</span>
+                <span class="param-val" id="val-stiffness">0.65</span>
+              </div>
+              <input type="range" id="slider-stiffness" min="0.10" max="1.00" step="0.01" value="0.65">
+            </div>
+
+            <div class="param-row">
+              <div class="param-label-line">
+                <span>Superfluid Curl-Current Advection (κ) · Continuity J</span>
+                <span class="param-val" id="val-vortex">0.62</span>
+              </div>
+              <input type="range" id="slider-vortex" min="0.05" max="1.00" step="0.01" value="0.62">
+            </div>
+          </div>
+
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">🎚️ 5-Layer Quantum Visual Manifold Mixer</h2>
+              <span class="ctrl-badge">HYBRID BLENDER</span>
+            </div>
+
+            <div class="param-row">
+              <div class="param-label-line"><span>Layer 1 · Spherical Harmonic Eigen-Orb (S²)</span><span class="param-val" id="val-layer-orb">88%</span></div>
+              <input type="range" id="slider-layer-orb" min="0" max="1" step="0.02" value="0.88">
+            </div>
+            <div class="param-row">
+              <div class="param-label-line"><span>Layer 2 · Hopf Fibration Gauge Filaments (S³ → S²)</span><span class="param-val" id="val-layer-hopf">85%</span></div>
+              <input type="range" id="slider-layer-hopf" min="0" max="1" step="0.02" value="0.85">
+            </div>
+            <div class="param-row">
+              <div class="param-label-line"><span>Layer 3 · 12,000 Advected Noether Current Particles</span><span class="param-val" id="val-layer-pt">95%</span></div>
+              <input type="range" id="slider-layer-pt" min="0" max="1" step="0.02" value="0.95">
+            </div>
+            <div class="param-row">
+              <div class="param-label-line"><span>Layer 4 · 3D Acoustic Huygens Wavefront Shells</span><span class="param-val" id="val-layer-shells">82%</span></div>
+              <input type="range" id="slider-layer-shells" min="0" max="1" step="0.02" value="0.82">
+            </div>
+            <div class="param-row">
+              <div class="param-label-line"><span>Layer 5 · Chladni-Lagrangian Action Manifold Floor</span><span class="param-val" id="val-layer-cym">62%</span></div>
+              <input type="range" id="slider-layer-cym" min="0" max="1" step="0.02" value="0.62">
+            </div>
+
+            <div class="btn-grid-2" style="margin-top:6px">
+              <button type="button" class="action-btn is-active" id="btn-toggle-orbit"><span>↻ Auto-Orbit Camera</span><span id="lbl-orbit">ON</span></button>
+              <button type="button" class="action-btn is-active" id="btn-toggle-vectors"><span>📐 3D Noether Vectors</span><span id="lbl-vectors">ON</span></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             PANEL 3: VISUAL MOODBOARD, PALETTES & CATEGORICAL LEDGER
+             ══════════════════════════════════════════════════════════════════ -->
+        <section class="studio-panel" id="panel-moodboard">
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">🎨 Curated Phase-Space Color Harmonies</h2>
+              <span class="ctrl-badge">CLICK TO APPLY</span>
+            </div>
+            <div class="swatch-grid">
+              <div class="swatch-card is-active" data-palette-card="cerenkov">
+                <div class="swatch-bar">
+                  <span style="background:#06080E"></span><span style="background:#58C4DD"></span><span style="background:#F5B851"></span><span style="background:#7CE38B"></span><span style="background:#FF6B5B"></span>
+                </div>
+                <strong style="font-family:var(--f-mono);font-size:10.5px;color:var(--ink-primary)">01 · Cerenkov &amp; Brass</strong>
+                <div style="font-size:11px;color:var(--ink-secondary)">Phase cyan, conserved gold, current mint</div>
+              </div>
+
+              <div class="swatch-card" data-palette-card="gottingen">
+                <div class="swatch-bar">
+                  <span style="background:#0B0E17"></span><span style="background:#C88A65"></span><span style="background:#F5EFE3"></span><span style="background:#5CA4A9"></span><span style="background:#E07A5F"></span>
+                </div>
+                <strong style="font-family:var(--f-mono);font-size:10.5px;color:var(--ink-primary)">02 · Göttingen 1918</strong>
+                <div style="font-size:11px;color:var(--ink-secondary)">Archival monograph paper &amp; brushed copper</div>
+              </div>
+
+              <div class="swatch-card" data-palette-card="abyssal">
+                <div class="swatch-bar">
+                  <span style="background:#03070D"></span><span style="background:#00F0FF"></span><span style="background:#06D6A0"></span><span style="background:#FFD166"></span><span style="background:#EF476F"></span>
+                </div>
+                <strong style="font-family:var(--f-mono);font-size:10.5px;color:var(--ink-primary)">03 · Abyssal Biolume</strong>
+                <div style="font-size:11px;color:var(--ink-secondary)">Deep-sea siphonophore &amp; Cerenkov indigo</div>
+              </div>
+
+              <div class="swatch-card" data-palette-card="helios">
+                <div class="swatch-bar">
+                  <span style="background:#09050A"></span><span style="background:#FFBE0B"></span><span style="background:#FB5607"></span><span style="background:#FF006E"></span><span style="background:#3A86FF"></span>
+                </div>
+                <strong style="font-family:var(--f-mono);font-size:10.5px;color:var(--ink-primary)">04 · Solar Helios MHD</strong>
+                <div style="font-size:11px;color:var(--ink-secondary)">Coronal plasma gold &amp; magnetic flux blue</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">📐 Clickable Noether Correspondence Ledger</h2>
+              <span class="ctrl-badge">CLICK ROW TO LOAD</span>
+            </div>
+            <table class="ledger-table">
+              <thead>
+                <tr>
+                  <th>Symmetry Group</th>
+                  <th>Conserved Charge</th>
+                  <th>Visual / Audio Role</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-sym-preset="1">
+                  <td><strong style="color:var(--ac-cyan)">U(1) Global Phase</strong><br><code>ψ → e^(iα)ψ</code></td>
+                  <td><strong>Norm Charge Q</strong><br><code>∂_t ρ + ∇·J = 0</code></td>
+                  <td>Incompressible particle flow &amp; fundamental pitch lock</td>
+                </tr>
+                <tr data-sym-preset="2">
+                  <td><strong style="color:var(--ac-gold)">SO(3) Rotation</strong><br><code>r → R_θ,φ r</code></td>
+                  <td><strong>Angular Mom. L</strong><br><code>Y_ℓ^m(θ, φ)</code></td>
+                  <td>Speech vowel formants sculpt 3D harmonic lobes</td>
+                </tr>
+                <tr data-sym-preset="3">
+                  <td><strong style="color:var(--ac-mint)">Local Gauge Fiber</strong><br><code>ψ → e^(iα(x,t))ψ</code></td>
+                  <td><strong>Free-Room Flux</strong><br><code>D_μ = ∂_μ − iqA_μ</code></td>
+                  <td>Hopf Clifford tori expand freely with music chords</td>
+                </tr>
+                <tr data-sym-preset="4">
+                  <td><strong style="color:var(--ac-violet)">Time Translation</strong><br><code>t → t + δt</code></td>
+                  <td><strong>Hamiltonian H</strong><br><code>E = T + V_trap</code></td>
+                  <td>Sub-bass vortex rings undulate back to unity</td>
+                </tr>
+                <tr data-sym-preset="5">
+                  <td><strong style="color:var(--ac-coral)">Broken Symmetry</strong><br><code>δV = ε cos(mφ)</code></td>
+                  <td><strong>Precessing L_z</strong><br><code>dL_z/dt = −∂V/∂φ</code></td>
+                  <td>Microtonal synth detune &amp; 3D gyroscopic precession</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">🔗 Standalone Variation Pages</h2>
+              <span class="ctrl-badge">DEDICATED VIEWS</span>
+            </div>
+            <div class="btn-grid-2">
+              <a href="./variation-1-harmonic-orb.html" class="action-btn" style="text-decoration:none"><span>Var I · Eigen-Orb</span><span>Open →</span></a>
+              <a href="./variation-2-hopf-fibration.html" class="action-btn" style="text-decoration:none"><span>Var II · Hopf Cathedral</span><span>Open →</span></a>
+              <a href="./variation-3-superfluid-vortex.html" class="action-btn" style="text-decoration:none"><span>Var III · Superfluid BEC</span><span>Open →</span></a>
+              <a href="./variation-4-chladni-cymatics.html" class="action-btn" style="text-decoration:none"><span>Var IV · Cymatics</span><span>Open →</span></a>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════════════
+             PANEL 4: 3-ROUND ADVERSARIAL EVALUATION MATRIX (E1–E4)
+             ══════════════════════════════════════════════════════════════════ -->
+        <section class="studio-panel" id="panel-adversarial">
+          <div class="ctrl-card">
+            <div class="ctrl-card-header">
+              <h2 class="ctrl-card-title">⚔️ 3-Round Adversarial Evaluation Matrix</h2>
+              <span class="ctrl-badge">CLICK TO AUDIT ON STAGE</span>
+            </div>
+            <p class="drawer-desc" style="font-size:12px">Evaluated by <strong>E1 (DeepMind Physics)</strong>, <strong>E2 (Data Arts Anti-Slop)</strong>, <strong>E3 (Dual-Mode Audio/Speech)</strong>, and <strong>E4 (60fps Offline)</strong>. Click any iteration to inspect the progression from Blockout to Gold Standard:</p>
+
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <div class="ctrl-card" style="padding:10px;background:rgba(12,18,30,0.7)">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <strong style="font-family:var(--f-mono);font-size:11px;color:var(--ac-cyan)">VAR I · SPHERICAL HARMONIC EIGEN-ORB</strong>
+                  <span style="font-family:var(--f-mono);font-size:10.5px;color:var(--ac-gold)">64 → 84 → 96/100</span>
+                </div>
+                <p style="font-size:11.5px;color:var(--ink-secondary);margin:2px 0">Replaced naive Perlin blob with exact orthonormal $Y_\ell^m(\theta,\phi)$ + glowing nodal contours + 6 Huygens speech wavefront shells.</p>
+                <div class="btn-grid-3">
+                  <button type="button" class="action-btn" data-audit-var="1" data-audit-iter="1"><span>Iter 1 (64)</span></button>
+                  <button type="button" class="action-btn" data-audit-var="1" data-audit-iter="2"><span>Iter 2 (84)</span></button>
+                  <button type="button" class="action-btn is-active" data-audit-var="1" data-audit-iter="3"><span>Iter 3 ★ (96)</span></button>
+                </div>
+              </div>
+
+              <div class="ctrl-card" style="padding:10px;background:rgba(12,18,30,0.7)">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <strong style="font-family:var(--f-mono);font-size:11px;color:var(--ac-cyan)">VAR II · HOPF FIBRATION GAUGE CATHEDRAL</strong>
+                  <span style="font-family:var(--f-mono);font-size:10.5px;color:var(--ac-gold)">68 → 87 → 97/100</span>
+                </div>
+                <p style="font-size:11.5px;color:var(--ink-secondary);margin:2px 0">Exact 4D→3D stereographic projection of 36 Villarceau circles on nested Clifford tori; U(1) phase pulses race without self-intersection.</p>
+                <div class="btn-grid-3">
+                  <button type="button" class="action-btn" data-audit-var="2" data-audit-iter="1"><span>Iter 1 (68)</span></button>
+                  <button type="button" class="action-btn" data-audit-var="2" data-audit-iter="2"><span>Iter 2 (87)</span></button>
+                  <button type="button" class="action-btn" data-audit-var="2" data-audit-iter="3"><span>Iter 3 ★ (97)</span></button>
+                </div>
+              </div>
+
+              <div class="ctrl-card" style="padding:10px;background:rgba(12,18,30,0.7)">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <strong style="font-family:var(--f-mono);font-size:11px;color:var(--ac-cyan)">VAR III · GROSS-PITAEVSKII SUPERFLUID BEC</strong>
+                  <span style="font-family:var(--f-mono);font-size:10.5px;color:var(--ac-gold)">61 → 86 → 95/100</span>
+                </div>
+                <p style="font-size:11.5px;color:var(--ink-secondary);margin:2px 0">Enforced $\partial_t\rho + \nabla\cdot\mathbf{J} = 0$ via divergence-free curl advection and damped Hamiltonian radial containment.</p>
+                <div class="btn-grid-3">
+                  <button type="button" class="action-btn" data-audit-var="3" data-audit-iter="1"><span>Iter 1 (61)</span></button>
+                  <button type="button" class="action-btn" data-audit-var="3" data-audit-iter="2"><span>Iter 2 (86)</span></button>
+                  <button type="button" class="action-btn" data-audit-var="3" data-audit-iter="3"><span>Iter 3 ★ (95)</span></button>
+                </div>
+              </div>
+
+              <div class="ctrl-card" style="padding:10px;background:rgba(12,18,30,0.7)">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <strong style="font-family:var(--f-mono);font-size:11px;color:var(--ac-gold)">★ CONVERGED GOLD STANDARD HYBRID</strong>
+                  <span style="font-family:var(--f-mono);font-size:10.5px;color:var(--ac-mint)">PASS · 98/100</span>
+                </div>
+                <p style="font-size:11.5px;color:var(--ink-secondary);margin:2px 0">Unifies Eigen-Orb + Hopf Fibers + 12k Superfluid Particles + Huygens Wave Shells + Cymatic Action Floor + Offline Synth.</p>
+                <button type="button" class="action-btn is-active" data-audit-var="0" data-audit-iter="3" style="width:100%"><span>★ Activate Converged Gold Standard (All 5 Layers)</span><span>98/100</span></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </aside>
+
+      <!-- Right Stage Column: Live Equation Inspector & Conversational AI / Music Caption Banner -->
+      <div class="stage-right-column">
+        <div class="stage-telemetry-card">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+            <span class="eyebrow-mono">ACTIVE LAGRANGIAN INVARIANT</span>
+            <span class="ctrl-badge" id="stage-pill-mode">SPEECH ORB MODE</span>
+          </div>
+          <div style="font-family:var(--f-mono);font-size:11.5px;color:var(--ink-primary)" id="stage-equation-line">
+            ∂_t ρ + ∇·[ρ(∇S − qA_audio)] = 0 · Y_3^2(θ,φ)
+          </div>
+          <div style="font-size:11.5px;color:var(--ink-secondary)" id="stage-physics-note">
+            Global U(1) × SO(3) symmetry preserves orb unity; local gauge slack (η = 0.58) gives voice vibrations room to sculpt 3D nodal lobes.
+          </div>
+        </div>
+
+        <!-- Bottom Center Live Dialog / Track Telemetry Banner -->
+        <div class="ai-speech-caption-banner">
+          <span class="caption-speaker-tag" id="caption-speaker">NOETHER AI CORE</span>
+          <span class="caption-text" id="caption-text">“Every continuous symmetry of nature’s Action conserves an invariant charge in 3D phase space.”</span>
+          <button type="button" class="chrome-tab-btn gold-active is-active" id="btn-quick-play" style="white-space:nowrap">▶ Play AI &amp; Synth</button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Bottom Live Space Mono Telemetry HUD -->
+  <footer class="noether-bottom-hud" aria-label="Live Conserved Noether Telemetry">
+    <div class="hud-cluster">
+      <span class="hud-item">CHARGE Q = ∫|ψ|²dV: <span class="hud-val-cyan" id="hud-q">1.0000 (INVARIANT)</span></span>
+      <span class="hud-item">HAMILTONIAN H: <strong id="hud-h">2.42 J</strong></span>
+      <span class="hud-item">ANGULAR MOM. L_z: <span class="hud-val-gold" id="hud-lz">2.00 ħ</span></span>
+      <span class="hud-item">FREE-ROOM FLUX Φ: <span class="hud-val-mint" id="hud-flux">0.58</span></span>
+    </div>
+    <div class="hud-cluster">
+      <span class="hud-item">ACOUSTIC f₀: <strong id="hud-f0">145 Hz</strong></span>
+      <span class="hud-item">FORMANTS F₁/F₂: <strong id="hud-formants">520 / 1480 Hz</strong></span>
+      <span class="hud-item">FPS: <strong id="hud-fps">60</strong></span>
+    </div>
+  </footer>
+
+  <script src="./three.global.js"></script>
+  <script src="./noether-quantum-engine.js"></script>
+  <script>
+    (function () {
+      'use strict';
+      const canvas = document.getElementById('noether-webgl-canvas');
+      const svgOverlay = document.getElementById('noether-svg-overlay');
+      const scopeCanvas = document.getElementById('noether-scope-canvas');
+
+      const hudQ = document.getElementById('hud-q');
+      const hudH = document.getElementById('hud-h');
+      const hudLz = document.getElementById('hud-lz');
+      const hudFlux = document.getElementById('hud-flux');
+      const hudF0 = document.getElementById('hud-f0');
+      const hudFormants = document.getElementById('hud-formants');
+      const hudFps = document.getElementById('hud-fps');
+
+      const captionSpeaker = document.getElementById('caption-speaker');
+      const captionText = document.getElementById('caption-text');
+      const badgeAiState = document.getElementById('badge-ai-state');
+      const readoutVowel = document.getElementById('readout-vowel');
+      const stageEquationLine = document.getElementById('stage-equation-line');
+      const stagePhysicsNote = document.getElementById('stage-physics-note');
+      const stagePillMode = document.getElementById('stage-pill-mode');
+
+      const engine = new window.NoetherStudio.NoetherQuantumFieldEngine(canvas, {
+        svgOverlay,
+        scopeCanvas,
+        mode: 'speech',
+        variation: 0,
+        iteration: 3,
+        onAudioStateChange: (feat) => {
+          if (captionSpeaker) captionSpeaker.textContent = feat.captionSpeaker;
+          if (captionText) captionText.textContent = `“${feat.captionText}”`;
+          if (badgeAiState) badgeAiState.textContent = `STATE: ${feat.aiState}`;
+          if (readoutVowel) readoutVowel.textContent = `${feat.vowel} (${feat.F1}/${feat.F2} Hz)`;
+        },
+        onTelemetry: (tel, ac, params) => {
+          if (hudQ) hudQ.textContent = `${tel.chargeQ.toFixed(4)} (CONSERVED)`;
+          if (hudH) hudH.textContent = `${tel.energyH.toFixed(2)} E₀`;
+          if (hudLz) hudLz.textContent = `${tel.angularLz.toFixed(2)} ħ ${params.symBreak > 0.05 ? '(PRECESS)' : '(LOCKED)'}`;
+          if (hudFlux) hudFlux.textContent = `${tel.gaugeFlux.toFixed(2)} Φ₀`;
+          if (hudF0) hudF0.textContent = `${Math.round(ac.f0)} Hz`;
+          if (hudFormants) hudFormants.textContent = `${Math.round(ac.F1)} / ${Math.round(ac.F2)} Hz`;
+          if (hudFps) hudFps.textContent = `${tel.fps}`;
+        }
+      });
+
+      engine.start();
+
+      function syncUIReadouts() {
+        const p = engine.params;
+        document.getElementById('val-l').textContent = p.l;
+        document.getElementById('val-m').textContent = p.m;
+        document.getElementById('val-freeroom').textContent = p.freeRoom.toFixed(2);
+        document.getElementById('val-symbreak').textContent = p.symBreak.toFixed(2);
+        document.getElementById('val-stiffness').textContent = p.stiffness.toFixed(2);
+        document.getElementById('val-vortex').textContent = p.vortexCoupling.toFixed(2);
+
+        document.getElementById('slider-l').value = p.l;
+        document.getElementById('slider-m').value = p.m;
+        document.getElementById('slider-freeroom').value = p.freeRoom;
+        document.getElementById('slider-symbreak').value = p.symBreak;
+        document.getElementById('slider-stiffness').value = p.stiffness;
+        document.getElementById('slider-vortex').value = p.vortexCoupling;
+
+        document.getElementById('val-layer-orb').textContent = `${Math.round(p.layerOrb * 100)}%`;
+        document.getElementById('val-layer-hopf').textContent = `${Math.round(p.layerHopf * 100)}%`;
+        document.getElementById('val-layer-pt').textContent = `${Math.round(p.layerParticles * 100)}%`;
+        document.getElementById('val-layer-shells').textContent = `${Math.round(p.layerShells * 100)}%`;
+        document.getElementById('val-layer-cym').textContent = `${Math.round(p.layerCymatics * 100)}%`;
+
+        document.getElementById('slider-layer-orb').value = p.layerOrb;
+        document.getElementById('slider-layer-hopf').value = p.layerHopf;
+        document.getElementById('slider-layer-pt').value = p.layerParticles;
+        document.getElementById('slider-layer-shells').value = p.layerShells;
+        document.getElementById('slider-layer-cym').value = p.layerCymatics;
+
+        document.getElementById('badge-quantum-nums').textContent = `Y_${p.l}^${p.m}(θ, φ)`;
+        document.getElementById('xy-readout').textContent = `ε = ${p.symBreak.toFixed(2)} · η_free = ${p.freeRoom.toFixed(2)}`;
+
+        const puck = document.getElementById('noether-xy-puck');
+        if (puck) {
+          puck.style.left = `${(p.symBreak * 100).toFixed(1)}%`;
+          puck.style.top = `${((1.0 - p.freeRoom) * 100).toFixed(1)}%`;
+        }
+
+        stageEquationLine.textContent = `∂_t ρ + ∇·[ρ(∇S − qA_audio)] = 0 · Eigenmode Y_${p.l}^${p.m}(θ,φ)`;
+        stagePhysicsNote.textContent = p.symBreak > 0.08
+          ? `Symmetry Breaking ε = ${p.symBreak.toFixed(2)} warps the potential well, causing Angular Momentum L_z to precess in 3D space.`
+          : `Global U(1) × SO(3) symmetry holds L_z = ${p.m}ħ invariant while Free-Room gauge slack (η = ${p.freeRoom.toFixed(2)}) lets sound waves sculpt the field.`;
+      }
+
+      // 1. Primary Mode Switcher (AI Speech Orb vs. Music Visualizer)
+      const modeBtns = document.querySelectorAll('.mode-pill-btn');
+      modeBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const m = btn.getAttribute('data-mode');
+          modeBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+          engine.setMode(m);
+          stagePillMode.textContent = m === 'speech' ? '🗣️ AI SPEECH ORB MODE' : '🎵 MUSIC & QUANTUM SYNTH MODE';
+          if (m === 'speech') {
+            engine.audio.startProceduralTrack('speech_dialog');
+            updateQuickPlayBtn(true);
+          } else {
+            engine.audio.startProceduralTrack('music_hopf');
+            updateQuickPlayBtn(true);
+          }
+          syncUIReadouts();
+        });
+      });
+
+      // 2. Top Chrome Variation & Iteration Switchers
+      const varBtns = document.querySelectorAll('[data-var-btn]');
+      const iterBtns = document.querySelectorAll('[data-iter-btn]');
+      varBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const v = Number(btn.getAttribute('data-var-btn'));
+          varBtns.forEach(b => b.classList.toggle('is-active', Number(b.getAttribute('data-var-btn')) === v));
+          engine.applyVariationPreset(v, engine.iteration);
+          syncUIReadouts();
+        });
+      });
+      iterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const it = Number(btn.getAttribute('data-iter-btn'));
+          iterBtns.forEach(b => b.classList.toggle('is-active', Number(b.getAttribute('data-iter-btn')) === it));
+          engine.applyVariationPreset(engine.variation, it);
+          syncUIReadouts();
+        });
+      });
+
+      // Stage-Only Toggle
+      const stageOnlyBtn = document.getElementById('btn-toggle-stage-only');
+      stageOnlyBtn.addEventListener('click', () => {
+        const active = document.body.classList.toggle('studio-stage-only');
+        stageOnlyBtn.classList.toggle('is-active', active);
+        stageOnlyBtn.textContent = active ? '⊞ Show Workbench' : '👁 Stage Only';
+      });
+
+      // 3. Drawer Sub-Tabs
+      const subtabBtns = document.querySelectorAll('[data-subtab]');
+      const panels = {
+        synth: document.getElementById('panel-synth'),
+        physics: document.getElementById('panel-physics'),
+        moodboard: document.getElementById('panel-moodboard'),
+        adversarial: document.getElementById('panel-adversarial')
+      };
+      subtabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const target = btn.getAttribute('data-subtab');
+          subtabBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+          Object.keys(panels).forEach(k => panels[k].classList.toggle('is-open', k === target));
+        });
+      });
+
+      // 4. AI Speech Cognitive State & Vowel Formant Buttons
+      const aiStateBtns = document.querySelectorAll('[data-ai-state]');
+      aiStateBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const st = btn.getAttribute('data-ai-state');
+          aiStateBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+          engine.audio.features.aiState = st;
+          badgeAiState.textContent = `STATE: ${st}`;
+          if (st === 'CONTEMPLATING') Object.assign(engine.params, { l: 2, m: 0, freeRoom: 0.35 });
+          else if (st === 'LISTENING') Object.assign(engine.params, { l: 3, m: 1, freeRoom: 0.52 });
+          else if (st === 'REASONING') Object.assign(engine.params, { l: 5, m: 4, freeRoom: 0.78 });
+          else if (st === 'SPEAKING') Object.assign(engine.params, { l: 3, m: 2, freeRoom: 0.62 });
+          engine.audio.playAIVocalSyllable(155, 580, 1480, 2600, 0.42);
+          syncUIReadouts();
+        });
+      });
+
+      const VOWEL_PRESETS = [
+        { name: '/ɑ/ Open', f1: 730, f2: 1090, f3: 2440, l: 2, m: 0 },
+        { name: '/eɪ/ Gate', f1: 530, f2: 1840, f3: 2480, l: 3, m: 2 },
+        { name: '/i/ Bright', f1: 270, f2: 2290, f3: 3010, l: 4, m: 3 },
+        { name: '/oʊ/ Torus', f1: 450, f2: 880, f3: 2540, l: 3, m: 1 },
+        { name: '/u/ Zonal', f1: 300, f2: 870, f3: 2240, l: 2, m: 1 }
+      ];
+      document.querySelectorAll('[data-vowel-btn]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const v = VOWEL_PRESETS[Number(btn.getAttribute('data-vowel-btn'))] || VOWEL_PRESETS[0];
+          engine.params.l = v.l;
+          engine.params.m = v.m;
+          engine.audio.features.vowel = v.name;
+          readoutVowel.textContent = `${v.name} (${v.f1}/${v.f2} Hz)`;
+          engine.audio.playAIVocalSyllable(148, v.f1, v.f2, v.f3, 0.55);
+          syncUIReadouts();
+        });
+      });
+
+      document.getElementById('btn-speak-phrase').addEventListener('click', () => {
+        engine.audio.startProceduralTrack('speech_dialog');
+        updateQuickPlayBtn(true);
+      });
+
+      // 5. Generative Audio Tracks, Stop, Mic & File Input
+      const trackBtns = document.querySelectorAll('[data-track-btn]');
+      const badgeAudioStatus = document.getElementById('badge-audio-status');
+      const quickPlayBtn = document.getElementById('btn-quick-play');
+
+      function updateQuickPlayBtn(playing) {
+        if (playing) {
+          quickPlayBtn.textContent = '⏸ Pause Audio';
+          badgeAudioStatus.textContent = `PLAYING: ${engine.audio.currentTrackId.toUpperCase()}`;
+        } else {
+          quickPlayBtn.textContent = '▶ Play AI & Synth';
+          badgeAudioStatus.textContent = 'PAUSED (VACUUM BREATHING)';
+        }
+      }
+
+      trackBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const tid = btn.getAttribute('data-track-btn');
+          trackBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+          engine.audio.startProceduralTrack(tid);
+          updateQuickPlayBtn(true);
+        });
+      });
+
+      document.getElementById('btn-stop-audio').addEventListener('click', () => {
+        engine.audio.stopProceduralTrack();
+        trackBtns.forEach(b => b.classList.remove('is-active'));
+        updateQuickPlayBtn(false);
+      });
+
+      quickPlayBtn.addEventListener('click', () => {
+        if (engine.audio.isPlayingTrack) {
+          engine.audio.stopProceduralTrack();
+          updateQuickPlayBtn(false);
+        } else {
+          const defaultTrack = engine.mode === 'speech' ? 'speech_dialog' : 'music_hopf';
+          engine.audio.startProceduralTrack(defaultTrack);
+          updateQuickPlayBtn(true);
+        }
+      });
+
+      const micBtn = document.getElementById('btn-mic-toggle');
+      const micLbl = document.getElementById('mic-status-lbl');
+      micBtn.addEventListener('click', async () => {
+        const active = await engine.audio.toggleMicrophone();
+        micBtn.classList.toggle('is-active', active);
+        micLbl.textContent = active ? 'LIVE' : 'Off';
+        badgeAudioStatus.textContent = active ? 'LIVE MICROPHONE' : 'READY';
+      });
+
+      const fileInput = document.getElementById('input-audio-file');
+      fileInput.addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          engine.audio.loadAudioFile(e.target.files[0]);
+          badgeAudioStatus.textContent = 'LOCAL AUDIO FILE';
+          updateQuickPlayBtn(true);
+        }
+      });
+
+      // Drag and drop audio file onto stage
+      window.addEventListener('dragover', (e) => e.preventDefault());
+      window.addEventListener('drop', (e) => {
+        e.preventDefault();
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+          engine.audio.loadAudioFile(e.dataTransfer.files[0]);
+          badgeAudioStatus.textContent = 'LOCAL AUDIO FILE';
+          updateQuickPlayBtn(true);
+        }
+      });
+
+      // 6. Interactive 2D XY Noether Gauge Pad
+      const xyPad = document.getElementById('noether-xy-pad');
+      let xyDragging = false;
+      const handleXY = (e) => {
+        const rect = xyPad.getBoundingClientRect();
+        const ux = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+        const uy = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+        engine.params.symBreak = ux;
+        engine.params.freeRoom = 1.0 - uy;
+        syncUIReadouts();
+        // Trigger a live harmonic grain when scrubbing the XY pad
+        const freq = 146.83 * Math.pow(2, (1.0 - uy) * 1.5);
+        engine.audio.playQuantumNote(freq, 0.22, 0.28);
+      };
+      xyPad.addEventListener('pointerdown', (e) => {
+        xyDragging = true;
+        xyPad.setPointerCapture(e.pointerId);
+        handleXY(e);
+      });
+      xyPad.addEventListener('pointermove', (e) => {
+        if (xyDragging) handleXY(e);
+      });
+      xyPad.addEventListener('pointerup', () => { xyDragging = false; });
+
+      // 7. Playable 2-Octave Polyphonic Quantum Keyboard + Computer Keys
+      const synthPresetSel = document.getElementById('select-synth-preset');
+      synthPresetSel.addEventListener('change', () => {
+        engine.audio.synthPreset = synthPresetSel.value;
+      });
+
+      const keyBtns = document.querySelectorAll('.synth-key');
+      const keyMap = {};
+      keyBtns.forEach(btn => {
+        const freq = parseFloat(btn.getAttribute('data-note-freq'));
+        const k = btn.getAttribute('data-key');
+        if (k) keyMap[k.toLowerCase()] = { btn, freq };
+        btn.addEventListener('pointerdown', () => {
+          btn.classList.add('is-playing');
+          engine.audio.playQuantumNote(freq, 0.75, 0.55);
+          setTimeout(() => btn.classList.remove('is-playing'), 220);
+        });
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.repeat || e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+        const entry = keyMap[e.key.toLowerCase()];
+        if (entry) {
+          entry.btn.classList.add('is-playing');
+          engine.audio.playQuantumNote(entry.freq, 0.75, 0.55);
+          setTimeout(() => entry.btn.classList.remove('is-playing'), 220);
+        }
+      });
+
+      // 8. Physics & Layer Sliders
+      const bindSlider = (id, prop, isInt = false) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener('input', () => {
+          const val = isInt ? parseInt(el.value, 10) : parseFloat(el.value);
+          engine.params[prop] = val;
+          if (prop === 'l' && Math.abs(engine.params.m) > val) {
+            engine.params.m = Math.sign(engine.params.m) * val;
+          }
+          syncUIReadouts();
+        });
+      };
+      bindSlider('slider-l', 'l', true);
+      bindSlider('slider-m', 'm', true);
+      bindSlider('slider-freeroom', 'freeRoom');
+      bindSlider('slider-symbreak', 'symBreak');
+      bindSlider('slider-stiffness', 'stiffness');
+      bindSlider('slider-vortex', 'vortexCoupling');
+      bindSlider('slider-layer-orb', 'layerOrb');
+      bindSlider('slider-layer-hopf', 'layerHopf');
+      bindSlider('slider-layer-pt', 'layerParticles');
+      bindSlider('slider-layer-shells', 'layerShells');
+      bindSlider('slider-layer-cym', 'layerCymatics');
+
+      document.getElementById('btn-toggle-orbit').addEventListener('click', function () {
+        engine.params.autoOrbit = !engine.params.autoOrbit;
+        this.classList.toggle('is-active', engine.params.autoOrbit);
+        document.getElementById('lbl-orbit').textContent = engine.params.autoOrbit ? 'ON' : 'OFF';
+      });
+
+      document.getElementById('btn-toggle-vectors').addEventListener('click', function () {
+        engine.params.showVectors = !engine.params.showVectors;
+        this.classList.toggle('is-active', engine.params.showVectors);
+        document.getElementById('lbl-vectors').textContent = engine.params.showVectors ? 'ON' : 'OFF';
+      });
+
+      // 9. Moodboard Palettes, Symmetry Rail & Adversarial Audit Buttons
+      const swatchCards = document.querySelectorAll('[data-palette-card]');
+      swatchCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const pid = card.getAttribute('data-palette-card');
+          swatchCards.forEach(c => c.classList.toggle('is-active', c === card));
+          engine.setPalette(pid);
+        });
+      });
+
+      const symPresetTriggers = document.querySelectorAll('[data-sym-preset]');
+      symPresetTriggers.forEach(el => {
+        el.addEventListener('click', () => {
+          const num = Number(el.getAttribute('data-sym-preset'));
+          document.querySelectorAll('.rail-tick-btn').forEach(b => {
+            b.classList.toggle('is-active', Number(b.getAttribute('data-sym-preset')) === num);
+          });
+          engine.applySymmetryLawPreset(num);
+          engine.audio.playQuantumNote(146.83 * (1 + num * 0.25), 0.65, 0.45);
+          syncUIReadouts();
+        });
+      });
+
+      const auditBtns = document.querySelectorAll('[data-audit-var]');
+      auditBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const v = Number(btn.getAttribute('data-audit-var'));
+          const it = Number(btn.getAttribute('data-audit-iter'));
+          auditBtns.forEach(b => b.classList.toggle('is-active', b === btn));
+          varBtns.forEach(b => b.classList.toggle('is-active', Number(b.getAttribute('data-var-btn')) === v));
+          iterBtns.forEach(b => b.classList.toggle('is-active', Number(b.getAttribute('data-iter-btn')) === it));
+          engine.applyVariationPreset(v, it);
+          syncUIReadouts();
+        });
+      });
+
+      syncUIReadouts();
+    })();
+  </script>
+</body>
+</html>
