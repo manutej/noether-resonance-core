@@ -600,13 +600,116 @@ body.dragging .drop { opacity: 1; }
   transition: width 0.08s linear;
 }
 
+/* Gemini 2.5 Flash & Neural Voice Transcript + Live Client Demo Studio Card */
+.voice-studio-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 8px 10px;
+  background: var(--ink-raise);
+  border: 1px solid var(--line-bright);
+  border-radius: 12px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  pointer-events: auto;
+  width: min(395px, 78vw);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+}
+.voice-studio-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+.voice-speaker-badge {
+  font: 600 9.5px/1.2 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+  background: var(--accent);
+  padding: 3px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: background 0.3s ease;
+}
+.voice-scenario-sel {
+  appearance: none;
+  -webkit-appearance: none;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font: 400 10px/1.2 var(--mono);
+  cursor: pointer;
+  max-width: 215px;
+  text-overflow: ellipsis;
+}
+.voice-caption-box {
+  font: 400 11.5px/1.45 var(--sans);
+  color: var(--fg);
+  min-height: 34px;
+  max-height: 70px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  letter-spacing: 0.01em;
+}
+.voice-caption-box::-webkit-scrollbar { display: none; }
+.voice-caption-box .w-spoken {
+  color: #ffffff;
+  text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+}
+.voice-caption-box .w-active {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.voice-caption-box .w-upcoming {
+  color: var(--fg-dim);
+}
+.voice-prompt-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.voice-prompt-input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(5, 6, 11, 0.65);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  color: var(--fg);
+  font: 400 11px/1.2 var(--sans);
+  padding: 5px 8px;
+  outline: none;
+}
+.voice-prompt-input:focus {
+  border-color: var(--accent);
+}
+.voice-prompt-row .btn {
+  padding: 4px 8px;
+  min-height: 25px;
+  font-size: 10.5px;
+  border-radius: 7px;
+}
+.gemini-key-row {
+  display: none;
+  align-items: center;
+  gap: 5px;
+  padding-top: 3px;
+  border-top: 1px solid var(--line);
+}
+.gemini-key-row.open { display: flex; }
+
 @media (max-width: 760px) {
   .meters, .q-telem { display: none; }
   .tree-bar {
     top: calc(env(safe-area-inset-top, 0px) + 78px);
     padding: 4px 7px;
   }
-  .turn-timeline { display: none; }
+  .turn-timeline, .voice-studio-card { display: none; }
   .dock {
     width: calc(100vw - 20px);
     padding: 5px 6px;
@@ -635,11 +738,11 @@ body.dragging .drop { opacity: 1; }
 
 <canvas id="stage" aria-label="Noether Quantum Field 3D Audio Visualizer"></canvas>
 
-<!-- Top-Left Minimal State, Source, Live Turn Sequencer & Practical Audio File Scrubber -->
+<!-- Top-Left Minimal State, Source, Live Turn Sequencer & Gemini 2.5 / Neural Voice Studio -->
 <header class="hud id">
   <div class="mark">Noether Resonance</div>
   <div class="state"><span class="pip" id="pip"></span><span class="glyph" id="stateGlyph" aria-hidden="true">◎</span><span id="stateLabel">Idle</span></div>
-  <div class="src" id="srcLabel">Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase</div>
+  <div class="src" id="srcLabel">Quantum vacuum breathing · Click Run agent turn, Demo track, or Ask Kore</div>
   <div class="turn-timeline" id="turnTimeline" title="Interactive Conversational Turn Sequencer — click 'Run agent turn' or click any stage directly">
     <div class="turn-steps">
       <span class="turn-step" data-turnstep="listening">1. Listen</span><span>▸</span>
@@ -649,6 +752,29 @@ body.dragging .drop { opacity: 1; }
       <span id="turnTimer" style="margin-left:auto;font-variant-numeric:tabular-nums;opacity:0.85">Ready</span>
     </div>
     <div class="turn-bar-track"><div class="turn-bar-fill" id="turnProgFill"></div></div>
+  </div>
+  <div class="voice-studio-card" id="voiceStudioCard" aria-label="Gemini 2.5 Flash & Neural Voice Conversational Studio">
+    <div class="voice-studio-head">
+      <span class="voice-speaker-badge" id="voiceSpeakerBadge">✦ KORE &amp; PUCK · NEURAL VOICE</span>
+      <select class="voice-scenario-sel" id="turnScenarioSelect" title="Select Client Demo Conversational Scenario">
+        <option value="0">I · Executive Quantum Pitch</option>
+        <option value="1">II · Formants &amp; Reasoning States</option>
+        <option value="2">III · 4 Quantum Topologies</option>
+        <option value="3">IV · Live Music &amp; PLL Clock</option>
+        <option value="4">V · Antigravity CLI &amp; Monorepo</option>
+      </select>
+    </div>
+    <div class="voice-caption-box" id="voiceCaptionBox">Click <b>Run agent turn</b> to hear Puck &amp; Kore converse in real neural voice, or ask Kore any question below.</div>
+    <div class="voice-prompt-row">
+      <input class="voice-prompt-input" id="aiPromptInput" type="text" placeholder="Ask Kore anything (or click 🎙 to speak)..." aria-label="Ask Kore a question">
+      <button class="btn" id="bDictatePrompt" title="Speak a question using Microphone Speech-to-Text">🎙</button>
+      <button class="btn primary" id="bAskKore" title="Synthesize live Gemini 2.5 Flash + Neural Voice turn">Ask</button>
+      <button class="btn" id="bGeminiKeyToggle" title="Optional: Set GEMINI_API_KEY for direct browser Gemini 2.5 Flash TTS">🔑</button>
+    </div>
+    <div class="gemini-key-row" id="geminiKeyRow">
+      <input class="voice-prompt-input" id="geminiKeyInput" type="password" placeholder="Paste GEMINI_API_KEY (saved locally for direct Gemini 2.5 TTS)...">
+      <button class="btn" id="bSaveGeminiKey">Save</button>
+    </div>
   </div>
   <div class="media-scrub" id="mediaScrubWrap">
     <button class="btn" id="bMediaPause">Pause</button>
@@ -1326,74 +1452,232 @@ function stopThinkingSynth() {
   }
 }
 
-/* ── Formant Speech Synthesizer for Agent / User Turns ── */
-const VOWELS = (window.NoetherSoundSequencer && window.NoetherSoundSequencer.VOWELS) || [
-  [730, 1090, 2440, 2, 1],
-  [530, 1840, 2480, 3, 2],
-  [270, 2290, 3010, 4, 3],
-  [570, 840, 2410, 3, 1],
-  [300, 870, 2240, 2, 0],
-  [660, 1720, 2410, 4, 2],
-  [490, 1350, 1690, 3, 3]
+/* ── Real Neural & Gemini 2.5 Flash Conversational Voice Engine (Kore & Puck) ── */
+const NEURAL_TURN_BANK = [
+  {
+    id: 'turn_01',
+    title: 'I · Executive Pitch: Why Noether Quantum Resonance?',
+    branch: 'orb',
+    palette: 'wada_auto',
+    user_speaker: 'Puck · Executive Client',
+    user_text: 'Kore, we are demoing Noether Resonance Core to a client right now. What makes this fundamentally different from a traditional audio visualizer?',
+    user_audio: './audio/turns/turn_01_user.mp3',
+    user_duration: 8.26,
+    thinking_summary: "Mapping Emmy Noether's 1918 continuous symmetry theorem to real-time spherical harmonic Y(ℓ,m) acoustic fields...",
+    ai_speaker: 'Kore · Gemini 2.5 Voice',
+    ai_text: "Traditional visualizers just map raw volume bars to arbitrary shapes. Here, every 3D undulation is governed by Emmy Noether's theorem: continuous rotational and time symmetries conserve angular momentum and Hamiltonian energy, giving the AI a physical, living presence that breathes naturally with your voice and music.",
+    ai_audio: './audio/turns/turn_01_ai.mp3',
+    ai_duration: 20.90
+  },
+  {
+    id: 'turn_02',
+    title: 'II · Conversational Formants & Reasoning States',
+    branch: 'orb',
+    palette: 'wada_142',
+    user_speaker: 'Puck · Systems Lead',
+    user_text: 'How does the 3D geometry adapt as we move from listening to my voice, into AI reasoning, and then into your spoken response?',
+    user_audio: './audio/turns/turn_02_user.mp3',
+    user_duration: 8.62,
+    thinking_summary: 'Aligning vocal formant frequencies F1 and F2 with Hopf fibration torsion and 132 BPM neural search...',
+    ai_speaker: 'Kore · Gemini 2.5 Voice',
+    ai_text: 'While you speak during the Listening phase, our formant tracker locks onto your vocal resonances F1 and F2, drawing the Hopf fibration filaments inward in verdigris teal. During Thinking, a 132 BPM symmetry search excites higher-order harmonics, and when I answer, the field radiates outward in warm Sanzo Wada pigments.',
+    ai_audio: './audio/turns/turn_02_ai.mp3',
+    ai_duration: 21.17
+  },
+  {
+    id: 'turn_03',
+    title: 'III · The 4 Quantum Visualizer Topologies',
+    branch: 'tokamak',
+    palette: 'wada_068',
+    user_speaker: 'Puck · Creative Director',
+    user_text: 'Can you walk us through the four 3D visualizers in the Exploration Tree at the top of the screen?',
+    user_audio: './audio/turns/turn_03_user.mp3',
+    user_duration: 5.98,
+    thinking_summary: 'Traversing the 4-branch Exploration Tree: Eigen-Orb, Clifford Tokamak, Cymatic Horizon, and Spinor Lattice...',
+    ai_speaker: 'Kore · Gemini 2.5 Voice',
+    ai_text: 'Branch One is the Eigen-Orb, a spherical harmonic droplet wrapped in geodesic veins. Branch Two, active now, is the Clifford Tokamak, a toroidal magnetic plasma chamber with Villarceau coils. Branch Three is the Cymatic Horizon with seventy-two crystal monoliths, and Branch Four is the nested SU-2 Spinor Lattice.',
+    ai_audio: './audio/turns/turn_03_ai.mp3',
+    ai_duration: 21.53
+  },
+  {
+    id: 'turn_04',
+    title: 'IV · Live Music & Symplectic PLL Tempo Lock',
+    branch: 'cymatic',
+    palette: 'wada_219',
+    user_speaker: 'Puck · Audio Architect',
+    user_text: 'What happens when we switch from conversational AI voice to live music, microphone input, or system audio?',
+    user_audio: './audio/turns/turn_04_user.mp3',
+    user_duration: 6.70,
+    thinking_summary: 'Synchronizing spectral-flux onset detector, IOI autocorrelation histogram, and Velocity-Verlet Hamiltonian oscillators...',
+    ai_speaker: 'Kore · Gemini 2.5 Voice',
+    ai_text: 'Our modular sound sequencer runs a phase-locked loop onset detector across eighty to one hundred sixty beats per minute. It locks onto the beat and four-bar downbeat, driving second-order symplectic Velocity-Verlet oscillators that keep the 3D standing waves silky-smooth without frame jitter.',
+    ai_audio: './audio/turns/turn_04_ai.mp3',
+    ai_duration: 17.38
+  },
+  {
+    id: 'turn_05',
+    title: 'V · Antigravity CLI & Monorepo Microservices',
+    branch: 'lattice',
+    palette: 'wada_173',
+    user_speaker: 'Puck · Principal Engineer',
+    user_text: 'How does an engineering team integrate these AI services or control the visualizer directly from the Antigravity CLI?',
+    user_audio: './audio/turns/turn_05_user.mp3',
+    user_duration: 8.47,
+    thinking_summary: 'Connecting MCP JSON-RPC 2.0 stdio server, SSE live control bus, and Gemini 2.5 Flash voice microservices...',
+    ai_speaker: 'Kore · Gemini 2.5 Voice',
+    ai_text: 'The monorepo is modularized into dedicated microservices for Gemini 2.5 reasoning, neural voice synthesis, and clock synchronization. Using our Antigravity CLI bridge and MCP server, you can launch the studio, switch 3D topologies, or make any agent speak through the orb from a single command.',
+    ai_audio: './audio/turns/turn_05_ai.mp3',
+    ai_duration: 19.61
+  }
 ];
-let V = null;
-function startVoice(kind, dur) {
-  ensureAudio(); stopVoice();
-  const c = A.ctx;
-  const cfg = kind === 'user' ? { f0: 204, rate: 1.15, fs: 1.12, vol: 0.48 } : { f0: 124, rate: 1.0, fs: 1.0, vol: 0.58 };
-  const bus = c.createGain(); bus.gain.value = cfg.vol; bus.connect(A.master);
-  const out = c.createGain(); out.gain.value = 0; out.connect(bus);
-  const osc = c.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = cfg.f0;
-  const vib = c.createOscillator(); vib.frequency.value = 5.2;
-  const vibG = c.createGain(); vibG.gain.value = cfg.f0 * 0.013; vib.connect(vibG); vibG.connect(osc.frequency);
-  const pre = c.createBiquadFilter(); pre.type = 'lowpass'; pre.frequency.value = 4200; osc.connect(pre);
-  const forms = [0, 1, 2].map(i => {
-    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = [7, 9, 10][i];
-    const g = c.createGain(); g.gain.value = [1.0, 0.55, 0.28][i] * 2.4;
-    pre.connect(f); f.connect(g); g.connect(out); return f;
-  });
-  const nz = c.createBufferSource(); nz.buffer = noiseBuffer(); nz.loop = true;
-  const nf = c.createBiquadFilter(); nf.type = 'highpass'; nf.frequency.value = 3400;
-  const ng = c.createGain(); ng.gain.value = 0; nz.connect(nf); nf.connect(ng); ng.connect(bus);
-  osc.start(); vib.start(); nz.start();
-  V = { cfg, osc, out, ng, bus, forms, nodes: [osc, vib, nz], next: c.currentTime + 0.06, syl: 0, phraseLen: 7, endAt: dur ? c.currentTime + dur : Infinity, timer: 0 };
-  schedVoice();
-  V.timer = setInterval(schedVoice, 30);
+
+let activeScenarioIdx = 0;
+let V = null; // Active neural voice state: { audioEl, mediaNode, gainNode, rafId, text, words }
+
+function setVoiceHudCaption(speakerBadge, text, progressRatio = -1) {
+  const badgeEl = $('#voiceSpeakerBadge');
+  const boxEl = $('#voiceCaptionBox');
+  if (badgeEl && speakerBadge) badgeEl.textContent = speakerBadge;
+  if (!boxEl) return;
+  if (progressRatio < 0) {
+    boxEl.textContent = text;
+    return;
+  }
+  const words = String(text || '').split(/\s+/).filter(Boolean);
+  if (!words.length) { boxEl.textContent = ''; return; }
+  const activeIdx = clamp(Math.floor(progressRatio * words.length), 0, words.length - 1);
+  boxEl.innerHTML = words.map((w, i) => {
+    const cls = i < activeIdx ? 'w-spoken' : (i === activeIdx ? 'w-active' : 'w-upcoming');
+    return `<span class="${cls}">${w}</span>`;
+  }).join(' ');
 }
-function schedVoice() {
-  const c = A.ctx, v = V; if (!v) return;
-  while (v.next < c.currentTime + 0.2) {
-    const t = v.next;
-    if (t > v.endAt) { v.out.gain.setTargetAtTime(0, t, 0.05); clearInterval(v.timer); break; }
-    if (v.syl >= v.phraseLen) {
-      v.out.gain.setTargetAtTime(0, t, 0.04);
-      v.syl = 0; v.phraseLen = 6 + (Math.random() * 9 | 0);
-      v.next = t + (0.26 + Math.random() * 0.36) / v.cfg.rate; continue;
-    }
-    const d = (0.11 + Math.random() * 0.13) / v.cfg.rate;
-    const vw = VOWELS[Math.random() * VOWELS.length | 0];
-    v.forms.forEach((f, i) => f.frequency.setTargetAtTime(vw[i] * v.cfg.fs, t, 0.025));
-    const pos = v.syl / v.phraseLen, stress = Math.random() < 0.28 ? 1.15 : 1;
-    v.osc.frequency.setTargetAtTime(v.cfg.f0 * (1.12 - 0.24 * pos) * stress * (0.95 + Math.random() * 0.1), t, 0.03);
-    const amp = (0.58 + Math.random() * 0.42) * stress;
-    v.out.gain.setTargetAtTime(amp, t, 0.016);
-    v.out.gain.setTargetAtTime(amp * 0.16, t + d * 0.7, 0.025);
-    if (Math.random() < 0.35) {
-      v.ng.gain.setTargetAtTime(0.16, Math.max(c.currentTime, t - 0.02), 0.008);
-      v.ng.gain.setTargetAtTime(0, t + 0.03, 0.015);
-    }
-    // Trigger syllabic pulse on stressed vowels so visualizer shockwaves & clock respond to speech cadence
-    if (stress > 1.05) {
-      setTimeout(() => { if (V) fireBeat(0.68, false, false); }, Math.max(0, (t - c.currentTime) * 1000));
-    }
-    v.syl++; v.next = t + d;
+
+function pcm16Base64ToWavBlobUrl(b64, sampleRate = 24000) {
+  const raw = atob(b64);
+  const numBytes = raw.length;
+  const buffer = new ArrayBuffer(44 + numBytes);
+  const view = new DataView(buffer);
+  const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
+  writeStr(0, 'RIFF');
+  view.setUint32(4, 36 + numBytes, true);
+  writeStr(8, 'WAVE');
+  writeStr(12, 'fmt ');
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * 2, true);
+  view.setUint16(32, 2, true);
+  view.setUint16(34, 16, true);
+  writeStr(36, 'data');
+  view.setUint32(40, numBytes, true);
+  const bytes = new Uint8Array(buffer, 44);
+  for (let i = 0; i < numBytes; i++) bytes[i] = raw.charCodeAt(i);
+  return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
+}
+
+function playNeuralVoiceClip({ srcUrl, text, speakerBadge, fallbackDuration = 8.0 }) {
+  ensureAudio();
+  stopVoice();
+  return new Promise((resolve) => {
+    const audioEl = new Audio();
+    audioEl.crossOrigin = 'anonymous';
+    audioEl.preload = 'auto';
+    audioEl.src = srcUrl;
+
+    const gainNode = A.ctx.createGain();
+    gainNode.gain.value = 0.96;
+    gainNode.connect(A.master);
+
+    let mediaNode = null;
+    try {
+      mediaNode = A.ctx.createMediaElementSource(audioEl);
+      mediaNode.connect(gainNode);
+    } catch (_) {}
+
+    let resolved = false;
+    let lastPulse = 0;
+    const startWall = performance.now() / 1000;
+
+    const finish = () => {
+      if (resolved) return;
+      resolved = true;
+      if (V && V.audioEl === audioEl) stopVoice();
+      resolve();
+    };
+
+    const updateKaraoke = () => {
+      if (resolved || !V || V.audioEl !== audioEl) return;
+      const dur = (audioEl.duration && isFinite(audioEl.duration) && audioEl.duration > 0.2)
+        ? audioEl.duration
+        : fallbackDuration;
+      turnStageDur = dur;
+      const cur = audioEl.currentTime || (performance.now() / 1000 - startWall);
+      const prog = clamp(cur / dur, 0, 0.999);
+      setVoiceHudCaption(speakerBadge, text, prog);
+
+      // Fire organic syllabic vortex shockwaves when vocal energy peaks
+      const nowS = performance.now() / 1000;
+      if (AN.level > 0.22 && nowS - lastPulse > 0.34) {
+        lastPulse = nowS;
+        fireBeat(clamp(AN.level * 0.85, 0.35, 0.82), false, false);
+      }
+      V.rafId = requestAnimationFrame(updateKaraoke);
+    };
+
+    audioEl.onloadedmetadata = () => {
+      if (audioEl.duration && isFinite(audioEl.duration)) {
+        turnStageDur = audioEl.duration;
+      }
+    };
+    audioEl.onended = finish;
+    audioEl.onerror = () => {
+      setTimeout(finish, Math.min(3500, fallbackDuration * 1000));
+    };
+
+    V = { audioEl, mediaNode, gainNode, rafId: 0, text, finish };
+    setVoiceHudCaption(speakerBadge, text, 0);
+    audioEl.play().then(() => {
+      V.rafId = requestAnimationFrame(updateKaraoke);
+    }).catch(() => {
+      V.rafId = requestAnimationFrame(updateKaraoke);
+      setTimeout(finish, fallbackDuration * 1000);
+    });
+  });
+}
+
+function startVoice(kind = 'agent') {
+  const turn = NEURAL_TURN_BANK[activeScenarioIdx % NEURAL_TURN_BANK.length];
+  if (kind === 'user') {
+    playNeuralVoiceClip({
+      srcUrl: turn.user_audio,
+      text: turn.user_text,
+      speakerBadge: `◆ ${turn.user_speaker.toUpperCase()}`,
+      fallbackDuration: turn.user_duration
+    });
+  } else {
+    playNeuralVoiceClip({
+      srcUrl: turn.ai_audio,
+      text: turn.ai_text,
+      speakerBadge: `✦ ${turn.ai_speaker.toUpperCase()}`,
+      fallbackDuration: turn.ai_duration
+    });
   }
 }
+
 function stopVoice() {
   if (!V) return;
-  const v = V; V = null; clearInterval(v.timer);
-  v.bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.04);
-  setTimeout(() => { v.nodes.forEach(n => { try { n.stop(); } catch (e) {} }); try { v.bus.disconnect(); } catch (e) {} }, 300);
+  const v = V;
+  V = null;
+  if (v.rafId) cancelAnimationFrame(v.rafId);
+  try {
+    v.audioEl.pause();
+    v.audioEl.src = '';
+  } catch (_) {}
+  try {
+    if (v.mediaNode) v.mediaNode.disconnect();
+    if (v.gainNode) v.gainNode.disconnect();
+  } catch (_) {}
 }
 
 /* ── Live File, Microphone (with Device Picker) & System/Tab Audio Capture ── */
@@ -1469,52 +1753,170 @@ async function startSystemAudio() {
   }
 }
 
-/* ── Modular Conversational Agent Turn Sequencer: Listening (3.5s) → Thinking (2.7s) → Speaking (6.2s) → Idle ── */
+/* ── Modular Conversational Agent Turn Sequencer (Real Neural Voice: Puck -> Gemini 2.5 Thinking -> Kore) ── */
 let turnId = 0;
+let activeCustomTurn = null;
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
-async function agentTurn(startStage = 'listening') {
+async function agentTurn(startStage = 'listening', customTurnObj = undefined) {
   ensureAudio();
   stopAll(true);
   const id = ++turnId;
   turnActive = true;
   const nowSec = () => performance.now() / 1000;
 
+  if (customTurnObj !== undefined) {
+    activeCustomTurn = customTurnObj;
+  }
+  const turn = activeCustomTurn || NEURAL_TURN_BANK[activeScenarioIdx % NEURAL_TURN_BANK.length];
+  if ($('#turnScenarioSelect') && !activeCustomTurn) {
+    $('#turnScenarioSelect').value = String(activeScenarioIdx % NEURAL_TURN_BANK.length);
+  }
+
+  if (turn.branch && ['orb', 'tokamak', 'cymatic', 'lattice'].includes(turn.branch)) {
+    setActiveBranch(turn.branch);
+  }
+
   if (startStage === 'listening') {
-    turnStageStart = nowSec(); turnStageDur = 3.5;
+    const uDur = turn.user_duration || 7.5;
+    turnStageStart = nowSec(); turnStageDur = uDur;
     setState('listening');
-    setSource('voice', 'Agent turn (1/3) · Listening to user speech formants');
-    startVoice('user', 3.3);
-    await wait(3500);
+    setSource('voice', `Agent turn (1/3) · ${turn.user_speaker || 'Puck'} speaking`);
+    if (turn.user_audio) {
+      await playNeuralVoiceClip({
+        srcUrl: turn.user_audio,
+        text: turn.user_text,
+        speakerBadge: `◆ ${(turn.user_speaker || 'PUCK · USER').toUpperCase()}`,
+        fallbackDuration: uDur
+      });
+    } else {
+      setVoiceHudCaption(`◆ ${(turn.user_speaker || 'PUCK · USER').toUpperCase()}`, turn.user_text, 0.5);
+      await wait(2400);
+    }
     if (id !== turnId) return;
   }
 
   if (startStage === 'listening' || startStage === 'thinking') {
     stopVoice();
-    turnStageStart = nowSec(); turnStageDur = 2.7;
+    const thinkDur = turn.thinking_duration || 2.4;
+    turnStageStart = nowSec(); turnStageDur = thinkDur;
     setState('thinking');
-    setSource('thinking', 'Agent turn (2/3) · Quantum symmetry search (132 BPM)');
-    startThinkingSynth(2.6);
-    await wait(2700);
+    setSource('thinking', 'Agent turn (2/3) · Gemini 2.5 Flash quantum symmetry search (132 BPM)');
+    setVoiceHudCaption('❖ GEMINI 2.5 FLASH · REASONING', turn.thinking_summary || 'Synthesizing harmonic response across Noether symmetry invariants...', -1);
+    startThinkingSynth(thinkDur - 0.1);
+    await wait(thinkDur * 1000);
     if (id !== turnId) return;
   }
 
   if (startStage === 'listening' || startStage === 'thinking' || startStage === 'speaking') {
     stopThinkingSynth();
-    turnStageStart = nowSec(); turnStageDur = 6.2;
+    const aDur = turn.ai_duration || 18.0;
+    turnStageStart = nowSec(); turnStageDur = aDur;
     setState('speaking');
-    setSource('voice', 'Agent turn (3/3) · Harmonic AI response synthesis');
-    startVoice('agent', 6.0);
-    await wait(6200);
+    setSource('voice', `Agent turn (3/3) · ${turn.ai_speaker || 'Kore · Gemini 2.5 Voice'}`);
+    await playNeuralVoiceClip({
+      srcUrl: turn.ai_audio,
+      text: turn.ai_text,
+      speakerBadge: `✦ ${(turn.ai_speaker || 'KORE · GEMINI 2.5 VOICE').toUpperCase()}`,
+      fallbackDuration: aDur
+    });
     if (id !== turnId) return;
   }
 
   stopVoice();
   stopThinkingSynth();
   turnActive = false;
-  setSource('none', 'Agent turn complete · Click Run agent turn, Demo track, or Mic');
+  setSource('none', 'Agent turn complete · Click Run agent turn for next scenario, or Ask Kore');
   setState('idle');
   updateTurnTimelineUI('idle', 0, 'Complete');
+  setVoiceHudCaption('✦ KORE & PUCK · READY', `Completed "${turn.title || 'Conversational Turn'}". Select another scenario, click Run agent turn, or ask a custom question below.`, -1);
+}
+
+async function runCustomAiTurn(userPrompt) {
+  const cleanPrompt = String(userPrompt || '').trim();
+  if (!cleanPrompt) {
+    agentTurn('listening');
+    return;
+  }
+  ensureAudio();
+  stopAll(true);
+  setVoiceHudCaption('❖ GEMINI 2.5 FLASH · SYNTHESIZING', `Synthesizing live response & 24kHz neural voice for: "${cleanPrompt}"...`, -1);
+  toast('Synthesizing live Gemini 2.5 Flash + Neural Voice response...');
+
+  const savedKey = (localStorage.getItem('NOETHER_GEMINI_API_KEY') || '').trim();
+  try {
+    const resp = await fetch('/api/turn', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: cleanPrompt,
+        geminiApiKey: savedKey,
+        synthesizeUserVoice: true
+      })
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+    if (!data.ok || !data.aiAudio) throw new Error(data.error || 'No audio returned');
+
+    const userBlobUrl = data.userAudio
+      ? `data:${data.userAudio.mimeType};base64,${data.userAudio.audioBase64}`
+      : null;
+    const aiBlobUrl = `data:${data.aiAudio.mimeType};base64,${data.aiAudio.audioBase64}`;
+
+    await agentTurn('listening', {
+      title: 'Live Custom AI Turn',
+      branch: data.recommendedBranch || activeBranch,
+      palette: data.recommendedPalette || paletteMode,
+      user_speaker: 'You · Live Prompt',
+      user_text: cleanPrompt,
+      user_audio: userBlobUrl,
+      user_duration: 5.5,
+      thinking_duration: 2.2,
+      thinking_summary: data.thinkingSummary,
+      ai_speaker: `Kore · ${data.aiAudio.engine || 'Gemini 2.5 Voice'}`,
+      ai_text: data.aiResponse,
+      ai_audio: aiBlobUrl,
+      ai_duration: 14.0
+    });
+    return;
+  } catch (err) {
+    // If running purely static without /api/turn and user provided GEMINI_API_KEY in browser:
+    if (savedKey) {
+      try {
+        const ttsResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${encodeURIComponent(savedKey)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: cleanPrompt }] }],
+            generationConfig: {
+              responseModalities: ['AUDIO'],
+              speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Kore' } } }
+            }
+          })
+        });
+        const ttsData = await ttsResp.json();
+        const b64 = ttsData.candidates[0].content.parts[0].inlineData.data;
+        const wavUrl = pcm16Base64ToWavBlobUrl(b64, 24000);
+        await agentTurn('speaking', {
+          title: 'Live Gemini 2.5 Flash TTS',
+          branch: activeBranch,
+          ai_speaker: 'Kore · gemini-2.5-flash-preview-tts',
+          ai_text: cleanPrompt,
+          ai_audio: wavUrl,
+          ai_duration: 10.0
+        });
+        return;
+      } catch (_) {}
+    }
+    // Match closest pre-rendered neural turn if offline
+    const q = cleanPrompt.toLowerCase();
+    if (q.includes('tokamak') || q.includes('tree') || q.includes('topolog')) activeScenarioIdx = 2;
+    else if (q.includes('music') || q.includes('clock') || q.includes('bpm')) activeScenarioIdx = 3;
+    else if (q.includes('cli') || q.includes('antigravity') || q.includes('microservice')) activeScenarioIdx = 4;
+    else if (q.includes('formant') || q.includes('think')) activeScenarioIdx = 1;
+    else activeScenarioIdx = 0;
+    agentTurn('listening');
+  }
 }
 
 /* ───────────────────────── Modular ClockSync & Spectral/Formant Analyser ───────────────────────── */
@@ -3235,17 +3637,185 @@ $('#trackSelect').onchange = e => {
 };
 $('#bVoice').onclick = () => {
   if (V) { stopAll(); setState('idle'); return; }
-  ensureAudio(); stopAll(); startVoice('agent', 0); setSource('voice', 'Agent voice · harmonic formant synthesis'); setState('speaking');
+  ensureAudio(); stopAll();
+  const sc = NEURAL_TURN_BANK[activeScenarioIdx % NEURAL_TURN_BANK.length];
+  startVoice('agent');
+  setSource('voice', `Agent voice · ${sc.ai_speaker || 'Kore (Gemini 2.5 Neural Voice)'}`);
+  setState('speaking');
 };
 $('#bMic').onclick = () => A.src === 'mic' ? (stopAll(), setState('idle')) : startMic($('#micDeviceSelect').value);
 $('#bSysAudio').onclick = () => A.src === 'sys' ? (stopAll(), setState('idle')) : startSystemAudio();
 $('#bStop').onclick = () => { toggleShowcase(false); toggleTreeCycle(false); stopAll(); setState('idle'); };
-$('#bTurn').onclick = () => { toggleShowcase(false); agentTurn('listening'); };
+let hasRunFirstTurn = false;
+$('#bTurn').onclick = () => {
+  toggleShowcase(false);
+  if (hasRunFirstTurn && !turnActive) {
+    activeScenarioIdx = (activeScenarioIdx + 1) % NEURAL_TURN_BANK.length;
+  }
+  hasRunFirstTurn = true;
+  agentTurn('listening', null);
+};
 $('#bShowcase').onclick = () => toggleShowcase();
 $('#bSharePreset').onclick = saveAndSharePreset;
 $('#bSnapPng').onclick = downloadPngSnapshot;
 $('#bRecVideo').onclick = toggleVideoRecord;
 $('#file').onchange = e => { const f = e.target.files[0]; if (f) { toggleShowcase(false); playFile(f); } e.target.value = ''; };
+
+// Neural Voice Studio Controls (Scenario Selector, Live Ask Kore Prompt, Voice Dictation, Gemini API Key)
+if ($('#turnScenarioSelect')) {
+  $('#turnScenarioSelect').onchange = e => {
+    activeScenarioIdx = clamp(parseInt(e.target.value, 10) || 0, 0, NEURAL_TURN_BANK.length - 1);
+    hasRunFirstTurn = true;
+    toggleShowcase(false);
+    agentTurn('listening', null);
+  };
+}
+if ($('#bAskKore') && $('#aiPromptInput')) {
+  const triggerCustomTurn = () => {
+    const val = $('#aiPromptInput').value.trim();
+    toggleShowcase(false);
+    runCustomAiTurn(val);
+  };
+  $('#bAskKore').onclick = triggerCustomTurn;
+  $('#aiPromptInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      triggerCustomTurn();
+    }
+  });
+}
+if ($('#bDictatePrompt')) {
+  let recInstance = null;
+  $('#bDictatePrompt').onclick = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      toast('Browser Speech-to-Text requires Chrome, Edge, or Safari. Type your question in the box and click Ask Kore.');
+      return;
+    }
+    if (recInstance) {
+      try { recInstance.stop(); } catch (_) {}
+      recInstance = null;
+      return;
+    }
+    try {
+      recInstance = new SR();
+      recInstance.lang = 'en-US';
+      recInstance.interimResults = true;
+      recInstance.maxAlternatives = 1;
+      setState('listening');
+      setVoiceHudCaption('🎙 LIVE DICTATION · LISTENING', 'Speak your question aloud now...', -1);
+      toast('Listening for your voice question...');
+      let finalTranscript = '';
+      recInstance.onresult = ev => {
+        let interim = '';
+        for (let i = ev.resultIndex; i < ev.results.length; i++) {
+          const t = ev.results[i][0].transcript;
+          if (ev.results[i].isFinal) finalTranscript += t;
+          else interim += t;
+        }
+        const combined = (finalTranscript || interim).trim();
+        if ($('#aiPromptInput')) $('#aiPromptInput').value = combined;
+        setVoiceHudCaption('🎙 LIVE DICTATION · TRANSCRIBING', combined || 'Listening...', -1);
+      };
+      recInstance.onend = () => {
+        recInstance = null;
+        const promptText = ($('#aiPromptInput') && $('#aiPromptInput').value.trim()) || finalTranscript.trim();
+        if (promptText) {
+          runCustomAiTurn(promptText);
+        }
+      };
+      recInstance.onerror = () => {
+        recInstance = null;
+        toast('Could not capture voice dictation. Type a question and click Ask Kore.');
+      };
+      recInstance.start();
+    } catch (_) {
+      recInstance = null;
+    }
+  };
+}
+if ($('#bGeminiKeyToggle') && $('#geminiKeyRow')) {
+  const existingKey = localStorage.getItem('NOETHER_GEMINI_API_KEY') || '';
+  if (existingKey && $('#geminiKeyInput')) $('#geminiKeyInput').value = existingKey;
+  $('#bGeminiKeyToggle').onclick = () => {
+    const row = $('#geminiKeyRow');
+    row.style.display = row.style.display === 'none' ? 'flex' : 'none';
+  };
+}
+if ($('#bSaveGeminiKey') && $('#geminiKeyInput')) {
+  $('#bSaveGeminiKey').onclick = () => {
+    const k = $('#geminiKeyInput').value.trim();
+    if (k) {
+      localStorage.setItem('NOETHER_GEMINI_API_KEY', k);
+      toast('Saved Gemini 2.5 API key to browser storage for direct Gemini 2.5 Flash TTS.');
+    } else {
+      localStorage.removeItem('NOETHER_GEMINI_API_KEY');
+      toast('Cleared browser Gemini API key (using server microservice & pre-rendered neural bank).');
+    }
+    if ($('#geminiKeyRow')) $('#geminiKeyRow').style.display = 'none';
+  };
+}
+
+// Antigravity CLI & Microservice SSE Real-Time Control Bus (/api/events)
+function initSseControlBridge() {
+  if (!window.EventSource || (location.protocol !== 'http:' && location.protocol !== 'https:')) return;
+  try {
+    const es = new EventSource('/api/events');
+    es.onmessage = ev => {
+      try {
+        const msg = JSON.parse(ev.data);
+        if (msg.type === 'cli_turn' && msg.payload) {
+          const p = msg.payload;
+          const userBlobUrl = p.userAudio ? `data:${p.userAudio.mimeType};base64,${p.userAudio.audioBase64}` : null;
+          const aiBlobUrl = p.aiAudio ? `data:${p.aiAudio.mimeType};base64,${p.aiAudio.audioBase64}` : null;
+          if (aiBlobUrl) {
+            toggleShowcase(false);
+            agentTurn('listening', {
+              title: 'Antigravity CLI Live Turn',
+              branch: p.recommendedBranch || activeBranch,
+              palette: p.recommendedPalette || paletteMode,
+              user_speaker: 'Antigravity CLI · Prompt',
+              user_text: p.prompt,
+              user_audio: userBlobUrl,
+              user_duration: 5.5,
+              thinking_duration: 2.0,
+              thinking_summary: p.thinkingSummary,
+              ai_speaker: `Kore · ${(p.aiAudio && p.aiAudio.engine) || 'Gemini 2.5 Voice'}`,
+              ai_text: p.aiResponse,
+              ai_audio: aiBlobUrl,
+              ai_duration: 13.0
+            });
+          }
+        } else if (msg.type === 'cli_speak' && msg.payload && msg.payload.audioBase64) {
+          const p = msg.payload;
+          const blobUrl = `data:${p.mimeType || 'audio/mpeg'};base64,${p.audioBase64}`;
+          toggleShowcase(false);
+          agentTurn('speaking', {
+            title: 'Antigravity CLI Direct Speech',
+            branch: activeBranch,
+            ai_speaker: `${p.speaker || 'Kore'} · ${p.engine || 'Neural TTS'}`,
+            ai_text: p.text,
+            ai_audio: blobUrl,
+            ai_duration: 10.0
+          });
+        } else if (msg.type === 'cli_control' && msg.payload) {
+          const c = msg.payload;
+          if (c.branch) setActiveBranch(c.branch);
+          if (c.palette && (WADA_PALETTES[c.palette] || c.palette === 'wada_auto')) {
+            paletteMode = c.palette;
+            applyAccentColor();
+          }
+          if (c.state) setState(c.state);
+          if (typeof c.scenario === 'number') {
+            activeScenarioIdx = clamp(c.scenario, 0, NEURAL_TURN_BANK.length - 1);
+            agentTurn('listening');
+          }
+        }
+      } catch (_) {}
+    };
+  } catch (_) {}
+}
+initSseControlBridge();
 
 // Exploration Tree Branch Switcher & Auto-Cycle
 $$('[data-branch]').forEach(b => {
@@ -3412,6 +3982,13 @@ window.noetherResonance = {
   setBranch: setActiveBranch,
   toggleTreeCycle,
   runAgentTurn: (stage) => agentTurn(stage || 'listening'),
+  askKore: (promptText) => runCustomAiTurn(promptText),
+  setScenario: (idx) => {
+    activeScenarioIdx = clamp(idx, 0, NEURAL_TURN_BANK.length - 1);
+    if ($('#turnScenarioSelect')) $('#turnScenarioSelect').value = String(activeScenarioIdx);
+    agentTurn('listening');
+  },
+  turnBank: NEURAL_TURN_BANK,
   startDemo: () => startDemo(),
   setPalette: (p) => { if (WADA_PALETTES[p] || p === 'wada_auto') { paletteMode = p; applyAccentColor(); } },
   setFieldMode: (m) => { visMode = clamp(m, 0, 4); },
@@ -3424,7 +4001,7 @@ window.noetherResonance = {
   connectStream: (stream, label) => attachStream(stream, 'mic', label || 'External stream'),
   connectNode: node => { ensureAudio(); node.connect(A.analyser); setSource('node', 'External audio node'); },
   sequencer: window.NoetherSoundSequencer || null,
-  get telemetry() { return { branch: activeBranch, turnActive, state: stateName, visMode, paletteMode, camMode, showcaseOn, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
+  get telemetry() { return { branch: activeBranch, scenarioIdx: activeScenarioIdx, turnActive, state: stateName, visMode, paletteMode, camMode, showcaseOn, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
   get audioContext() { return ensureAudio(); },
   stop: () => { toggleShowcase(false); toggleTreeCycle(false); stopAll(); setState('idle'); }
 };

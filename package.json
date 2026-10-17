@@ -1,27 +1,34 @@
 {
   "name": "noether-resonance-core",
-  "version": "3.0.0",
-  "description": "Noether Resonance Core (v3.0 Operadic Diamond) — Quantum Field 3D WebGL Audio Synthesizer & Conversational AI Voice Orb with Sanzo Wada & Monotone Palettes",
+  "version": "7.0.0",
+  "description": "Noether Resonance Core — Real-time 3D WebGL2 Quantum Field Audio Synthesizer, Gemini 2.5 Flash & Neural Voice Conversational AI Studio, and Antigravity CLI (agy) Microservices Monorepo.",
   "main": "server.js",
+  "bin": {
+    "noether": "./bin/noether-cli.js",
+    "noether-cli": "./bin/noether-cli.js"
+  },
   "scripts": {
     "start": "node server.js 3333",
-    "dev": "node server.js 3333 --open",
-    "deploy": "vercel --prod --yes"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/manutej/noether-resonance-core.git"
+    "demo": "node server.js 3333 --open",
+    "cli": "node bin/noether-cli.js",
+    "mcp": "node bin/noether-cli.js mcp",
+    "rebuild-voices": "node bin/noether-cli.js rebuild-voices"
   },
   "keywords": [
     "noether-theorem",
-    "quantum-field",
-    "webgl",
+    "quantum-fields",
     "threejs",
+    "webgl2",
     "webaudio",
+    "gemini-2.5-flash",
+    "gemini-tts",
     "sanzo-wada",
-    "audio-visualizer",
-    "ai-voice-orb"
+    "antigravity-cli",
+    "mcp"
   ],
-  "author": "Manu Mulaveesala",
-  "license": "MIT"
+  "author": "CETI / Google DeepMind + Data Arts Lab",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
