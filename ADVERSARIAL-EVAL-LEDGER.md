@@ -67,3 +67,20 @@ flowchart LR
      - Added `TRACK_LIBRARY` (`index.html#L698-L738`) with **5 distinct procedural WebAudio compositions**: *I. Noether Progression (98–134 BPM)*, *II. Göttingen 1918 Cathedral (76 BPM)*, *III. Hopf Fibration IDM Arp (124 BPM)*, *IV. Superfluid Vortex Dub (88 BPM)*, and *V. Broken Symmetry Etude (112 BPM)*.
      - Added `playHarmonicChime(midiNote, lOrder, mOrder)` (`index.html#L835-L858`) triggered by musical keyboard keys `A S D F G H J K L` or by **double-clicking anywhere on the 3D orb**.
      - Added `Save / Link` (`saveAndSharePreset()`, `index.html#L2043`) to persist all visual tweaks in `localStorage` and generate a shareable URL hash.
+
+
+---
+
+## Round 4: VBM Walkthrough Recording, Multi-Agent Design-System Audit & Mobile Ergonomics (`v3.0` $\to$ `v4.0`)
+
+Using **VBM (Visual Browser Monitoring — Playwright Video + Frame-by-Frame Screenshot Telemetry)** paired with **`meta-design` (Proposer $\to$ Executor $\to$ Auditor)**, **`bertin` (Retinal Variable Semiology)**, and **`adversarial-moe-governance` (`A1–A4`)**, we recorded the live experience across desktop (`1440×900`) and mobile (`390×844`) viewports (`docs/videos/v3_baseline_walkthrough.webm` and `docs/videos/v4_converged_walkthrough.webm`) and resolved 7 expert-level UX & design-system findings:
+
+| ID | Lens / Auditor | Finding in `v3.0` Baseline | `v4.0` Fix & Computed Verification |
+|---|---|---|---|
+| **UX-01** | `A2 / Responsive` (`meta-design`) | On mobile viewports (`390×844`, `audit_v3_mobile_390.png`), `.tweak-row` wrapped into 11 vertical lines (`height > 460px`), covering 65% of the 3D orb and colliding with the wrapped bottom `.dock`. | Converted mobile `.tweak-row` to single-line horizontal swipeable ribbons (`flex-wrap: nowrap; overflow-x: auto`) and dynamically measured `--dock-h` via `syncDockHeight()` so `#tweakDrawer` sits cleanly above `.dock` with a `+10px` gap and 100% unobstructed 3D orb (`v4_3_mobile_390_clean.png`). |
+| **UX-02** | `A3 / Semiology` (`bertin`) | Top-left `#stateLabel` relied on color + text alone, and `#qTelem` (`Y_3.5^2.9`) + `Eigen-Orb (Y_ℓ^m)` leaked raw ASCII `_` / `^` markers (`HF-STUDIO-03`). | Added Bertin non-color-alone geometric state glyphs (`◎ Idle`, `◈ Listening`, `❖ Thinking`, `✦ Speaking`) and rendered true typographic subscripts/superscripts (`Y<sub>3.6</sub><sup>3.0</sup>`, `Eigen-Orb (Y<sub>ℓ</sub><sup>m</sup>)`). |
+| **UX-03** | `A3 / Framing` (`Orbit` Camera) | During `Orbit` camera sweeps with `Tweaks ▾` open (`audit_v3_orbit_ferrofluid.png`), the bottom of the outer Spectrum Ring grazed the top border of `#tweakDrawer`. | Clamped minimum orbital camera distance (`Math.max(baseZ * 0.88, ...)`) and adjusted `lookY = -0.22` when `drawerOpen` in `Orbit` mode (`v4_1_orbit_ferrofluid_clearance.png`). |
+| **UX-04** | `A2 / Accessibility` (`meta-design`) | Interactive target audit found `minButtonHeight = 23px` and missing `:focus-visible` keyboard focus rings; `--fg-dim` (`0.56` alpha) was borderline WCAG AA over glass. | Enforced `min-height: 29px` on all `.btn`, `.swatch-pill`, `.sl-wrap`, and `.sl-select` (`smallTargetsCount = 0`), added `2px solid var(--accent)` `:focus-visible` rings, and raised `--fg-dim` to `0.68` (`> 5.8:1` contrast). |
+| **UX-05** | `A4 / Discoverability` | Keyboard shortcuts (`Space`, `1–4`, `5–9`, `A–L`, `T`, `U`) were invisible unless the user read documentation. | Added a `?` button in the bottom dock (and `?`/`/` hotkey) that opens a non-overlapping top-right HUD reference card (`#helpModal`, `v4_2_help_modal.png`). |
+| **UX-06** | `A4 / Consistency` | `<title>` still read `(v2.0 Gold)` despite `v3.0`/`v4.0` upgrades. | Updated `<title>` and metadata to `(v4.0)`. |
+| **UX-07** | `A3 / Spacing` | Desktop gap between `#tweakDrawer` and `.dock` was `7px`. | Standardized to `10px` across both desktop and mobile viewports. |

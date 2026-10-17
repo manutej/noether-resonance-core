@@ -50,3 +50,25 @@ $$f_{\text{Operad}} : (c_{\text{Design}},\, c_{\text{Practical}},\, c_{\text{Dem
    - **1-Click `Showcase` Director + `PNG` Snapshot + `60fps WebM` Video+Audio Recorder.**
 4. **Deployment Morphism ($c_{\text{Deploy}}$):**
    - **Live Zero-Dependency HTTP Server (`server.js`)** bound to `0.0.0.0:3333` with LAN IP discovery, `/health` JSON endpoint, and full `Permissions-Policy` headers for microphone and system audio capture.
+
+
+---
+
+## 3. Complete Prioritized Improvement Catalog & Next-Round Roadmap (`v4.0` $\to$ `v5.0`)
+
+Following the VBM walkthrough recording (`docs/videos/v3_baseline_walkthrough.webm` and `docs/videos/v4_converged_walkthrough.webm`) and the 4-Agent Adversarial Design Review (`meta-design` · `bertin` · `wada` · `A1–A4`), we divided all identified UX/engineering opportunities into **7 Completed `v4.0` Upgrades** (shipped and verified in this release) and **6 Next-Horizon `v5.0` Roadmap Items**:
+
+### A. Completed in `v4.0` (`100%` Predicate Pass)
+1. **Mobile Horizontal-Ribbon Tweak Drawer + Dynamic `--dock-h` Clearance (`UX-01`):** Eliminated 11-line vertical mobile wrapping so the 3D orb and outer spectrum ring remain 100% visible above the open Tweak Drawer on `390×844` phones (`v4_3_mobile_390_clean.png`).
+2. **Bertin Non-Color-Alone State Glyphs & Zero Raw Math Leakage (`UX-02`):** Added geometric state glyphs (`◎ Idle`, `◈ Listening`, `❖ Thinking`, `✦ Speaking`) and true HTML `<sub>`/`<sup>` typesetting (`Y<sub>3.5</sub><sup>2.9</sup>`).
+3. **Orbit Camera Clearance Guard (`UX-03`):** Guaranteed the outer Spectrum Ring never touches `#tweakDrawer` during $360^\circ$ orbital sweeps (`v4_1_orbit_ferrofluid_clearance.png`).
+4. **Interactive Target Size (`>= 29px`) & `:focus-visible` Accessibility (`UX-04`):** Zero sub-28px targets (`smallTargetsCount = 0`), high-contrast `:focus-visible` rings, and `--fg-dim` raised to `0.68` (`> 5.8:1` WCAG AA contrast).
+5. **Non-Overlapping Top-Right Shortcut & Physics Card (`?` / `UX-05`):** Instant discoverability of all keyboard shortcuts (`Space`, `1–4`, `5–9`, `A–L`, `T`, `U`, `?`) docked in the top-right corner (`v4_2_help_modal.png`).
+
+### B. Next-Round Iteration Roadmap (`v5.0 Quantum Horizon`)
+1. **WebGPU Compute-Shader Particle Field (`65,536` Coupled Noether Vortices):** Upgrade the 1,600-point WebGL2 particle cloud with an optional WebGPU compute pipeline solving Biot-Savart vortex filament induction in real time.
+2. **WebRTC / LiveKit / OpenAI Realtime Voice WebSocket Bridge:** Connect `window.noetherResonance.connectStream(remoteAudioStream)` and bidirectional turn events directly to a live conversational LLM voice session.
+3. **HRTF 3D Spatial Audio Binaural Panner:** Route the polyphonic chime synth and procedural compositions through a WebAudio `PannerNode` (`panningModel = 'HRTF'`) coupled to `orbit.yaw` and `orbit.pitch` so rotating the 3D orb rotates the soundstage in headphones.
+4. **WebMIDI Hardware Controller Mapping:** Auto-detect MIDI keyboards and CC knobs via `navigator.requestMIDIAccess()` to play harmonic chimes and sweep `Harmonic ℓ`, `Free Room`, and `Symmetry ε` with physical faders.
+5. **Custom Sanzo Wada Triadic / Tetradic Mixer:** Allow users to blend any two *Haishoku Soukan* palettes or sample custom pigment swatches while preserving filmic highlight roll-off.
+6. **Shader-Based Post-Processing Bloom & Chromatic Dispersion Pass:** Add a single-pass kawase bloom + subtle radial chromatic aberration FBO for gallery projection installations.

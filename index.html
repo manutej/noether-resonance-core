@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Noether Resonance Core — Quantum Field 3D Audio & Speech Visualizer (v2.0 Gold)</title>
+<title>Noether Resonance Core — Quantum Field 3D Audio & Speech Visualizer (v4.0)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -11,14 +11,15 @@
 :root {
   --ink: #05060b;
   --ink-raise: rgba(10, 13, 22, 0.78);
-  --ink-drawer: rgba(8, 11, 19, 0.90);
+  --ink-drawer: rgba(8, 11, 19, 0.92);
   --fg: #eef1f7;
-  --fg-dim: rgba(238, 241, 247, 0.56);
-  --line: rgba(238, 241, 247, 0.12);
-  --line-bright: rgba(238, 241, 247, 0.28);
+  --fg-dim: rgba(238, 241, 247, 0.68);
+  --line: rgba(238, 241, 247, 0.14);
+  --line-bright: rgba(238, 241, 247, 0.30);
   --accent: #7ea8be;
   --sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --dock-h: 58px;
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body {
@@ -81,7 +82,7 @@ body.ui-off .hud {
 .state {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
   font-weight: 700;
   font-size: clamp(28px, 4vw, 44px);
   line-height: 1;
@@ -96,6 +97,12 @@ body.ui-off .hud {
   background: var(--accent);
   box-shadow: 0 0 18px var(--accent);
   transition: background 0.55s ease, box-shadow 0.55s ease;
+}
+.state .glyph {
+  font-size: 0.52em;
+  opacity: 0.88;
+  font-weight: 500;
+  transform: translateY(-1px);
 }
 .src {
   font-family: var(--mono);
@@ -193,11 +200,15 @@ body.ui-off .hud {
   text-decoration: none;
 }
 .q-telem {
-  font-size: 9.5px;
-  letter-spacing: 0.10em;
+  font-size: 10px;
+  letter-spacing: 0.08em;
   color: var(--fg-dim);
   margin-top: 2px;
   font-variant-numeric: tabular-nums;
+}
+.q-telem sub, .q-telem sup {
+  font-size: 0.78em;
+  line-height: 0;
 }
 
 /* Non-Overlapping Bottom Control Dock */
@@ -235,15 +246,27 @@ body.ui-off .hud {
   background: transparent;
   color: var(--fg-dim);
   font: 500 11.5px/1 var(--mono);
-  padding: 8px 10px;
+  min-height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
+.btn sub, .btn sup {
+  font-size: 0.78em;
+  line-height: 0;
+}
 .btn:hover {
   background: rgba(255, 255, 255, 0.07);
   color: var(--fg);
+}
+.btn:focus-visible, .swatch-pill:focus-visible, .sl-select:focus-visible, input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 .btn[aria-pressed="true"] {
   color: var(--fg);
@@ -273,7 +296,7 @@ body.ui-off .hud {
 .tweak-drawer {
   left: 50%;
   transform: translateX(-50%) translateY(14px);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + 64px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--dock-h, 46px) + 24px);
   width: max-content;
   max-width: calc(100vw - 28px);
   background: var(--ink-drawer);
@@ -310,12 +333,14 @@ body.ui-off .hud {
   text-transform: uppercase;
   color: var(--fg-dim);
   margin-right: 2px;
+  flex-shrink: 0;
 }
 .swatch-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 9px;
+  min-height: 29px;
+  padding: 5px 10px;
   border-radius: 7px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
@@ -323,6 +348,7 @@ body.ui-off .hud {
   font: 500 11px/1 var(--mono);
   cursor: pointer;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 .swatch-pill:hover {
   color: var(--fg);
@@ -347,9 +373,11 @@ body.ui-off .hud {
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-height: 29px;
   font: 400 10.5px var(--mono);
   color: var(--fg-dim);
   padding: 0 2px;
+  flex-shrink: 0;
 }
 .sl-wrap input[type="range"] {
   width: 56px;
@@ -362,9 +390,11 @@ body.ui-off .hud {
   border: 1px solid var(--line);
   border-radius: 6px;
   font: 400 11px var(--mono);
+  min-height: 29px;
   padding: 4px 7px;
   max-width: 195px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .toast {
@@ -424,11 +454,76 @@ body.dragging .drop { opacity: 1; }
   background: rgba(255, 107, 107, 0.16);
 }
 
+/* Non-Overlapping Corner Shortcut & Physics Reference Card (?) */
+.help-modal {
+  right: max(22px, calc(env(safe-area-inset-right, 0px) + 22px));
+  top: calc(env(safe-area-inset-top, 0px) + 205px);
+  transform: translateY(-8px) scale(0.98);
+  width: min(350px, calc(100vw - 32px));
+  background: var(--ink-drawer);
+  border: 1px solid var(--line-bright);
+  border-radius: 14px;
+  padding: 13px 16px;
+  color: var(--fg);
+  font: 400 11px/1.5 var(--mono);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.help-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+.help-modal h3 {
+  margin: 0 0 8px;
+  font: 600 11px/1.2 var(--mono);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.help-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 10px;
+}
+.help-grid kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line-bright);
+  border-radius: 5px;
+  padding: 2px 5px;
+  color: var(--fg);
+  font: 500 10px/1.2 var(--mono);
+}
+
 @media (max-width: 760px) {
   .meters, .q-telem { display: none; }
-  .dock { padding: 5px; gap: 3px; }
+  .dock {
+    width: calc(100vw - 20px);
+    padding: 5px 6px;
+    gap: 3px;
+  }
   .grp + .grp { padding-left: 0; border-left: 0; }
-  .btn { padding: 7px 8px; font-size: 10.5px; }
+  .btn { padding: 6px 8px; font-size: 10.5px; min-height: 29px; }
+  .tweak-drawer {
+    width: calc(100vw - 20px);
+    padding: 7px 10px;
+    gap: 5px;
+  }
+  .tweak-row {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .tweak-row::-webkit-scrollbar { display: none; }
 }
 </style>
 </head>
@@ -439,10 +534,10 @@ body.dragging .drop { opacity: 1; }
 <!-- Top-Left Minimal State, Source & Practical Audio File Scrubber -->
 <header class="hud id">
   <div class="mark">Noether Resonance</div>
-  <div class="state"><span class="pip" id="pip"></span><span id="stateLabel">Idle</span></div>
+  <div class="state"><span class="pip" id="pip"></span><span class="glyph" id="stateGlyph" aria-hidden="true">◎</span><span id="stateLabel">Idle</span></div>
   <div class="src" id="srcLabel">Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase</div>
   <div class="media-scrub" id="mediaScrubWrap">
-    <button class="btn" id="bMediaPause" style="padding:3px 7px;font-size:10px">Pause</button>
+    <button class="btn" id="bMediaPause">Pause</button>
     <input id="mediaSeek" type="range" min="0" max="1000" step="1" value="0" title="Seek audio track">
     <span id="mediaTime">0:00 / 0:00</span>
   </div>
@@ -458,7 +553,7 @@ body.dragging .drop { opacity: 1; }
     <div class="meter">Mid<span><u id="mMid"></u></span></div>
     <div class="meter">High<span><u id="mHigh"></u></span></div>
   </div>
-  <div class="q-telem" id="qTelem">Y_3^2 · H 0.42</div>
+  <div class="q-telem" id="qTelem">Y<sub>3.0</sub><sup>2.0</sup> · H 0.42 · ε 0.18</div>
 </section>
 
 <!-- Non-Overlapping Slim Tweak Drawer (Sits just above bottom dock) -->
@@ -466,7 +561,7 @@ body.dragging .drop { opacity: 1; }
   <!-- Row 1: Visualizer Physics Technique, 3D Camera Choreography & Procedural Synth Track -->
   <div class="tweak-row" role="group" aria-label="Quantum Field Visualizer Mode and Camera">
     <span class="tweak-lbl">Field Mode</span>
-    <button class="btn" data-vismode="0" aria-pressed="true">Eigen-Orb (Y_ℓ^m)</button>
+    <button class="btn" data-vismode="0" aria-pressed="true">Eigen-Orb (Y<sub>ℓ</sub><sup>m</sup>)</button>
     <button class="btn" data-vismode="1" aria-pressed="false">Cymatic Chladni</button>
     <button class="btn" data-vismode="2" aria-pressed="false">Hopf Torus</button>
     <button class="btn" data-vismode="3" aria-pressed="false">Dirac Ferrofluid</button>
@@ -567,8 +662,22 @@ body.dragging .drop { opacity: 1; }
     <button class="btn primary" id="bTurn">Run agent turn</button>
     <button class="btn" id="bShowcase" aria-pressed="false" title="Auto-cycle through 5 curated Sanzo Wada & Quantum Field scenes for live demos">Showcase</button>
     <button class="btn" id="bTweaks" aria-pressed="false">Tweaks ▴</button>
+    <button class="btn" id="bHelp" aria-pressed="false" title="Keyboard shortcuts & Noether physics reference (?)">?</button>
   </div>
 </nav>
+
+<!-- On-Demand Shortcut & Physics Reference Modal -->
+<aside class="hud help-modal" id="helpModal" role="dialog" aria-label="Keyboard Shortcuts and Physics Reference">
+  <h3><span>Noether Resonance · Controls & Symmetries</span><button class="btn" id="bCloseHelp">Close</button></h3>
+  <div class="help-grid">
+    <kbd>Space</kbd><span>Start / stop offline procedural quantum composition</span>
+    <kbd>1 – 4</kbd><span>Switch conversational state (Idle · Listening · Thinking · Speaking)</span>
+    <kbd>5 – 9</kbd><span>Jump directly to Curated Showcase Scenes I – V</span>
+    <kbd>A – L</kbd><span>Play polyphonic harmonic chimes & launch 3D vortex shockwaves</span>
+    <kbd>T / U / ?</kbd><span>Toggle Tweak Drawer (`T`) · Toggle pure 3D canvas (`U`) · Help (`?`)</span>
+    <kbd>Drag / Wheel</kbd><span>Orbit 3D field (`Drag`) · Zoom camera (`Wheel`) · Pluck chime (`Dbl-Click`)</span>
+  </div>
+</aside>
 
 <div class="hud toast" id="toast" role="status" aria-live="polite"></div>
 <div class="drop">Drop any audio file (.mp3, .wav, .ogg, .flac, .m4a) to visualize it</div>
@@ -652,10 +761,10 @@ const SHOWCASE_SCENES = [
 
 /* ───────────────────────── Agent & Resonance States ───────────────────────── */
 const STATES = {
-  idle:      { label: 'Idle',      amp: 0.48, spin: 0.24, inward: 0.0,  proc: 0.58, lTarget: 2.0, mTarget: 1.0 },
-  listening: { label: 'Listening', amp: 1.05, spin: 0.38, inward: 1.0,  proc: 0.14, lTarget: 3.0, mTarget: 2.0 },
-  thinking:  { label: 'Thinking',  amp: 0.85, spin: 1.65, inward: 0.38, proc: 1.00, lTarget: 5.0, mTarget: 3.0 },
-  speaking:  { label: 'Speaking',  amp: 1.18, spin: 0.68, inward: -1.0, proc: 0.10, lTarget: 4.0, mTarget: 2.0 },
+  idle:      { label: 'Idle',      glyph: '◎', amp: 0.48, spin: 0.24, inward: 0.0,  proc: 0.58, lTarget: 2.0, mTarget: 1.0 },
+  listening: { label: 'Listening', glyph: '◈', amp: 1.05, spin: 0.38, inward: 1.0,  proc: 0.14, lTarget: 3.0, mTarget: 2.0 },
+  thinking:  { label: 'Thinking',  glyph: '❖', amp: 0.85, spin: 1.65, inward: 0.38, proc: 1.00, lTarget: 5.0, mTarget: 3.0 },
+  speaking:  { label: 'Speaking',  glyph: '✦', amp: 1.18, spin: 0.68, inward: -1.0, proc: 0.10, lTarget: 4.0, mTarget: 2.0 },
 };
 
 let stateName = 'idle';
@@ -722,6 +831,8 @@ function setState(name) {
   stateName = name;
   const s = STATES[name];
   $('#stateLabel').textContent = s.label;
+  const gEl = $('#stateGlyph');
+  if (gEl) gEl.textContent = s.glyph;
   applyAccentColor();
   $$('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === name)));
 }
@@ -1862,12 +1973,20 @@ function updateBarDots() {
 }
 
 /* ───────────────────────── Responsive Frustum & Non-Overlapping Camera ───────────────────────── */
+function syncDockHeight() {
+  const dockEl = document.querySelector('.dock');
+  if (dockEl) {
+    const h = Math.round(dockEl.getBoundingClientRect().height);
+    if (h > 20) document.documentElement.style.setProperty('--dock-h', h + 'px');
+  }
+}
 function resize() {
   const w = window.innerWidth, h = window.innerHeight;
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.userData.z = Math.max(6.4, 3.3 / (Math.tan(THREE.MathUtils.degToRad(20)) * camera.aspect));
   camera.updateProjectionMatrix();
+  syncDockHeight();
 }
 addEventListener('resize', resize);
 resize();
@@ -2065,10 +2184,15 @@ function tick() {
     m.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
   });
 
-  // Non-overlapping vertical shift & scale when Tweak Drawer is open so the entire 3D visual & ring stay 100% unobstructed
+  // Non-overlapping vertical shift & scale when Tweak Drawer is open so the entire 3D visual & ring stay 100% unobstructed on both desktop and mobile
   const drawerOpen = $('#tweakDrawer').classList.contains('open');
-  const targetY = drawerOpen ? (camMode === 'macro' ? 0.28 : 0.34) : 0.05;
-  const targetScale = drawerOpen ? (camMode === 'macro' ? 0.78 : 0.84) : 1.0;
+  const isMobile = window.innerWidth < 760;
+  const targetY = drawerOpen
+    ? (isMobile ? 1.05 : (camMode === 'macro' ? 0.32 : (camMode === 'orbit' ? 0.38 : 0.34)))
+    : (isMobile ? 0.28 : 0.05);
+  const targetScale = drawerOpen
+    ? (isMobile ? 0.66 : (camMode === 'macro' ? 0.78 : (camMode === 'orbit' ? 0.80 : 0.84)))
+    : (isMobile ? 0.88 : 1.0);
   world.position.y = lerp(world.position.y, targetY, 0.14);
   world.scale.setScalar(lerp(world.scale.x, targetScale, 0.14));
 
@@ -2077,7 +2201,7 @@ function tick() {
   renderer.setClearColor(bgClearColor, 1);
 
   // 4-Mode 3D Camera Choreography + Mouse-Wheel Zoom
-  const baseZ = clamp(camera.userData.z + zoomOffset, 3.2, 10.5);
+  const baseZ = clamp(camera.userData.z + zoomOffset, 3.2, 11.5);
   const sway = reduceMotion ? 0 : 1;
   let camX = Math.sin(now * 0.11) * 0.42 * sway;
   let camY = Math.cos(now * 0.13) * 0.28 * sway;
@@ -2091,10 +2215,10 @@ function tick() {
     lookY = drawerOpen ? -0.18 : 0.0;
   } else if (camMode === 'orbit') {
     const orbAng = now * 0.34;
-    camX = Math.sin(orbAng) * baseZ * 0.58;
-    camY = 0.72 * Math.sin(orbAng * 0.65);
-    camZ = Math.cos(orbAng) * baseZ * 0.94;
-    lookY = drawerOpen ? -0.14 : 0.0;
+    camX = Math.sin(orbAng) * baseZ * 0.56;
+    camY = 0.62 * Math.sin(orbAng * 0.65);
+    camZ = Math.max(baseZ * 0.88, Math.cos(orbAng) * baseZ * 0.98);
+    lookY = drawerOpen ? -0.22 : 0.0;
   } else if (camMode === 'macro') {
     camX = Math.sin(now * 0.18) * 0.45 * sway;
     camY = 0.24 + Math.cos(now * 0.15) * 0.18 * sway;
@@ -2122,7 +2246,7 @@ function tick() {
     if (lock.textContent !== lt) { lock.textContent = lt; lock.dataset.on = AN.locked ? '1' : '0'; }
     meterEls.forEach((el, i) => el.style.width = (clamp([bass, mid, treb][i], 0, 1) * 100).toFixed(1) + '%');
     if (!AN.locked) $$('#bar i').forEach(el => el.classList.remove('on'));
-    qTelemEl.textContent = `Y_${K.l.toFixed(1)}^${K.m.toFixed(1)} · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
+    qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
 
     if (A.src === 'file' && A.media && A.media.duration) {
       const cur = A.media.currentTime || 0, dur = A.media.duration || 1;
@@ -2370,10 +2494,22 @@ $$('[data-state]').forEach(b => b.onclick = () => { turnId++; setState(b.dataset
 const tweakDrawer = $('#tweakDrawer');
 const bTweaks = $('#bTweaks');
 bTweaks.onclick = () => {
+  syncDockHeight();
   const open = tweakDrawer.classList.toggle('open');
   bTweaks.setAttribute('aria-pressed', String(open));
   bTweaks.textContent = open ? 'Tweaks ▾' : 'Tweaks ▴';
 };
+
+// Help Modal toggle
+const helpModal = $('#helpModal');
+const bHelp = $('#bHelp');
+function toggleHelp(force) {
+  const open = typeof force === 'boolean' ? force : !helpModal.classList.contains('open');
+  helpModal.classList.toggle('open', open);
+  bHelp.setAttribute('aria-pressed', String(open));
+}
+bHelp.onclick = () => toggleHelp();
+$('#bCloseHelp').onclick = () => toggleHelp(false);
 
 // Visualizer Field Mode buttons
 $$('[data-vismode]').forEach(b => b.onclick = () => {
@@ -2414,14 +2550,16 @@ $('#bAutoVad').onclick = function () {
   this.setAttribute('aria-pressed', String(autoVadOn));
 };
 
-// Musical Keyboard Chime Mapping (A S D F G H J K L) + Scene Shortcuts (5-9) + State Shortcuts (1-4, Space, T, U)
+// Musical Keyboard Chime Mapping (A S D F G H J K L) + Scene Shortcuts (5-9) + State Shortcuts (1-4, Space, T, U, ?)
 const KEY_NOTES = { a: 57, s: 60, d: 62, f: 64, g: 67, h: 69, j: 72, k: 74, l: 76 };
 addEventListener('keydown', e => {
   if (e.target.closest && e.target.closest('input, select')) return;
   const map = { '1': 'idle', '2': 'listening', '3': 'thinking', '4': 'speaking' };
   const sceneMap = { '5': 0, '6': 1, '7': 2, '8': 3, '9': 4 };
   const kl = e.key.toLowerCase();
-  if (map[e.key]) { turnId++; setState(map[e.key]); }
+  if (e.key === 'Escape') { toggleHelp(false); }
+  else if (e.key === '?' || e.key === '/') { toggleHelp(); }
+  else if (map[e.key]) { turnId++; setState(map[e.key]); }
   else if (sceneMap[e.key] !== undefined) { applyShowcaseScene(sceneMap[e.key]); }
   else if (e.key === ' ') { e.preventDefault(); Demo.on ? stopAll() : startDemo(); }
   else if (kl === 't') bTweaks.click();
