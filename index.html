@@ -11,13 +11,18 @@
 <style>
 :root {
   --ink: #05060b;
-  --ink-raise: rgba(10, 13, 22, 0.78);
-  --ink-drawer: rgba(8, 11, 19, 0.92);
+  --ink-raise: rgba(10, 13, 22, 0.80);
+  --ink-drawer: rgba(8, 11, 19, 0.94);
   --fg: #eef1f7;
   --fg-dim: rgba(238, 241, 247, 0.68);
   --line: rgba(238, 241, 247, 0.14);
   --line-bright: rgba(238, 241, 247, 0.30);
-  --accent: #7ea8be;
+  --wada-core: #1b315e;
+  --wada-mid: #2f8f83;
+  --wada-rim: #e3e9c2;
+  --wada-fib: #f26a4b;
+  --accent: #e3e9c2;
+  --accent-2: #f26a4b;
   --sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
   --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --dock-h: 58px;
@@ -51,7 +56,7 @@ body::after {
   inset: 0;
   pointer-events: none;
   z-index: 1;
-  background: radial-gradient(circle at 50% 48%, transparent 50%, rgba(2, 3, 7, 0.72) 100%);
+  background: radial-gradient(circle at 50% 48%, transparent 52%, rgba(2, 3, 7, 0.70) 100%);
 }
 
 .hud {
@@ -88,21 +93,22 @@ body.ui-off .hud {
   font-size: clamp(28px, 4vw, 44px);
   line-height: 1;
   letter-spacing: -0.025em;
-  color: var(--accent);
+  color: var(--wada-rim);
   transition: color 0.55s ease;
 }
 .state .pip {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 18px var(--accent);
+  background: var(--wada-fib);
+  box-shadow: 0 0 18px var(--wada-fib);
   transition: background 0.55s ease, box-shadow 0.55s ease;
 }
 .state .glyph {
   font-size: 0.52em;
-  opacity: 0.88;
+  opacity: 0.92;
   font-weight: 500;
+  color: var(--wada-fib);
   transform: translateY(-1px);
 }
 .src {
@@ -115,7 +121,7 @@ body.ui-off .hud {
   text-overflow: ellipsis;
 }
 
-/* Top-Right Tempo, Harmonic Telemetry & Spectrum Instrument */
+/* Top-Right Tempo, Harmonic Telemetry & 4-Pigment Sanzo Wada Instrument */
 .tempo {
   top: calc(env(safe-area-inset-top, 0px) + 20px);
   right: max(22px, calc(env(safe-area-inset-right, 0px) + 22px));
@@ -154,7 +160,7 @@ body.ui-off .hud {
 }
 .lock[data-on="1"] {
   color: var(--ink);
-  background: var(--accent);
+  background: var(--wada-fib);
   border-color: transparent;
   font-weight: 600;
 }
@@ -167,14 +173,14 @@ body.ui-off .hud {
   transition: background 0.08s linear, transform 0.08s linear;
 }
 .bar i.on {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--wada-fib);
+  border-color: var(--wada-fib);
   transform: scale(1.16);
 }
 .meters {
   display: grid;
   gap: 5px;
-  width: 132px;
+  width: 140px;
   margin-top: 2px;
 }
 .meter {
@@ -188,7 +194,7 @@ body.ui-off .hud {
   color: var(--fg-dim);
 }
 .meter span {
-  height: 3px;
+  height: 4px;
   background: var(--line);
   border-radius: 2px;
   overflow: hidden;
@@ -200,6 +206,9 @@ body.ui-off .hud {
   background: var(--accent);
   text-decoration: none;
 }
+#mLow { background: var(--wada-mid); }
+#mMid { background: var(--wada-rim); }
+#mHigh { background: var(--wada-fib); }
 .q-telem {
   font-size: 10px;
   letter-spacing: 0.08em;
@@ -210,6 +219,52 @@ body.ui-off .hud {
 .q-telem sub, .q-telem sup {
   font-size: 0.78em;
   line-height: 0;
+}
+/* Live Top-Right 4-Pigment Sanzo Wada Status Strip */
+.hud-wada-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px;
+  background: var(--ink-raise);
+  border: 1px solid var(--line-bright);
+  border-radius: 999px;
+  pointer-events: auto;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  margin-top: 2px;
+}
+.hud-wada-lbl {
+  font: 600 9px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--wada-rim);
+}
+.hud-wada-chips {
+  display: inline-flex;
+  gap: 3px;
+}
+.hud-wada-chips i {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.28);
+  display: inline-block;
+  transition: background 0.3s ease;
+}
+.hud-wada-rot {
+  appearance: none;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.06);
+  color: var(--fg);
+  font: 600 9.5px/1 var(--mono);
+  padding: 3px 6px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.hud-wada-rot:hover {
+  border-color: var(--wada-fib);
+  color: var(--wada-fib);
 }
 
 /* Non-Overlapping Bottom Control Dock */
@@ -271,17 +326,16 @@ body.ui-off .hud {
 }
 .btn[aria-pressed="true"] {
   color: var(--fg);
-  background: color-mix(in srgb, var(--accent) 22%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+  background: color-mix(in srgb, var(--wada-fib) 24%, transparent);
+  border-color: color-mix(in srgb, var(--wada-fib) 62%, transparent);
 }
 .btn.primary {
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--wada-rim), var(--wada-fib));
   color: var(--ink);
   font-weight: 600;
 }
 .btn.primary:hover {
   filter: brightness(1.08);
-  background: var(--accent);
   color: var(--ink);
 }
 .vh {
@@ -293,22 +347,22 @@ body.ui-off .hud {
   white-space: nowrap;
 }
 
-/* Non-Overlapping Slim Tweak Bar (Docks cleanly above bottom bar, never over the 3D Orb) */
+/* Clear, Structured 4-Card Studio Control Panel (Docks cleanly above bottom bar, never overlapping the 3D Orb) */
 .tweak-drawer {
   left: 50%;
   transform: translateX(-50%) translateY(14px);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--dock-h, 46px) + 24px);
-  width: max-content;
-  max-width: calc(100vw - 28px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--dock-h, 52px) + 20px);
+  width: min(1360px, calc(100vw - 28px));
   background: var(--ink-drawer);
   border: 1px solid var(--line-bright);
-  border-radius: 14px;
-  padding: 9px 14px;
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  border-radius: 16px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 1.35fr 1.15fr 1.15fr 0.95fr;
+  gap: 10px;
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.62);
   opacity: 0;
   pointer-events: none;
 }
@@ -317,39 +371,126 @@ body.ui-off .hud {
   pointer-events: auto;
   transform: translateX(-50%) translateY(0);
 }
-.tweak-row {
+.ctrl-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  min-width: 0;
+}
+.ctrl-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--line);
+}
+.ctrl-card-title {
+  font: 600 9.5px/1.1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--wada-rim);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.ctrl-card-title i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--wada-fib);
+  display: inline-block;
+}
+.ctrl-subrow {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
   gap: 4px;
 }
-.tweak-row + .tweak-row {
-  padding-top: 6px;
-  border-top: 1px solid var(--line);
-}
-.tweak-lbl {
-  font: 500 10px/1 var(--mono);
-  letter-spacing: 0.12em;
+.ctrl-lbl {
+  font: 500 9.5px/1 var(--mono);
+  letter-spacing: 0.09em;
   text-transform: uppercase;
   color: var(--fg-dim);
-  margin-right: 2px;
+  margin-right: 3px;
+}
+/* 4-Pigment Sanzo Wada Role Inspector Matrix */
+.wada-role-matrix {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+}
+.wada-slot {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 6px;
+  background: rgba(5, 6, 11, 0.55);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+  position: relative;
+}
+.wada-slot:hover {
+  border-color: var(--line-bright);
+}
+.wada-slot input[type="color"] {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  width: 15px;
+  height: 15px;
+  border-radius: 4px;
+  padding: 0;
+  background: none;
+  cursor: pointer;
   flex-shrink: 0;
+}
+.wada-slot input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+.wada-slot input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(255,255,255,0.35); border-radius: 3px; }
+.wada-slot-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.wada-slot-role {
+  font: 600 8.5px/1.1 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.wada-slot-hex {
+  font: 500 9px/1.1 var(--mono);
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pal-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3.5px;
 }
 .swatch-pill {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  min-height: 29px;
-  padding: 5px 9px;
-  border-radius: 7px;
+  justify-content: flex-start;
+  gap: 4px;
+  min-height: 24px;
+  padding: 3px 6px;
+  border-radius: 6px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
   color: var(--fg-dim);
-  font: 500 10.5px/1 var(--mono);
+  font: 500 9.5px/1 var(--mono);
   cursor: pointer;
   transition: all 0.15s ease;
-  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .swatch-pill:hover {
   color: var(--fg);
@@ -357,53 +498,112 @@ body.ui-off .hud {
 }
 .swatch-pill[aria-pressed="true"] {
   color: var(--fg);
-  border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--wada-fib);
+  background: color-mix(in srgb, var(--wada-fib) 20%, transparent);
 }
 .swatch-dots {
   display: inline-flex;
-  gap: 2px;
+  gap: 1.5px;
+  flex-shrink: 0;
 }
 .swatch-dots i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 6.5px;
+  height: 11px;
+  border-radius: 2px;
   display: inline-block;
 }
-.sl-wrap {
-  display: inline-flex;
+/* 3D Layer Element Toggle Grid */
+.elem-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3.5px;
+}
+.elem-grid .btn, .ctrl-subrow .btn {
+  min-height: 24px;
+  padding: 3px 7px;
+  font-size: 10px;
+  border-radius: 6px;
+}
+/* 2D XY Symplectic Morph Pad + Sliders Layout */
+.phys-split {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 8px;
   align-items: center;
-  gap: 4px;
-  min-height: 29px;
-  font: 400 10.5px var(--mono);
+}
+.xy-pad {
+  width: 78px;
+  height: 78px;
+  border-radius: 9px;
+  background:
+    linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px) 0 0 / 50% 50%,
+    linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px) 0 0 / 50% 50%,
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--wada-mid) 35%, transparent), rgba(5,6,11,0.85));
+  border: 1px solid var(--line-bright);
+  position: relative;
+  cursor: crosshair;
+  touch-action: none;
+  overflow: hidden;
+}
+.xy-pad-lbl {
+  position: absolute;
+  bottom: 3px;
+  left: 5px;
+  font: 500 7.5px/1 var(--mono);
+  letter-spacing: 0.06em;
   color: var(--fg-dim);
-  padding: 0 2px;
-  flex-shrink: 0;
+  pointer-events: none;
+}
+.xy-puck {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--wada-fib);
+  border: 2px solid var(--wada-rim);
+  box-shadow: 0 0 12px var(--wada-fib);
+  transform: translate(-50%, -50%);
+  left: 35%;
+  top: 65%;
+  pointer-events: none;
+}
+.sl-stack {
+  display: grid;
+  gap: 3.5px;
+}
+.sl-wrap {
+  display: grid;
+  grid-template-columns: 64px 1fr 28px;
+  align-items: center;
+  gap: 5px;
+  min-height: 18px;
+  font: 400 9.5px/1 var(--mono);
+  color: var(--fg-dim);
   font-variant-numeric: tabular-nums;
 }
 .sl-wrap b {
-  color: var(--fg);
-  font-weight: 500;
-  font-size: 10px;
-  min-width: 22px;
+  color: var(--wada-rim);
+  font-weight: 600;
+  font-size: 9.5px;
   text-align: right;
 }
 .sl-wrap input[type="range"] {
-  width: 50px;
-  accent-color: var(--accent);
+  width: 100%;
+  height: 4px;
+  accent-color: var(--wada-fib);
   cursor: pointer;
+  margin: 0;
 }
 .sl-select {
   background: rgba(15, 20, 32, 0.92);
   color: var(--fg);
   border: 1px solid var(--line);
   border-radius: 6px;
-  font: 400 11px var(--mono);
-  min-height: 29px;
-  padding: 4px 7px;
-  max-width: 195px;
+  font: 400 10px var(--mono);
+  min-height: 25px;
+  padding: 3px 6px;
+  width: 100%;
   cursor: pointer;
-  flex-shrink: 0;
 }
 
 .toast {
@@ -466,7 +666,7 @@ body.dragging .drop { opacity: 1; }
 /* Non-Overlapping Corner Shortcut & Physics Reference Card (?) */
 .help-modal {
   right: max(22px, calc(env(safe-area-inset-right, 0px) + 22px));
-  top: calc(env(safe-area-inset-top, 0px) + 205px);
+  top: calc(env(safe-area-inset-top, 0px) + 225px);
   transform: translateY(-8px) scale(0.98);
   width: min(350px, calc(100vw - 32px));
   background: var(--ink-drawer);
@@ -534,7 +734,7 @@ body.dragging .drop { opacity: 1; }
   font: 600 9.5px/1 var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--wada-fib);
   padding: 0 6px 0 4px;
   border-right: 1px solid var(--line);
   white-space: nowrap;
@@ -546,7 +746,7 @@ body.dragging .drop { opacity: 1; }
   min-height: 27px;
 }
 
-/* Interactive Agent Turn Sequencer Timeline Pill (ShowsListening -> Thinking -> Speaking -> Idle) */
+/* Interactive Agent Turn Sequencer Timeline Pill (Shows Listening -> Thinking -> Speaking -> Idle) */
 .turn-timeline {
   display: inline-flex;
   flex-direction: column;
@@ -579,12 +779,12 @@ body.dragging .drop { opacity: 1; }
 .turn-step:hover { color: var(--fg); background: rgba(255,255,255,0.06); }
 .turn-step.active {
   color: var(--ink);
-  background: var(--accent);
+  background: var(--wada-fib);
   font-weight: 600;
 }
 .turn-step.done {
-  color: var(--accent);
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+  color: var(--wada-rim);
+  border-color: color-mix(in srgb, var(--wada-rim) 40%, transparent);
 }
 .turn-bar-track {
   height: 3px;
@@ -596,7 +796,7 @@ body.dragging .drop { opacity: 1; }
 .turn-bar-fill {
   height: 100%;
   width: 0%;
-  background: var(--accent);
+  background: linear-gradient(90deg, var(--wada-mid), var(--wada-rim), var(--wada-fib));
   transition: width 0.08s linear;
 }
 
@@ -627,7 +827,7 @@ body.dragging .drop { opacity: 1; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink);
-  background: var(--accent);
+  background: linear-gradient(135deg, var(--wada-rim), var(--wada-fib));
   padding: 3px 7px;
   border-radius: 999px;
   white-space: nowrap;
@@ -658,10 +858,10 @@ body.dragging .drop { opacity: 1; }
 .voice-caption-box::-webkit-scrollbar { display: none; }
 .voice-caption-box .w-spoken {
   color: #ffffff;
-  text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--wada-rim) 55%, transparent);
 }
 .voice-caption-box .w-active {
-  color: var(--accent);
+  color: var(--wada-fib);
   font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -686,7 +886,7 @@ body.dragging .drop { opacity: 1; }
   outline: none;
 }
 .voice-prompt-input:focus {
-  border-color: var(--accent);
+  border-color: var(--wada-fib);
 }
 .voice-prompt-row .btn {
   padding: 4px 8px;
@@ -703,8 +903,15 @@ body.dragging .drop { opacity: 1; }
 }
 .gemini-key-row.open { display: flex; }
 
+@media (max-width: 1120px) {
+  .tweak-drawer {
+    grid-template-columns: repeat(2, 1fr);
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
 @media (max-width: 760px) {
-  .meters, .q-telem { display: none; }
+  .meters, .q-telem, .hud-wada-strip { display: none; }
   .tree-bar {
     top: calc(env(safe-area-inset-top, 0px) + 78px);
     padding: 4px 7px;
@@ -718,19 +925,13 @@ body.dragging .drop { opacity: 1; }
   .grp + .grp { padding-left: 0; border-left: 0; }
   .btn { padding: 6px 8px; font-size: 10.5px; min-height: 29px; }
   .tweak-drawer {
+    grid-template-columns: 1fr;
     width: calc(100vw - 20px);
-    padding: 7px 10px;
-    gap: 5px;
+    max-height: 44vh;
+    overflow-y: auto;
+    padding: 8px;
+    gap: 6px;
   }
-  .tweak-row {
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 2px;
-  }
-  .tweak-row::-webkit-scrollbar { display: none; }
 }
 </style>
 </head>
@@ -793,7 +994,7 @@ body.dragging .drop { opacity: 1; }
   <button class="btn" id="bTreeCycle" aria-pressed="false" title="Auto-explore all 4 Visualizer Tree branches synchronized to the Demo Track">Tree Cycle ⟳</button>
 </nav>
 
-<!-- Top-Right Tempo & Harmonic Telemetry -->
+<!-- Top-Right Tempo, Harmonic Telemetry & Live 4-Pigment Sanzo Wada Strip -->
 <section class="hud tempo" aria-label="Tempo and frequency levels">
   <div class="bpm"><b id="bpm">—</b><small>BPM</small></div>
   <div class="lock" id="lock" data-on="0">Harmonic</div>
@@ -804,24 +1005,149 @@ body.dragging .drop { opacity: 1; }
     <div class="meter">High<span><u id="mHigh"></u></span></div>
   </div>
   <div class="q-telem" id="qTelem">Y<sub>3.0</sub><sup>2.0</sup> · H 0.42 · ε 0.18</div>
+  <div class="hud-wada-strip" id="hudWadaStrip" title="Active Sanzo Wada 4-Pigment Combination (Ground · Body · Crest Accent · Vein Accent)">
+    <span class="hud-wada-lbl" id="hudWadaName">Wada #142</span>
+    <span class="hud-wada-chips">
+      <i id="hudChip0" style="background:#1b315e" title="Pigment I · Ground / Deep Core"></i>
+      <i id="hudChip1" style="background:#2f8f83" title="Pigment II · Harmonic Body"></i>
+      <i id="hudChip2" style="background:#e3e9c2" title="Pigment III · Crest &amp; Rim Accent"></i>
+      <i id="hudChip3" style="background:#f26a4b" title="Pigment IV · Fibroid Vein Counter-Accent"></i>
+    </span>
+    <button class="hud-wada-rot" id="bHudRotateWada" title="Rotate the 4 Sanzo Wada Pigment Roles across the 3D field">↻ Role</button>
+  </div>
 </section>
 
-<!-- Non-Overlapping Slim Tweak Drawer (Sits just above bottom dock) -->
-<aside class="hud tweak-drawer" id="tweakDrawer" aria-label="Visual, Palette and Quantum Field Tweaks">
-  <!-- Row 1: Visualizer Physics Technique, 3D Camera Choreography & Procedural Synth Track -->
-  <div class="tweak-row" role="group" aria-label="Quantum Field Visualizer Mode and Camera">
-    <span class="tweak-lbl">Field Mode</span>
-    <button class="btn" data-vismode="0" aria-pressed="true">Eigen-Orb (Y<sub>ℓ</sub><sup>m</sup>)</button>
-    <button class="btn" data-vismode="1" aria-pressed="false">Cymatic Chladni</button>
-    <button class="btn" data-vismode="2" aria-pressed="false">Hopf Torus</button>
-    <button class="btn" data-vismode="3" aria-pressed="false">Dirac Ferrofluid</button>
-    <button class="btn" data-vismode="4" aria-pressed="false">Superfluid Vortex</button>
-    <span class="tweak-lbl" style="margin-left:5px">Cam</span>
-    <button class="btn" data-cam="front" aria-pressed="true" title="Centered harmonic view">Front</button>
-    <button class="btn" data-cam="iso" aria-pressed="false" title="3/4 Isometric sculptural perspective">3/4 Iso</button>
-    <button class="btn" data-cam="orbit" aria-pressed="false" title="Continuous 360-degree orbital cinema">Orbit</button>
-    <button class="btn" data-cam="macro" aria-pressed="false" title="Close-up inspection of surface fibroid veins">Macro</button>
-    <span class="tweak-lbl" style="margin-left:5px">Synth</span>
+<!-- Non-Overlapping 4-Card Studio Control Panel (Docks cleanly above bottom dock) -->
+<aside class="hud tweak-drawer" id="tweakDrawer" aria-label="Studio Control Panel: Sanzo Wada 4-Pigment Matrix, 3D Elements, Quantum Physics & Audio">
+  <!-- CARD I: Sanzo Wada 4-Pigment Palette & Accent Role Matrix -->
+  <section class="ctrl-card" aria-label="Sanzo Wada 4-Pigment Palette and Accent Roles">
+    <div class="ctrl-card-head">
+      <span class="ctrl-card-title"><i></i>I · Sanzo Wada 4-Pigment Studio</span>
+      <div style="display:flex;gap:3px">
+        <button class="btn" id="bRotateWada" style="min-height:20px;padding:2px 6px;font-size:9px" title="Rotate which pigment drives Ground, Body, Crest Accent, and Vein Accent">Rotate ↻</button>
+        <button class="btn" id="bBeatRotateWada" aria-pressed="false" style="min-height:20px;padding:2px 6px;font-size:9px" title="Auto-rotate Wada accent roles every 4 bars on the beat">Bar-Sync</button>
+      </div>
+    </div>
+    <div class="wada-role-matrix" id="wadaRoleMatrix">
+      <label class="wada-slot" title="Pigment I: Deep Cavity &amp; Ground Absorption (click to customize)">
+        <input type="color" id="colPickerCore" value="#1b315e">
+        <span class="wada-slot-meta"><span class="wada-slot-role">1·Ground</span><span class="wada-slot-hex" id="hexCore">#1B315E</span></span>
+      </label>
+      <label class="wada-slot" title="Pigment II: Primary Sculptural Body Tone (click to customize)">
+        <input type="color" id="colPickerMid" value="#2f8f83">
+        <span class="wada-slot-meta"><span class="wada-slot-role">2·Body</span><span class="wada-slot-hex" id="hexMid">#2F8F83</span></span>
+      </label>
+      <label class="wada-slot" title="Pigment III: Nodal Crest &amp; Grazing Rim Accent (click to customize)">
+        <input type="color" id="colPickerRim" value="#e3e9c2">
+        <span class="wada-slot-meta"><span class="wada-slot-role">3·Crest</span><span class="wada-slot-hex" id="hexRim">#E3E9C2</span></span>
+      </label>
+      <label class="wada-slot" title="Pigment IV: High-Contrast Fibroid Vein &amp; Coil Counter-Accent (click to customize)">
+        <input type="color" id="colPickerFib" value="#f26a4b">
+        <span class="wada-slot-meta"><span class="wada-slot-role">4·Vein</span><span class="wada-slot-hex" id="hexFib">#F26A4B</span></span>
+      </label>
+    </div>
+    <div class="pal-grid" role="group" aria-label="Sanzo Wada and Monotone Combinations">
+      <button class="swatch-pill" data-pal="wada_auto" aria-pressed="true" title="Sanzo Wada Turn-Adaptive 4-Pigment Combinations">
+        <span class="swatch-dots"><i style="background:#1b315e"></i><i style="background:#2f8f83"></i><i style="background:#f4c95d"></i><i style="background:#f26a4b"></i></span>Auto
+      </button>
+      <button class="swatch-pill" data-pal="wada_142" aria-pressed="false" title="Wada #142: Prussian Indigo · Verdigris Jade · Celadon Gold · Cinnabar Coral">
+        <span class="swatch-dots"><i style="background:#1b315e"></i><i style="background:#2f8f83"></i><i style="background:#e3e9c2"></i><i style="background:#f26a4b"></i></span>#142
+      </button>
+      <button class="swatch-pill" data-pal="wada_068" aria-pressed="false" title="Wada #068: Imperial Violet · Cinnabar · Naples Ochre · Kingfisher Cyan">
+        <span class="swatch-dots"><i style="background:#3b234a"></i><i style="background:#d14933"></i><i style="background:#f4c95d"></i><i style="background:#3ec1d3"></i></span>#068
+      </button>
+      <button class="swatch-pill" data-pal="wada_219" aria-pressed="false" title="Wada #219: Abyssal Peacock · Benzol Emerald · Hermosa Rose · Citron">
+        <span class="swatch-dots"><i style="background:#113f59"></i><i style="background:#168aad"></i><i style="background:#ff8fa3"></i><i style="background:#d9ed92"></i></span>#219
+      </button>
+      <button class="swatch-pill" data-pal="wada_284" aria-pressed="false" title="Wada #284: Cobalt Night · Dusky Mallow · Citrine Gold · Electric Mint">
+        <span class="swatch-dots"><i style="background:#1d2d50"></i><i style="background:#9b4f78"></i><i style="background:#f6d04d"></i><i style="background:#64dfdf"></i></span>#284
+      </button>
+      <button class="swatch-pill" data-pal="wada_091" aria-pressed="false" title="Wada #091: Kyoto Pine · Mineral Sage · Bamboo Gold · Persimmon Scarlet">
+        <span class="swatch-dots"><i style="background:#1b3b2b"></i><i style="background:#4d8b76"></i><i style="background:#f4d35e"></i><i style="background:#ee6c4d"></i></span>#091
+      </button>
+      <button class="swatch-pill" data-pal="wada_173" aria-pressed="false" title="Wada #173: Aubergine Lacquer · Carmine · Raw Amber · Cerulean Silk">
+        <span class="swatch-dots"><i style="background:#311832"></i><i style="background:#b52b38"></i><i style="background:#f7a028"></i><i style="background:#62b6cb"></i></span>#173
+      </button>
+      <button class="swatch-pill" data-pal="mono_silver" aria-pressed="false" title="Monotone I: Obsidian &amp; Liquid Silver">
+        <span class="swatch-dots"><i style="background:#10131a"></i><i style="background:#6c7587"></i><i style="background:#d8dee9"></i><i style="background:#ffffff"></i></span>Silver
+      </button>
+      <button class="swatch-pill" data-pal="mono_sumi" aria-pressed="false" title="Monotone II: Sumi Ink &amp; Warm Bone">
+        <span class="swatch-dots"><i style="background:#14120f"></i><i style="background:#7d7465"></i><i style="background:#e6dec8"></i><i style="background:#fff8eb"></i></span>Sumi
+      </button>
+      <button class="swatch-pill" data-pal="mono_ice" aria-pressed="false" title="Monotone III: Deep Cobalt &amp; Ice Quartz">
+        <span class="swatch-dots"><i style="background:#071324"></i><i style="background:#2e6b9e"></i><i style="background:#8ce0ff"></i><i style="background:#e0f7ff"></i></span>Ice
+      </button>
+    </div>
+  </section>
+
+  <!-- CARD II: 3D Scene Elements, Field Mode & Camera Choreography -->
+  <section class="ctrl-card" aria-label="3D Scene Elements and Camera">
+    <div class="ctrl-card-head">
+      <span class="ctrl-card-title"><i></i>II · 3D Elements &amp; Camera</span>
+      <span class="ctrl-lbl" style="margin:0">6 Layers</span>
+    </div>
+    <div class="elem-grid" role="group" aria-label="Toggle 3D Visual Elements">
+      <button class="btn" id="bCoreSurfaceToggle" aria-pressed="true" title="Toggle central 3D quantum surface / torus / horizon">Core Mesh</button>
+      <button class="btn" id="bOnBlobFib" aria-pressed="true" title="Toggle Pigment IV geodesic fibroid veins riding on the surface">Surface Veins</button>
+      <button class="btn" id="bOrbitalFib" aria-pressed="true" title="Toggle 3D Hopf &amp; Villarceau orbital magnetic coils">3D Coils</button>
+      <button class="btn" id="bRingToggle" aria-pressed="true" title="Toggle 144 4-pigment spectrum bars / monoliths / spires">144 Spectrum</button>
+      <button class="btn" id="bWaveToggle" aria-pressed="true" title="Toggle dual harmonic waveform &amp; echo loops">Wave Loops</button>
+      <button class="btn" id="bParticlesToggle" aria-pressed="true" title="Toggle 4,800 conserved Noether current particles">4.8k Halo</button>
+    </div>
+    <div class="ctrl-subrow" role="group" aria-label="Surface Eigenmode">
+      <span class="ctrl-lbl">Mode</span>
+      <button class="btn" data-vismode="0" aria-pressed="true">Eigen Y<sub>ℓ</sub><sup>m</sup></button>
+      <button class="btn" data-vismode="1" aria-pressed="false">Chladni</button>
+      <button class="btn" data-vismode="2" aria-pressed="false">Hopf Torus</button>
+      <button class="btn" data-vismode="3" aria-pressed="false">Ferrofluid</button>
+      <button class="btn" data-vismode="4" aria-pressed="false">Superfluid</button>
+    </div>
+    <div class="ctrl-subrow" role="group" aria-label="3D Camera View">
+      <span class="ctrl-lbl">Cam</span>
+      <button class="btn" data-cam="front" aria-pressed="true">Front</button>
+      <button class="btn" data-cam="iso" aria-pressed="false">3/4 Iso</button>
+      <button class="btn" data-cam="orbit" aria-pressed="false">Orbit 360°</button>
+      <button class="btn" data-cam="macro" aria-pressed="false">Macro</button>
+    </div>
+  </section>
+
+  <!-- CARD III: Quantum Physics Sliders & 2D XY Symplectic Morph Pad -->
+  <section class="ctrl-card" aria-label="Quantum Physics and 2D XY Symplectic Pad">
+    <div class="ctrl-card-head">
+      <span class="ctrl-card-title"><i></i>III · Physics &amp; 2D XY Morph</span>
+      <span class="ctrl-lbl" id="xyReadout" style="margin:0">ℓ 3.0 · ε 0.18</span>
+    </div>
+    <div class="phys-split">
+      <div class="xy-pad" id="xyMorphPad" title="Drag in 2D to sweep Harmonic Order ℓ (X-axis) and Symmetry Breaking ε + Free Room (Y-axis)">
+        <div class="xy-puck" id="xyPuck"></div>
+        <span class="xy-pad-lbl">X:ℓ · Y:ε</span>
+      </div>
+      <div class="sl-stack">
+        <label class="sl-wrap" title="Intensity of Pigment III &amp; IV Accents on Veins, Coils &amp; Spectrum">
+          Accent Pop <input id="slAccentPop" type="range" min="0.5" max="2.0" step="0.05" value="1.30"><b id="valAccent">1.30</b>
+        </label>
+        <label class="sl-wrap" title="Intensity and clarity of quantum field fibroids on and around the blob">
+          Fibroids <input id="slFibroid" type="range" min="0" max="1.6" step="0.05" value="1.15"><b id="valFib">1.15</b>
+        </label>
+        <label class="sl-wrap" title="Spherical Harmonic Multipole Order (l)">
+          Harmonic ℓ <input id="slHarmonic" type="range" min="2" max="7" step="0.2" value="3"><b id="valHarm">3.0</b>
+        </label>
+        <label class="sl-wrap" title="Noether Second Theorem Free-Room Elasticity">
+          Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.0"><b id="valFree">1.00</b>
+        </label>
+        <label class="sl-wrap" title="Explicit Symmetry Breaking Perturbation (epsilon)">
+          Symmetry ε <input id="slSymBreak" type="range" min="0.0" max="1.0" step="0.05" value="0.18"><b id="valSym">0.18</b>
+        </label>
+      </div>
+    </div>
+  </section>
+
+  <!-- CARD IV: Audio Synth, Socratic Duet & Studio Capture -->
+  <section class="ctrl-card" aria-label="Audio Synthesizer, AI Duet and Studio Capture">
+    <div class="ctrl-card-head">
+      <span class="ctrl-card-title"><i></i>IV · Synth, AI Duet &amp; Export</span>
+      <span class="ctrl-lbl" style="margin:0">Studio</span>
+    </div>
     <select id="trackSelect" class="sl-select" title="Select Built-In Offline Quantum Composition">
       <option value="0">I. Noether Progression (98–134 BPM)</option>
       <option value="1">II. Göttingen 1918 Cathedral (76 BPM)</option>
@@ -829,69 +1155,20 @@ body.dragging .drop { opacity: 1; }
       <option value="3">IV. Superfluid Vortex Dub (88 BPM)</option>
       <option value="4">V. Broken Symmetry Etude (112 BPM)</option>
     </select>
-  </div>
-
-  <!-- Row 2: Sanzo Wada & Monotone Color Combinations + Custom Wada Pigment Duet Mixer -->
-  <div class="tweak-row" role="group" aria-label="Sanzo Wada and Monotone Palettes">
-    <span class="tweak-lbl">Palette</span>
-    <button class="swatch-pill" data-pal="wada_auto" aria-pressed="true" title="Sanzo Wada Turn-Adaptive Combinations">
-      <span class="swatch-dots"><i style="background:#7ea8be"></i><i style="background:#52b788"></i><i style="background:#b5838d"></i><i style="background:#e29578"></i></span>Wada Auto
-    </button>
-    <button class="swatch-pill" data-pal="wada_142" aria-pressed="false" title="Sanzo Wada #142: Deep Indigo, Verdigris, Terracotta Silk, Celadon">
-      <span class="swatch-dots"><i style="background:#14213d"></i><i style="background:#387d7a"></i><i style="background:#d8e6d5"></i><i style="background:#e29578"></i></span>Wada #142
-    </button>
-    <button class="swatch-pill" data-pal="wada_068" aria-pressed="false" title="Sanzo Wada #068: Slate Violet, Cinnabar, Warm Ochre, Ivory Silk">
-      <span class="swatch-dots"><i style="background:#23192d"></i><i style="background:#c84b31"></i><i style="background:#e9c46a"></i><i style="background:#faf0ca"></i></span>Wada #068
-    </button>
-    <button class="swatch-pill" data-pal="wada_219" aria-pressed="false" title="Sanzo Wada #219: Abyssal Peacock, Benzol Green, Hermosa Rose">
-      <span class="swatch-dots"><i style="background:#081c24"></i><i style="background:#167d7f"></i><i style="background:#f4b8b0"></i><i style="background:#98d7c2"></i></span>Wada #219
-    </button>
-    <button class="swatch-pill" data-pal="wada_284" aria-pressed="false" title="Sanzo Wada #284: Prussian Blue, Dusky Mallow, Citrine, Alabaster">
-      <span class="swatch-dots"><i style="background:#0d1b2a"></i><i style="background:#8e5b72"></i><i style="background:#e6c972"></i><i style="background:#f4f1ea"></i></span>Wada #284
-    </button>
-    <button class="swatch-pill" data-pal="wada_091" aria-pressed="false" title="Sanzo Wada #091: Kyoto Moss, Persimmon Silk, Pale Gold, Bamboo">
-      <span class="swatch-dots"><i style="background:#131f16"></i><i style="background:#52796f"></i><i style="background:#e07a5f"></i><i style="background:#f2cc8f"></i></span>Wada #091
-    </button>
-    <button class="swatch-pill" data-pal="wada_173" aria-pressed="false" title="Sanzo Wada #173: Aubergine Ink, Carmine Lacquer, Raw Amber, Warm Parchment">
-      <span class="swatch-dots"><i style="background:#1b0f1e"></i><i style="background:#9e2a2b"></i><i style="background:#e09f3e"></i><i style="background:#fff3b0"></i></span>Wada #173
-    </button>
-    <button class="swatch-pill" data-pal="mono_silver" aria-pressed="false" title="Monotone I: Obsidian & Liquid Silver">
-      <span class="swatch-dots"><i style="background:#10131a"></i><i style="background:#6c7587"></i><i style="background:#eef2f7"></i></span>Mono Silver
-    </button>
-    <button class="swatch-pill" data-pal="mono_sumi" aria-pressed="false" title="Monotone II: Sumi Ink & Warm Bone">
-      <span class="swatch-dots"><i style="background:#14120f"></i><i style="background:#7d7465"></i><i style="background:#f3ede2"></i></span>Mono Sumi
-    </button>
-    <button class="swatch-pill" data-pal="mono_ice" aria-pressed="false" title="Monotone III: Deep Cobalt & Ice Quartz">
-      <span class="swatch-dots"><i style="background:#071324"></i><i style="background:#2e6b9e"></i><i style="background:#d4eeff"></i></span>Mono Ice
-    </button>
-  </div>
-
-  <!-- Row 3: Fibroids, Quantum Harmonics, Live VAD & Capture Controls -->
-  <div class="tweak-row">
-    <label class="sl-wrap" title="Intensity and clarity of quantum field fibroids on and around the blob">
-      Fibroids <input id="slFibroid" type="range" min="0" max="1.6" step="0.05" value="1.15"><b id="valFib">1.15</b>
-    </label>
-    <button class="btn" id="bOnBlobFib" aria-pressed="true" title="Toggle surface-hugging quantum fibroid veins directly on the moving blob">On-Blob Veins</button>
-    <button class="btn" id="bOrbitalFib" aria-pressed="true" title="Toggle 3D Hopf & magnetic flux fibroid loops around the blob">3D Field Loops</button>
-    <button class="btn" id="bRingToggle" aria-pressed="true" title="Toggle outer spectrum bar ring">Spectrum Ring</button>
-    <label class="sl-wrap" title="Spherical Harmonic Multipole Order (l)">
-      Harmonic ℓ <input id="slHarmonic" type="range" min="2" max="7" step="1" value="3"><b id="valHarm">3</b>
-    </label>
-    <label class="sl-wrap" title="Noether Second Theorem Free-Room Elasticity">
-      Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.0"><b id="valFree">1.00</b>
-    </label>
-    <label class="sl-wrap" title="Explicit Symmetry Breaking Perturbation (epsilon)">
-      Symmetry ε <input id="slSymBreak" type="range" min="0.0" max="1.0" step="0.05" value="0.18"><b id="valSym">0.18</b>
-    </label>
     <label class="sl-wrap" title="Audio Input Sensitivity / Gain">
-      Gain <input id="sens" type="range" min="0.4" max="2.5" step="0.05" value="1.15"><b id="valGain">1.15</b>
+      Input Gain <input id="sens" type="range" min="0.4" max="2.5" step="0.05" value="1.15"><b id="valGain">1.15</b>
     </label>
-    <button class="btn" id="bAutoVad" aria-pressed="true" title="Hands-Free Mic Auto-Turn: automatically transitions Listening -> Thinking -> Speaking when you speak into Mic and pause">Auto-VAD</button>
-    <select id="micDeviceSelect" class="sl-select" title="Select Microphone or Loopback Audio Input Device" style="display:none"></select>
-    <button class="btn" id="bSharePreset" title="Save preset & copy shareable URL hash">Save / Link</button>
-    <button class="btn" id="bSnapPng" title="Download high-resolution PNG snapshot of current quantum field">PNG</button>
-    <button class="btn" id="bRecVideo" title="Record 60fps WebM video + audio clip to share with others">Rec</button>
-  </div>
+    <div class="ctrl-subrow">
+      <button class="btn primary" id="bDuetMode" style="flex:1" title="Run a multi-turn Socratic Duet between Puck &amp; Kore across all 4 Quantum Topologies">✦ Puck × Kore Duet</button>
+      <button class="btn" id="bAutoVad" aria-pressed="true" title="Hands-Free Mic Auto-Turn">Auto-VAD</button>
+    </div>
+    <div class="ctrl-subrow">
+      <select id="micDeviceSelect" class="sl-select" title="Select Microphone or Loopback Audio Input Device" style="display:none;max-width:110px"></select>
+      <button class="btn" id="bSharePreset" style="flex:1" title="Save preset &amp; copy shareable URL hash">Save / Link</button>
+      <button class="btn" id="bSnapPng" title="Download high-resolution PNG snapshot">PNG</button>
+      <button class="btn" id="bRecVideo" title="Record 60fps WebM video + audio clip">Rec</button>
+    </div>
+  </section>
 </aside>
 
 <!-- Bottom Control Dock -->
@@ -914,7 +1191,7 @@ body.dragging .drop { opacity: 1; }
   <div class="grp">
     <button class="btn primary" id="bTurn">Run agent turn</button>
     <button class="btn" id="bShowcase" aria-pressed="false" title="Auto-cycle through 5 curated Sanzo Wada & Quantum Field scenes for live demos">Showcase</button>
-    <button class="btn" id="bTweaks" aria-pressed="false">Tweaks ▴</button>
+    <button class="btn" id="bTweaks" aria-pressed="false">Controls ▴</button>
     <button class="btn" id="bHelp" aria-pressed="false" title="Keyboard shortcuts & Noether physics reference (?)">?</button>
   </div>
 </nav>
@@ -956,57 +1233,60 @@ const lerp = (a, b, t) => a + (b - a) * t;
    ──────────────────────────────────────────────────────────────────────────────── */
 const WADA_PALETTES = {
   auto_idle: {
-    // Wada #138: Deep Slate Indigo · Salvia Blue · Pale Ecru · Glaucous Celadon
-    core: [0.05, 0.08, 0.15], mid: [0.33, 0.49, 0.62], rim: [0.85, 0.90, 0.88], fib: [0.68, 0.85, 0.84], accent: '#88b8b8', mono: 0
+    label: 'Wada #138 · Slate · Salvia · Ecru · Coral',
+    core: [0.10, 0.16, 0.30], mid: [0.24, 0.52, 0.68], rim: [0.92, 0.89, 0.74], fib: [0.95, 0.46, 0.36], accent: '#ebe3bd', mono: 0
   },
   auto_listening: {
-    // Wada #194: Abyssal Teal · Verdigris · Celadon Cream · Seafoam
-    core: [0.02, 0.12, 0.14], mid: [0.16, 0.58, 0.52], rim: [0.84, 0.95, 0.88], fib: [0.52, 0.94, 0.82], accent: '#68d8be', mono: 0
+    label: 'Wada #194 · Peacock · Verdigris · Gold · Coral',
+    core: [0.06, 0.20, 0.26], mid: [0.12, 0.62, 0.54], rim: [0.95, 0.86, 0.52], fib: [1.00, 0.48, 0.42], accent: '#f2db85', mono: 0
   },
   auto_thinking: {
-    // Wada #247: Night Indigo · Dusky Mallow · Warm Alabaster · Heliotrope Gold
-    core: [0.10, 0.06, 0.18], mid: [0.56, 0.36, 0.48], rim: [0.92, 0.84, 0.74], fib: [0.92, 0.78, 0.54], accent: '#c98ca7', mono: 0
+    label: 'Wada #247 · Indigo · Mallow · Amber · Turquoise',
+    core: [0.16, 0.10, 0.28], mid: [0.64, 0.32, 0.52], rim: [0.96, 0.78, 0.34], fib: [0.26, 0.84, 0.86], accent: '#f5c757', mono: 0
   },
   auto_speaking: {
-    // Wada #052: Umber Ink · Cinnabar Terracotta · Apricot Ochre · Raw Silk
-    core: [0.15, 0.05, 0.04], mid: [0.82, 0.36, 0.24], rim: [0.97, 0.85, 0.66], fib: [0.98, 0.78, 0.54], accent: '#e88d67', mono: 0
+    label: 'Wada #052 · Umber · Cinnabar · Ochre · Jade',
+    core: [0.22, 0.10, 0.14], mid: [0.85, 0.33, 0.22], rim: [0.97, 0.82, 0.44], fib: [0.24, 0.78, 0.72], accent: '#f7d170', mono: 0
   },
 
-  // Manual Locked Sanzo Wada Combinations:
+  // Manual Locked Sanzo Wada 4-Pigment Combinations (True 4-Chroma Tetrads: Ground · Body · Crest Accent · Vein Counter-Accent):
   wada_142: {
-    // Wada #142: Deep Indigo · Verdigris · Pale Celadon · Terracotta Silk
-    core: [0.05, 0.09, 0.17], mid: [0.22, 0.49, 0.48], rim: [0.85, 0.91, 0.84], fib: [0.91, 0.60, 0.48], accent: '#7ab8b2', mono: 0
+    label: 'Wada #142 · Indigo · Verdigris · Celadon · Cinnabar',
+    core: [0.11, 0.19, 0.37], mid: [0.18, 0.56, 0.51], rim: [0.89, 0.91, 0.76], fib: [0.95, 0.42, 0.29], accent: '#e3e9c2', mono: 0
   },
   wada_068: {
-    // Wada #068: Slate Violet · Cinnabar · Warm Ochre · Ivory Silk
-    core: [0.12, 0.08, 0.16], mid: [0.78, 0.29, 0.19], rim: [0.96, 0.88, 0.68], fib: [0.93, 0.79, 0.44], accent: '#e9c46a', mono: 0
+    label: 'Wada #068 · Violet · Cinnabar · Ochre · Kingfisher',
+    core: [0.23, 0.14, 0.29], mid: [0.82, 0.29, 0.20], rim: [0.96, 0.79, 0.36], fib: [0.24, 0.76, 0.83], accent: '#f4c95d', mono: 0
   },
   wada_219: {
-    // Wada #219: Abyssal Peacock · Benzol Green · Hermosa Rose · Seafoam
-    core: [0.03, 0.10, 0.14], mid: [0.09, 0.49, 0.50], rim: [0.96, 0.72, 0.69], fib: [0.62, 0.88, 0.78], accent: '#f4b8b0', mono: 0
+    label: 'Wada #219 · Peacock · Emerald · Rose · Citron',
+    core: [0.07, 0.25, 0.35], mid: [0.09, 0.54, 0.68], rim: [1.00, 0.56, 0.64], fib: [0.85, 0.93, 0.57], accent: '#ff8fa3', mono: 0
   },
   wada_284: {
-    // Wada #284: Prussian Blue · Dusky Mallow · Citrine · Alabaster
-    core: [0.05, 0.10, 0.17], mid: [0.56, 0.36, 0.45], rim: [0.90, 0.79, 0.45], fib: [0.96, 0.94, 0.90], accent: '#e6c972', mono: 0
+    label: 'Wada #284 · Cobalt · Mallow · Citrine · Mint',
+    core: [0.11, 0.18, 0.31], mid: [0.61, 0.31, 0.47], rim: [0.96, 0.82, 0.30], fib: [0.39, 0.87, 0.87], accent: '#f6d04d', mono: 0
   },
   wada_091: {
-    // Wada #091: Kyoto Moss · Verdigris Pine · Persimmon Silk · Pale Bamboo Gold
-    core: [0.05, 0.10, 0.07], mid: [0.32, 0.48, 0.43], rim: [0.95, 0.82, 0.56], fib: [0.89, 0.49, 0.38], accent: '#f2cc8f', mono: 0
+    label: 'Wada #091 · Pine · Sage · Bamboo Gold · Persimmon',
+    core: [0.11, 0.23, 0.17], mid: [0.30, 0.55, 0.46], rim: [0.96, 0.83, 0.37], fib: [0.93, 0.42, 0.30], accent: '#f4d35e', mono: 0
   },
   wada_173: {
-    // Wada #173: Aubergine Ink · Carmine Lacquer · Raw Amber · Warm Parchment
-    core: [0.09, 0.04, 0.10], mid: [0.62, 0.17, 0.17], rim: [0.98, 0.92, 0.69], fib: [0.90, 0.62, 0.24], accent: '#e09f3e', mono: 0
+    label: 'Wada #173 · Aubergine · Carmine · Amber · Cerulean',
+    core: [0.19, 0.09, 0.20], mid: [0.71, 0.17, 0.22], rim: [0.97, 0.63, 0.16], fib: [0.38, 0.71, 0.80], accent: '#f7a028', mono: 0
   },
 
   // Pure Architectural Monotone Palettes:
   mono_silver: {
-    core: [0.04, 0.05, 0.07], mid: [0.42, 0.46, 0.53], rim: [0.95, 0.97, 0.99], fib: [0.90, 0.93, 0.98], accent: '#d8dee9', mono: 1
+    label: 'Mono I · Obsidian & Liquid Silver',
+    core: [0.06, 0.08, 0.11], mid: [0.42, 0.46, 0.54], rim: [0.85, 0.89, 0.95], fib: [1.00, 1.00, 1.00], accent: '#d8dee9', mono: 1
   },
   mono_sumi: {
-    core: [0.06, 0.05, 0.04], mid: [0.49, 0.45, 0.39], rim: [0.95, 0.93, 0.88], fib: [0.91, 0.87, 0.80], accent: '#e6dec8', mono: 1
+    label: 'Mono II · Sumi Ink & Warm Bone',
+    core: [0.08, 0.07, 0.06], mid: [0.49, 0.45, 0.39], rim: [0.90, 0.86, 0.78], fib: [1.00, 0.97, 0.90], accent: '#e6dec8', mono: 1
   },
   mono_ice: {
-    core: [0.02, 0.06, 0.12], mid: [0.18, 0.42, 0.62], rim: [0.83, 0.93, 1.00], fib: [0.72, 0.90, 1.00], accent: '#a8dcff', mono: 1
+    label: 'Mono III · Deep Cobalt & Ice Quartz',
+    core: [0.04, 0.09, 0.18], mid: [0.18, 0.42, 0.62], rim: [0.68, 0.88, 1.00], fib: [0.92, 0.98, 1.00], accent: '#a8dcff', mono: 1
   }
 };
 
@@ -1029,15 +1309,21 @@ const STATES = {
 
 let stateName = 'idle';
 let paletteMode = 'wada_auto';
+let wadaRolePermutation = 0; // 0..3 rotates the 4 Sanzo Wada pigments across Ground, Body, Crest, and Vein
+let beatRotateWada = false;
+let customWadaOverride = null; // { core, mid, rim, fib, label, mono }
 let activeBranch = 'orb'; // 'orb' | 'tokamak' | 'cymatic' | 'lattice'
 let treeCycleOn = false;
 let treeCycleTimer = 0;
 let visMode = 0; // 0: Eigen-Orb, 1: Cymatic Chladni, 2: Hopf Torus, 3: Dirac Ferrofluid, 4: Superfluid Vortex
 let camMode = 'front'; // 'front' | 'iso' | 'orbit' | 'macro'
 let zoomOffset = 0.0;
+let showCoreSurface = true;
 let showOnBlobFib = true;
 let showOrbitalFib = true;
 let showSpectrumRing = true;
+let showWaveLoops = true;
+let showParticleHalo = true;
 let autoVadOn = true;
 let showcaseOn = false;
 let showcaseTimer = 0;
@@ -1079,16 +1365,99 @@ function stepHamiltonian(dt, forces, freeRoom) {
   HAM.energy = lerp(HAM.energy, clamp(0.18 + totalH, 0.12, 2.40), 0.18);
 }
 
-function getActivePaletteTarget() {
-  if (paletteMode === 'wada_auto' || turnActive) {
+function rgbArrToHex(arr) {
+  const toH = c => clamp(Math.round(c * 255), 0, 255).toString(16).padStart(2, '0');
+  return '#' + toH(arr[0]) + toH(arr[1]) + toH(arr[2]);
+}
+
+function hexToRgbArr(hex) {
+  const clean = String(hex || '#ffffff').replace('#', '');
+  const n = parseInt(clean, 16) || 0xffffff;
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
+}
+
+function getBasePaletteEntry() {
+  if (customWadaOverride) return customWadaOverride;
+  if (paletteMode === 'wada_auto') {
     return WADA_PALETTES['auto_' + stateName] || WADA_PALETTES.auto_idle;
   }
   return WADA_PALETTES[paletteMode] || WADA_PALETTES.wada_142;
 }
 
+function getActivePaletteTarget() {
+  const base = getBasePaletteEntry();
+  if (wadaRolePermutation === 0) return base;
+  const slots = [base.core, base.mid, base.rim, base.fib];
+  const rot = n => slots[(n + wadaRolePermutation) % 4];
+  const cRaw = rot(0);
+  // Keep Ground cavity dark enough to preserve 3D depth while taking on the rotated pigment's chroma
+  const cLum = 0.299 * cRaw[0] + 0.587 * cRaw[1] + 0.114 * cRaw[2];
+  const cScale = cLum > 0.35 ? (0.28 / cLum) : 1.0;
+  const c = [cRaw[0] * cScale, cRaw[1] * cScale, cRaw[2] * cScale];
+
+  // Ensure any dark ground pigment rotated into Body, Crest, or Vein accent slots is lifted to luminous chroma
+  const liftAccent = (arr, minLum) => {
+    const lum = 0.299 * arr[0] + 0.587 * arr[1] + 0.114 * arr[2];
+    if (lum >= minLum) return arr;
+    const boost = minLum / Math.max(0.06, lum);
+    return [
+      clamp(arr[0] * boost + 0.08, 0, 1),
+      clamp(arr[1] * boost + 0.08, 0, 1),
+      clamp(arr[2] * boost + 0.08, 0, 1)
+    ];
+  };
+  const mCol = liftAccent(rot(1), 0.38);
+  const rCol = liftAccent(rot(2), 0.52);
+  const fCol = liftAccent(rot(3), 0.50);
+  return {
+    label: base.label + ` (Role ↻${wadaRolePermutation})`,
+    core: c,
+    mid: mCol,
+    rim: rCol,
+    fib: fCol,
+    accent: rgbArrToHex(rCol),
+    mono: base.mono || 0
+  };
+}
+
 function applyAccentColor() {
   const p = getActivePaletteTarget();
-  document.documentElement.style.setProperty('--accent', p.accent);
+  const hCore = rgbArrToHex(p.core);
+  const hMid  = rgbArrToHex(p.mid);
+  const hRim  = rgbArrToHex(p.rim);
+  const hFib  = rgbArrToHex(p.fib);
+
+  const root = document.documentElement.style;
+  root.setProperty('--wada-core', hCore);
+  root.setProperty('--wada-mid', hMid);
+  root.setProperty('--wada-rim', hRim);
+  root.setProperty('--wada-fib', hFib);
+  root.setProperty('--accent', hRim);
+  root.setProperty('--accent-2', hFib);
+
+  if ($('#hudWadaName')) {
+    const shortName = (p.label || 'Wada').split('·')[0].trim();
+    $('#hudWadaName').textContent = wadaRolePermutation > 0 ? `${shortName} ↻${wadaRolePermutation}` : shortName;
+  }
+  if ($('#hudChip0')) $('#hudChip0').style.background = hCore;
+  if ($('#hudChip1')) $('#hudChip1').style.background = hMid;
+  if ($('#hudChip2')) $('#hudChip2').style.background = hRim;
+  if ($('#hudChip3')) $('#hudChip3').style.background = hFib;
+
+  if ($('#colPickerCore')) $('#colPickerCore').value = hCore;
+  if ($('#colPickerMid'))  $('#colPickerMid').value = hMid;
+  if ($('#colPickerRim'))  $('#colPickerRim').value = hRim;
+  if ($('#colPickerFib'))  $('#colPickerFib').value = hFib;
+  if ($('#hexCore')) $('#hexCore').textContent = hCore.toUpperCase();
+  if ($('#hexMid'))  $('#hexMid').textContent = hMid.toUpperCase();
+  if ($('#hexRim'))  $('#hexRim').textContent = hRim.toUpperCase();
+  if ($('#hexFib'))  $('#hexFib').textContent = hFib.toUpperCase();
+}
+
+function rotateWadaRoles() {
+  wadaRolePermutation = (wadaRolePermutation + 1) % 4;
+  applyAccentColor();
+  toast(`Sanzo Wada 4-Pigment Roles Rotated (Permutation ${wadaRolePermutation + 1}/4)`);
 }
 
 function updateTurnTimelineUI(activeStage, progress, timerLabel) {
@@ -2275,14 +2644,15 @@ vec3 disp(vec3 q) {
 }
 `;
 
-/* ── 1. The Central Quantum Field Orb (with Analytical Normal Reconstruction & Surface Fibroid Veins) ── */
+/* ── 1. The Central Quantum Field Orb (with Analytical Normal Reconstruction & 4-Pigment Sanzo Wada Shader) ── */
 const orbU = {
   uT: { value: 0 }, uBass: { value: 0 }, uMid: { value: 0 }, uTreb: { value: 0 },
   uBeat: { value: 0 }, uR: { value: 0.88 }, uSharp: { value: 6.2 },
   uHarmL: { value: 3.0 }, uHarmM: { value: 2.0 }, uFreeRoom: { value: 1.0 },
   uSymBreak: { value: 0.18 }, uVisMode: { value: 0.0 }, uTorusMorph: { value: 0.0 },
   uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib },
-  uLevel: { value: 0 }, uFibIntensity: { value: 1.15 }, uShowSurfFib: { value: 1.0 }, uMono: { value: 0.0 }
+  uLevel: { value: 0 }, uFibIntensity: { value: 1.15 }, uAccentBoost: { value: 1.30 },
+  uShowSurfFib: { value: 1.0 }, uMono: { value: 0.0 }
 };
 
 const orb = new THREE.Mesh(
@@ -2316,64 +2686,86 @@ const orb = new THREE.Mesh(
     `,
     fragmentShader: `
       uniform vec3 uCore, uMidC, uRim, uFib;
-      uniform float uT, uBass, uMid, uTreb, uLevel, uBeat, uFibIntensity, uShowSurfFib, uHarmL, uHarmM, uMono, uTorusMorph;
+      uniform float uT, uBass, uMid, uTreb, uLevel, uBeat, uFibIntensity, uAccentBoost, uShowSurfFib, uHarmL, uHarmM, uMono, uTorusMorph;
       varying vec3 vN;
       varying vec3 vV;
       varying float vD;
       varying float vPhase;
       varying vec3 vUnitPos;
 
+      // Kubelka-Munk Subtractive Pigment Reflectance Blend (preserves rich Sanzo Wada mineral saturation without muddy gray midtones)
+      vec3 kubelkaMunkMix(vec3 c1, vec3 c2, float t) {
+        vec3 r1 = clamp(c1, 0.02, 0.98);
+        vec3 r2 = clamp(c2, 0.02, 0.98);
+        vec3 ks1 = ((1.0 - r1) * (1.0 - r1)) / (2.0 * r1);
+        vec3 ks2 = ((1.0 - r2) * (1.0 - r2)) / (2.0 * r2);
+        vec3 ks = mix(ks1, ks2, clamp(t, 0.0, 1.0));
+        return 1.0 + ks - sqrt(ks * ks + 2.0 * ks);
+      }
+
       void main() {
         vec3 N = normalize(vN);
         vec3 V = normalize(vV);
         float ndv = max(dot(N, V), 0.0);
-        float fr = pow(1.0 - ndv, 2.20);
+        float fr = pow(1.0 - ndv, 2.15);
 
-        // Smooth Sanzo Wada / Monotone body shading
-        float h = clamp(vD * 2.65 + 0.48, 0.0, 1.0);
-        vec3 col = mix(uCore, uMidC, smoothstep(0.06, 0.94, h));
+        // Zone 1 & 2: Pigment I (Ground Cavity uCore) -> Pigment II (Harmonic Body uMidC) via Kubelka-Munk Subtractive Mixing
+        float h = clamp(vD * 2.85 + 0.48, 0.0, 1.0);
+        vec3 col = kubelkaMunkMix(uCore, uMidC, smoothstep(0.04, 0.78, h));
 
-        // Sanzo Wada 4-pigment thin-film interference sheen along Noether action phase S
-        float sheen = 0.5 + 0.5 * cos(6.28318 * (ndv * 0.55 + uT * 0.04 + vPhase * 0.25));
-        vec3 sheenPigment = mix(uMidC, mix(uFib, uRim, 0.45), sheen);
-        col = mix(col, sheenPigment, (uMono > 0.5 ? 0.05 : 0.14) * (0.45 + uLevel));
+        // Zone 3: Pigment III (Crest Accent uRim) on high spherical harmonic wave crests & grazing Fresnel rim
+        float crestMask = smoothstep(0.54, 0.95, h) * clamp(0.45 + 0.55 * uAccentBoost, 0.3, 1.4);
+        col = kubelkaMunkMix(col, uRim, crestMask * 0.62);
 
-        // Key specular highlight + Fresnel rim
-        float key = pow(max(dot(N, normalize(vec3(-0.42, 0.62, 0.66))), 0.0), 16.0);
-        col += uRim * key * 0.58;
-        col = mix(col, uRim, fr * 0.82);
-        col += uRim * fr * uBeat * 0.32;
+        //Zone 4 Subsurface Scattering & Thin-Film Sheen using Pigment IV (Counter-Accent uFib)
+        vec3 L = normalize(vec3(-0.42, 0.62, 0.66));
+        float backScatter = pow(clamp(dot(V, -normalize(L + N * 0.4)), 0.0, 1.0), 2.6) * (0.35 + uBass * 0.65);
+        float sheen = pow(0.5 + 0.5 * sin(vPhase * 2.2 - uT * 0.8), 2.2);
+        if (uMono < 0.5) {
+          col = kubelkaMunkMix(col, uFib, clamp((backScatter * 0.48 + sheen * 0.24) * uAccentBoost, 0.0, 0.72));
+        }
 
-        // Crisp Triple-Band On-Surface Quantum Equipotential, Nodal & Acoustic-Ripple Fibroid Veins
+        // Key specular highlight (Pigment III uRim) + Grazing Rim Duet (Pigment III & IV)
+        float key = pow(max(dot(N, L), 0.0), 18.0);
+        col = mix(col, uRim, fr * 0.76);
+        col += uRim * key * 0.52 + uFib * pow(fr, 3.0) * uBeat * 0.38 * uAccentBoost;
+
+        // Crisp Dual-Accent On-Surface Quantum Equipotential (Pigment IV uFib) & Geodesic Meridian (Pigment III uRim) Veins
         if (uShowSurfFib > 0.5 && uFibIntensity > 0.01) {
           float waveCoord = vPhase * 2.65 + uT * 0.36;
           float fw = max(fwidth(waveCoord), 0.0075);
           float distToLine = abs(fract(waveCoord) - 0.5);
-          float fibCore = 1.0 - smoothstep(0.0, fw * 1.55, distToLine);
-          float fibAura = 1.0 - smoothstep(0.0, fw * 4.20, distToLine);
+          float fibCore = 1.0 - smoothstep(0.0, fw * 1.65, distToLine);
+          float fibAura = 1.0 - smoothstep(0.0, fw * 4.40, distToLine);
 
-          // Secondary orthogonal geodesic meridian fibroid
+          // Secondary orthogonal geodesic meridian fibroid (Pigment III uRim)
           float theta = acos(clamp(vUnitPos.y, -1.0, 1.0));
           float phi = atan(vUnitPos.z, vUnitPos.x);
           float geoCoord = (phi * uHarmM + theta * uHarmL) * 0.95 - uT * 0.25;
           float fw2 = max(fwidth(geoCoord), 0.0075);
           float geoDist = abs(fract(geoCoord) - 0.5);
-          float geoLine = 1.0 - smoothstep(0.0, fw2 * 1.45, geoDist);
+          float geoLine = 1.0 - smoothstep(0.0, fw2 * 1.50, geoDist);
 
-          // Tertiary high-frequency acoustic-ripple interference filament (driven by treble & mid energy)
+          // Tertiary high-frequency acoustic-ripple interference filament (Pigment IV uFib)
           float acoustCoord = (theta * (uHarmL + 2.0) - phi * uHarmM) * 1.35 + vPhase * 1.8 + uT * 0.52;
           float fw3 = max(fwidth(acoustCoord), 0.008);
           float acoustDist = abs(fract(acoustCoord) - 0.5);
-          float acoustLine = (1.0 - smoothstep(0.0, fw3 * 1.25, acoustDist)) * clamp(0.28 + uTreb * 0.95 + uMid * 0.45, 0.0, 1.0);
+          float acoustLine = (1.0 - smoothstep(0.0, fw3 * 1.30, acoustDist)) * clamp(0.32 + uTreb * 0.95 + uMid * 0.45, 0.0, 1.0);
 
           float torusDamp = 1.0 - 0.22 * uTorusMorph;
-          float combinedFib = (max(max(fibCore * 0.92, geoLine * 0.66), acoustLine * 0.58) + fibAura * 0.24) * (0.48 + 0.52 * fr) * uFibIntensity * torusDamp;
-          vec3 veinColor = mix(uFib, uRim, max(fibCore * 0.50, acoustLine * 0.65)) * 1.18;
-          col = mix(col, veinColor, clamp(combinedFib, 0.0, 0.92));
+          float veinStrength = uFibIntensity * uAccentBoost * torusDamp;
+
+          // Apply Pigment IV (uFib Counter-Accent) to primary equipotential & acoustic veins
+          float fibMask = clamp((max(fibCore * 0.95, acoustLine * 0.72) + fibAura * 0.28) * veinStrength, 0.0, 0.96);
+          col = mix(col, uFib * 1.15, fibMask);
+
+          // Apply Pigment III (uRim Crest Accent) to orthogonal geodesic meridians so both accents interplay distinctly
+          float rimMask = clamp(geoLine * 0.76 * veinStrength, 0.0, 0.90);
+          col = mix(col, uRim * 1.10, rimMask * (1.0 - fibCore * 0.6));
         }
 
-        // Soft filmic highlight protection so pigments remain saturated and never clip
-        col = col / (1.0 + max(vec3(0.0), col - 0.85) * 0.45);
+        // Soft filmic highlight protection so all 4 Sanzo Wada pigments remain saturated and never clip to white
+        col = col / (1.0 + max(vec3(0.0), col - 0.88) * 0.48);
         gl_FragColor = vec4(col, 1.0);
       }
     `
@@ -2393,7 +2785,7 @@ const surfFibMat = new THREE.ShaderMaterial({
     uBeat: orbU.uBeat, uR: orbU.uR, uSharp: orbU.uSharp,
     uHarmL: orbU.uHarmL, uHarmM: orbU.uHarmM, uFreeRoom: orbU.uFreeRoom,
     uSymBreak: orbU.uSymBreak, uVisMode: orbU.uVisMode, uTorusMorph: orbU.uTorusMorph,
-    uFib: { value: pal.fib }, uRim: { value: pal.rim }, uFibIntensity: orbU.uFibIntensity
+    uFib: { value: pal.fib }, uRim: { value: pal.rim }, uFibIntensity: orbU.uFibIntensity, uAccentBoost: orbU.uAccentBoost
   },
   transparent: true,
   depthWrite: false,
@@ -2415,16 +2807,19 @@ const surfFibMat = new THREE.ShaderMaterial({
   `,
   fragmentShader: `
     uniform vec3 uFib, uRim;
-    uniform float uT, uFibIntensity, uBeat, uTorusMorph;
+    uniform float uT, uFibIntensity, uAccentBoost, uBeat, uTorusMorph;
     varying float vArc;
     varying float vFibId;
     void main() {
       // Traveling Noether current wave-packets along each surface fibroid
-      float pulse1 = pow(0.5 + 0.5 * sin(vArc * 18.8495 - uT * 3.4 + vFibId * 1.7), 2.5);
+      float pulse1 = pow(0.5 + 0.5 * sin(vArc * 18.8495 - uT * 3.4 + vFibId * 1.7), 2.3);
       float pulse2 = 0.5 + 0.5 * cos(vArc * 6.28318 + uT * 1.6 - vFibId);
       float torusScale = 1.0 - 0.42 * uTorusMorph;
-      float alpha = (0.34 + 0.66 * pulse1) * (0.70 + 0.30 * pulse2) * clamp(uFibIntensity, 0.0, 1.5) * torusScale;
-      vec3 col = mix(uFib, uRim, pulse1 * 0.55) * (1.05 + uBeat * 0.32);
+      float alpha = (0.38 + 0.62 * pulse1) * (0.72 + 0.28 * pulse2) * clamp(uFibIntensity * uAccentBoost * 0.85, 0.0, 1.6) * torusScale;
+      // Alternate strands between Pigment IV (uFib) and Pigment III (uRim) for authentic Sanzo Wada two-accent interplay
+      float isOdd = mod(vFibId, 2.0);
+      vec3 strandAccent = mix(uFib, uRim, isOdd * 0.72 + pulse1 * 0.25);
+      vec3 col = strandAccent * (1.08 + uBeat * 0.35);
       gl_FragColor = vec4(col * alpha, alpha);
     }
   `
@@ -2470,7 +2865,7 @@ const orbitalFibMat = new THREE.ShaderMaterial({
     uT: orbU.uT, uBass: orbU.uBass, uMid: orbU.uMid, uTreb: orbU.uTreb,
     uBeat: orbU.uBeat, uFreeRoom: orbU.uFreeRoom, uSymBreak: orbU.uSymBreak, uInward: { value: 0 },
     uFib: { value: pal.fib }, uRim: { value: pal.rim }, uMidC: { value: pal.mid },
-    uFibIntensity: orbU.uFibIntensity
+    uFibIntensity: orbU.uFibIntensity, uAccentBoost: orbU.uAccentBoost
   },
   transparent: true,
   depthWrite: false,
@@ -2512,15 +2907,18 @@ const orbitalFibMat = new THREE.ShaderMaterial({
   `,
   fragmentShader: `
     uniform vec3 uFib, uRim, uMidC;
-    uniform float uT, uFibIntensity, uBeat;
+    uniform float uT, uFibIntensity, uAccentBoost, uBeat;
     varying float vArc;
     varying float vFibId;
     void main() {
-      // High-clarity traveling phase packets so orbital fibroids are unmistakable and crisp
-      float packet = pow(0.5 + 0.5 * sin(vArc * 12.56637 - uT * 2.8 + vFibId * 1.1), 2.3);
-      float baseLine = 0.34 + 0.66 * packet;
-      float alpha = clamp(baseLine * uFibIntensity * (0.90 + uBeat * 0.32), 0.0, 1.0);
-      vec3 col = mix(uMidC, mix(uFib, uRim, packet), 0.80) * 1.20;
+      // High-clarity traveling phase packets with distinct 3-Pigment Sanzo Wada coil coding (uFib, uRim, uMidC)
+      float packet = pow(0.5 + 0.5 * sin(vArc * 12.56637 - uT * 2.8 + vFibId * 1.1), 2.1);
+      float baseLine = 0.38 + 0.62 * packet;
+      float alpha = clamp(baseLine * uFibIntensity * uAccentBoost * 0.82 * (0.90 + uBeat * 0.32), 0.0, 1.0);
+      float shellRole = mod(vFibId, 3.0);
+      vec3 loopBase = shellRole < 0.5 ? uFib : (shellRole < 1.5 ? uRim : uMidC);
+      vec3 loopPeak = shellRole < 0.5 ? uRim : uFib;
+      vec3 col = mix(loopBase, loopPeak, packet * 0.65) * 1.22;
       gl_FragColor = vec4(col * alpha, alpha);
     }
   `
@@ -2567,7 +2965,7 @@ const barGeo = new THREE.BoxGeometry(1, 1, 1);
 barGeo.translate(0, 0.5, 0);
 const bars = new THREE.InstancedMesh(
   barGeo,
-  new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false }),
+  new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.94, blending: THREE.AdditiveBlending, depthWrite: false }),
   NB
 );
 const tmpC = new THREE.Color(), dummy = new THREE.Object3D();
@@ -2575,6 +2973,45 @@ for (let i = 0; i < NB; i++) bars.setColorAt(i, tmpC.setRGB(0.5, 0.6, 0.9));
 world.add(bars);
 const barVal = new Float32Array(HALF);
 const edges = Array.from({ length: HALF + 1 }, (_, k) => 32 * Math.pow(14000 / 32, k / HALF));
+
+// 4-Pigment Sanzo Wada Spectral Color Mapper for all 144 Instanced Spectrum Bars / Ribs / Monoliths / Spires
+function setWada4BarColor(targetColor, bandIdx, ampVal, accentBoost) {
+  const fNorm = bandIdx / HALF; // 0 (sub-bass) -> 1 (air treble)
+  const aNorm = clamp(ampVal * 1.15 * (0.75 + 0.25 * accentBoost), 0, 1);
+  let r, g, b;
+  if (fNorm < 0.34) {
+    // Low Band: Pigment I (Ground) -> Pigment II (Body), tipped with Pigment III (Crest) on loud bass kicks
+    const t = clamp(fNorm / 0.34 * 0.55 + aNorm * 0.45, 0, 1);
+    r = lerp(pal.core.x * 1.35, pal.mid.x, t);
+    g = lerp(pal.core.y * 1.35, pal.mid.y, t);
+    b = lerp(pal.core.z * 1.35, pal.mid.z, t);
+    if (aNorm > 0.65) {
+      const k = (aNorm - 0.65) / 0.35;
+      r = lerp(r, pal.rim.x, k * 0.65);
+      g = lerp(g, pal.rim.y, k * 0.65);
+      b = lerp(b, pal.rim.z, k * 0.65);
+    }
+  } else if (fNorm < 0.68) {
+    // Mid Band: Pigment II (Body) -> Pigment III (Crest Accent), tipped with Pigment IV (Counter-Accent)
+    const t = clamp((fNorm - 0.34) / 0.34 * 0.5 + aNorm * 0.5, 0, 1);
+    r = lerp(pal.mid.x, pal.rim.x, t);
+    g = lerp(pal.mid.y, pal.rim.y, t);
+    b = lerp(pal.mid.z, pal.rim.z, t);
+    if (aNorm > 0.58) {
+      const k = (aNorm - 0.58) / 0.42;
+      r = lerp(r, pal.fib.x, k * 0.75);
+      g = lerp(g, pal.fib.y, k * 0.75);
+      b = lerp(b, pal.fib.z, k * 0.75);
+    }
+  } else {
+    // High Band: Pigment III (Crest) -> Pigment IV (Vein Counter-Accent) so upper harmonics blaze with Accent 4
+    const t = clamp((fNorm - 0.68) / 0.32 * 0.45 + aNorm * 0.55, 0, 1);
+    r = lerp(pal.rim.x, pal.fib.x, t);
+    g = lerp(pal.rim.y, pal.fib.y, t);
+    b = lerp(pal.rim.z, pal.fib.z, t);
+  }
+  targetColor.setRGB(r, g, b);
+}
 
 /* ── 6. Crisp Harmonic Waveform Loops ── */
 const WN = 256;
@@ -2585,7 +3022,7 @@ function makeLoop(opacity) {
   world.add(l);
   return l;
 }
-const wave = makeLoop(0.95), waveEcho = makeLoop(0.55);
+const wave = makeLoop(0.95), waveEcho = makeLoop(0.65);
 const waveBuf = new Float32Array(WN), echoBuf = new Float32Array(WN);
 
 /* ── 7. Conserved Noether Current Particle Halo (4,800 GPU Particles with Legendre Nodal & Biot-Savart Advection) ── */
@@ -2603,7 +3040,7 @@ const pU = {
   uT: { value: 0 }, uSpin: { value: 0 }, uBurst: { value: 0 }, uBass: { value: 0 }, uTreb: { value: 0 },
   uInward: { value: 0 }, uHarmL: { value: 3 }, uHarmM: { value: 2 }, uSymBreak: { value: 0.35 }, uVisMode: { value: 0 },
   uPx: { value: renderer.getPixelRatio() },
-  uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }, uOp: { value: 0.85 }
+  uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }, uOp: { value: 0.85 }
 };
 const points = new THREE.Points(pg, new THREE.ShaderMaterial({
   uniforms: pU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
@@ -2642,7 +3079,8 @@ const points = new THREE.Points(pg, new THREE.ShaderMaterial({
   fragmentShader: `
     uniform vec3 uMidC, uRim, uFib; uniform float uOp; varying float vA; varying float vR; varying float vNodal;
     void main(){ float d = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, d);
-      vec3 pCol = mix(mix(uRim, uMidC, vR), uFib, vNodal * 0.35);
+      // Partition particle halo across Pigment II (uMidC), Pigment III (uRim), and Pigment IV (uFib) along Legendre nodal bands
+      vec3 pCol = vNodal > 0.62 ? mix(uRim, uFib, (vNodal - 0.62) / 0.38) : mix(uMidC, uRim, vR);
       gl_FragColor = vec4(pCol * a * vA * uOp, 1.0); }`
 }));
 world.add(points);
@@ -2658,7 +3096,7 @@ for (let i = 0; i < 8; i++) {
   m.visible = false; m.userData = { age: 0, life: 1, s: 1, str: 0, rx: 0, ry: 0 };
   world.add(m); shocks.push(m);
 }
-let shockIdx = 0, beatEnv = 0, burst = 0, punch = 0;
+let shockIdx = 0, beatEnv = 0, burst = 0, punch = 0, downbeatCounter = 0;
 
 function fireBeat(strength, isClock, down) {
   beatEnv = Math.max(beatEnv, strength);
@@ -2669,9 +3107,16 @@ function fireBeat(strength, isClock, down) {
   const tilt = (shockIdx % 3 === 0) ? 0.32 : (shockIdx % 3 === 1 ? -0.28 : 0.0);
   m.userData = {
     age: 0, life, s: down ? 1.15 : 1.0, str: strength * (down ? 1 : 0.68),
-    rx: tilt * Math.cos(shockIdx), ry: tilt * Math.sin(shockIdx)
+    rx: tilt * Math.cos(shockIdx), ry: tilt * Math.sin(shockIdx), isDown: !!down
   };
   m.visible = true;
+  if (down && beatRotateWada) {
+    downbeatCounter++;
+    if (downbeatCounter % 4 === 0) {
+      wadaRolePermutation = (wadaRolePermutation + 1) % 4;
+      applyAccentColor();
+    }
+  }
   if (isClock) updateBarDots();
 }
 function updateBarDots() {
@@ -2689,14 +3134,14 @@ world.add(branchTokamakGroup);
 const tokamakU = {
   uT: { value: 0 }, uBass: { value: 0 }, uMid: { value: 0 }, uTreb: { value: 0 },
   uBeat: { value: 0 }, uHarmL: { value: 3.0 }, uHarmM: { value: 2.0 }, uSymBreak: { value: 0.18 },
-  uFibIntensity: { value: 0.92 }, uMono: { value: 0 },
+  uFibIntensity: { value: 0.92 }, uAccentBoost: { value: 1.30 }, uMono: { value: 0 },
   uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }
 };
 
 const tokamakVert = `
   uniform float uT, uBass, uMid, uTreb, uBeat, uHarmL, uHarmM, uSymBreak;
   varying vec3 vN, vV, vPos;
-  varying float vHelix, vFlux;
+  varying float vHelix, vHelix2, vFlux;
   void main() {
     vPos = position;
     float u = atan(position.y, position.x);
@@ -2712,6 +3157,7 @@ const tokamakVert = `
     vV = -mv.xyz;
     vN = normalMatrix * normalize(normal + vec3(disp * 1.8));
     vHelix = sin(uHarmL * 2.0 * u + uHarmM * 3.0 * v - uT * 3.2);
+    vHelix2 = cos(uHarmM * 3.0 * u - uHarmL * 2.0 * v + uT * 2.1);
     vFlux = clamp((disp + 0.12) / 0.24, 0.0, 1.0);
     gl_Position = projectionMatrix * mv;
   }
@@ -2720,25 +3166,39 @@ const tokamakVert = `
 const tokamakFrag = `
   precision highp float;
   uniform vec3 uCore, uMidC, uRim, uFib;
-  uniform float uT, uBass, uMid, uTreb, uBeat, uFibIntensity, uMono;
+  uniform float uT, uBass, uMid, uTreb, uBeat, uFibIntensity, uAccentBoost, uMono;
   varying vec3 vN, vV, vPos;
-  varying float vHelix, vFlux;
+  varying float vHelix, vHelix2, vFlux;
+
+  vec3 kubelkaMunkMix(vec3 c1, vec3 c2, float t) {
+    vec3 r1 = clamp(c1, 0.02, 0.98);
+    vec3 r2 = clamp(c2, 0.02, 0.98);
+    vec3 ks1 = ((1.0 - r1) * (1.0 - r1)) / (2.0 * r1);
+    vec3 ks2 = ((1.0 - r2) * (1.0 - r2)) / (2.0 * r2);
+    vec3 ks = mix(ks1, ks2, clamp(t, 0.0, 1.0));
+    return 1.0 + ks - sqrt(ks * ks + 2.0 * ks);
+  }
+
   void main() {
     vec3 N = normalize(vN);
     vec3 V = normalize(vV);
     float fr = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), 2.1);
-    vec3 col = mix(uCore * 0.45, uMidC, smoothstep(0.0, 0.85, vFlux));
-    col = mix(col, uRim, fr * 0.92 + uBeat * 0.22);
+    // Kubelka-Munk 4-Pigment Tokamak Shading: Ground (uCore) -> Body (uMidC) -> Crest (uRim) -> Villarceau Veins (uFib)
+    vec3 col = kubelkaMunkMix(uCore, uMidC, smoothstep(0.05, 0.80, vFlux));
+    col = kubelkaMunkMix(col, uRim, fr * 0.78 + smoothstep(0.65, 0.98, vFlux) * 0.45);
     float fw = max(fwidth(vHelix), 0.015);
-    float line = (1.0 - smoothstep(0.0, fw * 1.8, abs(vHelix))) * uFibIntensity;
-    col += uFib * line * (0.58 + uTreb * 0.55 + uBeat * 0.35);
-    col += uRim * pow(fr, 3.2) * (0.65 + uBass * 0.45);
+    float line1 = (1.0 - smoothstep(0.0, fw * 1.9, abs(vHelix))) * uFibIntensity * uAccentBoost;
+    float fw2 = max(fwidth(vHelix2), 0.015);
+    float line2 = (1.0 - smoothstep(0.0, fw2 * 1.7, abs(vHelix2))) * uFibIntensity * uAccentBoost;
+    col = mix(col, uFib * 1.18, clamp(line1 * (0.72 + uTreb * 0.45 + uBeat * 0.35), 0.0, 0.95));
+    col = mix(col, uRim * 1.12, clamp(line2 * 0.65, 0.0, 0.85) * (1.0 - line1 * 0.6));
+    col += uFib * pow(fr, 3.2) * (0.45 + uBass * 0.45) * uAccentBoost;
     if (uMono > 0.5) {
       float lum = dot(col, vec3(0.299, 0.587, 0.114));
       col = mix(col, vec3(lum) * uRim, 0.85);
     }
-    col = col / (1.0 + col * 0.36);
-    gl_FragColor = vec4(pow(col, vec3(0.92)), 0.94);
+    col = col / (1.0 + max(vec3(0.0), col - 0.86) * 0.42);
+    gl_FragColor = vec4(pow(col, vec3(0.94)), 0.95);
   }
 `;
 
@@ -2770,8 +3230,8 @@ const zPinchMat = new THREE.ShaderMaterial({
     varying float vY, vPinch;
     void main() {
       float fade = smoothstep(1.18, 0.15, abs(vY));
-      vec3 c = mix(uMidC, uFib, vPinch);
-      gl_FragColor = vec4(c * fade * (0.55 + 0.45 * vPinch), 0.85);
+      vec3 c = mix(uFib, uRim, vPinch * 0.65);
+      gl_FragColor = vec4(c * fade * (0.65 + 0.45 * vPinch), 0.90);
     }`
 });
 const zPinchMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 2.35, 36, 48, true), zPinchMat);
@@ -2806,7 +3266,7 @@ branchTokamakGroup.add(tokamakCoils);
 
 // 72 Instanced 3D Toroidal Confinement Spectrum Ribs
 const tokRibGeo = new THREE.BoxGeometry(0.028, 0.12, 0.028);
-const tokRibMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, blending: THREE.AdditiveBlending, depthWrite: false });
+const tokRibMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false });
 const tokamakRibs = new THREE.InstancedMesh(tokRibGeo, tokRibMat, NB);
 tokamakRibs.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 for (let i = 0; i < NB; i++) tokamakRibs.setColorAt(i, new THREE.Color(1, 1, 1));
@@ -2820,7 +3280,8 @@ world.add(branchCymaticGroup);
 const cymaticU = {
   uT: { value: 0 }, uBass: { value: 0 }, uMid: { value: 0 }, uTreb: { value: 0 },
   uBeat: { value: 0 }, uHarmL: { value: 3.0 }, uHarmM: { value: 2.0 }, uSymBreak: { value: 0.18 },
-  uFibIntensity: { value: 0.92 }, uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }
+  uFibIntensity: { value: 0.92 }, uAccentBoost: { value: 1.30 },
+  uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }
 };
 
 const cymaticPlaneVert = `
@@ -2847,20 +3308,21 @@ const cymaticPlaneVert = `
 const cymaticPlaneFrag = `
   precision highp float;
   uniform vec3 uCore, uMidC, uRim, uFib;
-  uniform float uTreb, uBeat, uFibIntensity;
+  uniform float uTreb, uBeat, uFibIntensity, uAccentBoost;
   varying float vWave, vRad, vNodal;
   varying vec3 vN;
   void main() {
     float mask = smoothstep(1.02, 0.72, vRad);
     if (mask <= 0.01) discard;
     float fw = max(fwidth(vNodal), 0.012);
-    float contour = 1.0 - smoothstep(0.0, fw * 1.75, abs(vNodal));
+    float contour = 1.0 - smoothstep(0.0, fw * 1.85, abs(vNodal));
     float gridR = abs(fract(vRad * 8.0) - 0.5);
-    float ringLine = 1.0 - smoothstep(0.0, max(fwidth(vRad * 8.0), 0.015) * 1.3, gridR);
-    vec3 col = mix(uCore * 0.5, uMidC, clamp(0.5 + vWave, 0.0, 1.0));
-    col = mix(col, uRim, ringLine * 0.42);
-    col += uFib * contour * (0.75 + uTreb * 0.5 + uBeat * 0.4) * uFibIntensity;
-    float alpha = mask * (0.34 + contour * 0.55 + ringLine * 0.22);
+    float ringLine = 1.0 - smoothstep(0.0, max(fwidth(vRad * 8.0), 0.015) * 1.4, gridR);
+    // 4-Pigment Cymatic Separation: uCore troughs -> uMidC waves -> uRim concentric rings -> uFib Chladni nodal contours
+    vec3 col = mix(uCore * 0.85, uMidC, clamp(0.5 + vWave, 0.0, 1.0));
+    col = mix(col, uRim * 1.10, clamp(ringLine * 0.65 * uAccentBoost, 0.0, 0.92));
+    col = mix(col, uFib * 1.22, clamp(contour * (0.78 + uTreb * 0.45 + uBeat * 0.4) * uFibIntensity * uAccentBoost, 0.0, 0.96));
+    float alpha = mask * (0.38 + contour * 0.56 + ringLine * 0.28);
     gl_FragColor = vec4(col, alpha);
   }
 `;
@@ -2881,7 +3343,7 @@ branchCymaticGroup.add(cymaticCeiling);
 
 // 72 Instanced 3D Harmonic Crystal Monoliths rising between the Cymatic Horizons
 const cymPillarGeo = new THREE.CylinderGeometry(0.018, 0.026, 1.0, 6);
-const cymPillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false });
+const cymPillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false });
 const cymaticPillars = new THREE.InstancedMesh(cymPillarGeo, cymPillarMat, NB);
 cymaticPillars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 for (let i = 0; i < NB; i++) cymaticPillars.setColorAt(i, new THREE.Color(1, 1, 1));
@@ -2895,7 +3357,7 @@ const cymGyroRings = [];
 for (let r = 0; r < 3; r++) {
   const rg = new THREE.Mesh(
     new THREE.TorusGeometry(0.52 + r * 0.19, 0.009, 12, 120),
-    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.78, blending: THREE.AdditiveBlending, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.84, blending: THREE.AdditiveBlending, depthWrite: false })
   );
   branchCymaticGroup.add(rg);
   cymGyroRings.push(rg);
@@ -2909,8 +3371,8 @@ world.add(branchLatticeGroup);
 const latticeInnerCore = new THREE.Mesh(new THREE.OctahedronGeometry(0.58, 2), orb.material);
 branchLatticeGroup.add(latticeInnerCore);
 
-const latticeWireMat1 = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.65, blending: THREE.AdditiveBlending, depthWrite: false });
-const latticeWireMat2 = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.42, blending: THREE.AdditiveBlending, depthWrite: false });
+const latticeWireMat1 = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.72, blending: THREE.AdditiveBlending, depthWrite: false });
+const latticeWireMat2 = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true, transparent: true, opacity: 0.52, blending: THREE.AdditiveBlending, depthWrite: false });
 const latticeMidShell = new THREE.Mesh(new THREE.IcosahedronGeometry(1.06, 1), latticeWireMat1);
 const latticeOuterShell = new THREE.Mesh(new THREE.IcosahedronGeometry(1.52, 2), latticeWireMat2);
 branchLatticeGroup.add(latticeMidShell);
@@ -2943,7 +3405,7 @@ branchLatticeGroup.add(latticeRibbons);
 
 // 72 Radial 3D Fibonacci-Sphere Spectrum Spires
 const spireGeo = new THREE.ConeGeometry(0.024, 1.0, 5);
-const spireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88, blending: THREE.AdditiveBlending, depthWrite: false });
+const spireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false });
 const latticeSpires = new THREE.InstancedMesh(spireGeo, spireMat, NB);
 latticeSpires.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 const spireDirs = [];
@@ -3008,6 +3470,7 @@ resize();
 
 let last = performance.now() / 1000, tAcc = 0, spinAcc = 0, procPulse = 0, hudTick = 0;
 const gainEl = $('#sens');
+const accentEl = $('#slAccentPop');
 const fibEl = $('#slFibroid');
 const harmEl = $('#slHarmonic');
 const freeEl = $('#slFreeRoom');
@@ -3045,6 +3508,7 @@ function tick() {
 
   const live = A.ctx && A.src !== 'none';
   const gain = parseFloat(gainEl.value);
+  const accentBoost = accentEl ? parseFloat(accentEl.value) : 1.30;
   const fibInt = parseFloat(fibEl.value);
   const userL = parseFloat(harmEl.value);
   const freeRoom = parseFloat(freeEl.value);
@@ -3117,6 +3581,7 @@ function tick() {
   orbU.uVisMode.value = K.vis;
   orbU.uTorusMorph.value = K.torusMorph;
   orbU.uFibIntensity.value = fibInt;
+  orbU.uAccentBoost.value = accentBoost;
   orbU.uShowSurfFib.value = showOnBlobFib ? 1.0 : 0.0;
   orbU.uSharp.value = stateName === 'listening' ? 8.0 : 6.2;
   orbitalFibMat.uniforms.uInward.value = K.inward;
@@ -3140,23 +3605,25 @@ function tick() {
     barVal[b] += (v - barVal[b]) * (v > barVal[b] ? 0.6 : 0.14);
   }
 
-  // Toggle Exploration Tree Branch Visibility
+  // Toggle Exploration Tree Branch & 6-Layer Element Visibility
   const isOrb = activeBranch === 'orb';
   const isTokamak = activeBranch === 'tokamak';
   const isCymatic = activeBranch === 'cymatic';
   const isLattice = activeBranch === 'lattice';
 
-  orb.visible = isOrb;
+  orb.visible = isOrb && showCoreSurface;
   surfFibGroup.visible = isOrb && showOnBlobFib && fibInt > 0.02;
   orbitalFibGroup.visible = isOrb && showOrbitalFib && fibInt > 0.02;
   bars.visible = isOrb && showSpectrumRing;
-  wave.visible = isOrb;
-  waveEcho.visible = isOrb;
+  wave.visible = isOrb && showWaveLoops;
+  waveEcho.visible = isOrb && showWaveLoops;
+  points.visible = showParticleHalo;
 
   branchTokamakGroup.visible = isTokamak;
   branchCymaticGroup.visible = isCymatic;
   branchLatticeGroup.visible = isLattice;
 
+  halo.visible = showCoreSurface;
   halo.scale.setScalar(0.88 * (1.52 + level * 0.32 + beatEnv * 0.14));
   haloU.uI.value = (isTokamak ? 0.18 : 0.34) + level * (isTokamak ? 0.28 : 0.52) + beatEnv * 0.28;
 
@@ -3176,35 +3643,36 @@ function tick() {
         dummy.scale.set(0.022, h, 0.022);
         dummy.updateMatrix();
         bars.setMatrixAt(i, dummy.matrix);
-        const c = clamp(barVal[b] * 1.2, 0, 1);
-        tmpC.setRGB(lerp(pal.mid.x, pal.rim.x, c), lerp(pal.mid.y, pal.rim.y, c), lerp(pal.mid.z, pal.rim.z, c));
+        setWada4BarColor(tmpC, b, barVal[b], accentBoost);
         bars.setColorAt(i, tmpC);
       }
       bars.instanceMatrix.needsUpdate = true;
       bars.instanceColor.needsUpdate = true;
     }
 
-    // Waveform & Echo Loops
-    const step = live ? Math.floor(A.time.length / WN) : 0;
-    for (let i = 0; i < WN; i++) {
-      const win = Math.sin((Math.PI * i) / WN);
-      let s = live ? A.time[i * step] * gain * 2.2 : 0;
-      s = lerp(s, 0.18 * Math.sin(i * 0.18 + now * 2.2) * Math.sin(i * 0.05 - now * 0.7), procW * 0.8);
-      echoBuf[i] = lerp(echoBuf[i], waveBuf[i], 0.18);
-      waveBuf[i] = s * win * K.amp;
+    // Waveform (Pigment IV Counter-Accent) & Echo (Pigment III Crest Accent) Loops
+    if (showWaveLoops) {
+      const step = live ? Math.floor(A.time.length / WN) : 0;
+      for (let i = 0; i < WN; i++) {
+        const win = Math.sin((Math.PI * i) / WN);
+        let s = live ? A.time[i * step] * gain * 2.2 : 0;
+        s = lerp(s, 0.18 * Math.sin(i * 0.18 + now * 2.2) * Math.sin(i * 0.05 - now * 0.7), procW * 0.8);
+        echoBuf[i] = lerp(echoBuf[i], waveBuf[i], 0.18);
+        waveBuf[i] = s * win * K.amp;
+      }
+      const wp = wave.geometry.attributes.position.array, ep = waveEcho.geometry.attributes.position.array;
+      const wr = 1.52 + beatEnv * 0.04;
+      for (let i = 0; i < WN; i++) {
+        const a = (i / WN) * Math.PI * 2 + Math.PI / 2;
+        const r1 = wr + clamp(waveBuf[i], -0.35, 0.35), r2 = wr * 1.035 + clamp(echoBuf[i], -0.35, 0.35);
+        wp[i * 3] = Math.cos(a) * r1; wp[i * 3 + 1] = Math.sin(a) * r1; wp[i * 3 + 2] = 0;
+        ep[i * 3] = Math.cos(a) * r2; ep[i * 3 + 1] = Math.sin(a) * r2; ep[i * 3 + 2] = 0;
+      }
+      wave.geometry.attributes.position.needsUpdate = true;
+      waveEcho.geometry.attributes.position.needsUpdate = true;
+      wave.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
+      waveEcho.material.color.setRGB(pal.rim.x, pal.rim.y, pal.rim.z);
     }
-    const wp = wave.geometry.attributes.position.array, ep = waveEcho.geometry.attributes.position.array;
-    const wr = 1.52 + beatEnv * 0.04;
-    for (let i = 0; i < WN; i++) {
-      const a = (i / WN) * Math.PI * 2 + Math.PI / 2;
-      const r1 = wr + clamp(waveBuf[i], -0.35, 0.35), r2 = wr * 1.035 + clamp(echoBuf[i], -0.35, 0.35);
-      wp[i * 3] = Math.cos(a) * r1; wp[i * 3 + 1] = Math.sin(a) * r1; wp[i * 3 + 2] = 0;
-      ep[i * 3] = Math.cos(a) * r2; ep[i * 3 + 1] = Math.sin(a) * r2; ep[i * 3 + 2] = 0;
-    }
-    wave.geometry.attributes.position.needsUpdate = true;
-    waveEcho.geometry.attributes.position.needsUpdate = true;
-    wave.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
-    waveEcho.material.color.setRGB(pal.mid.x, pal.mid.y, pal.mid.z);
   } else if (isTokamak) {
     tokamakU.uT.value = tAcc;
     tokamakU.uBass.value = bass;
@@ -3215,7 +3683,10 @@ function tick() {
     tokamakU.uHarmM.value = K.m;
     tokamakU.uSymBreak.value = symBreak;
     tokamakU.uFibIntensity.value = fibInt;
+    tokamakU.uAccentBoost.value = accentBoost;
 
+    tokamakTorus.visible = showCoreSurface;
+    zPinchMesh.visible = showOnBlobFib;
     branchTokamakGroup.rotation.set(0.48 + rotX * 0.75, rotY * 0.9, Math.sin(now * 0.18) * 0.12);
     tokamakCoils.visible = showOrbitalFib && fibInt > 0.02;
     tokamakCoils.rotation.z = -spinAcc * 0.25;
@@ -3233,8 +3704,7 @@ function tick() {
         dummy.scale.set(1.0, 1.0 + h * 4.2, 1.0 + bass * 1.5);
         dummy.updateMatrix();
         tokamakRibs.setMatrixAt(i, dummy.matrix);
-        const c = clamp(barVal[b] * 1.25, 0, 1);
-        tmpC.setRGB(lerp(pal.mid.x, pal.fib.x, c), lerp(pal.mid.y, pal.fib.y, c), lerp(pal.mid.z, pal.fib.z, c));
+        setWada4BarColor(tmpC, b, barVal[b], accentBoost);
         tokamakRibs.setColorAt(i, tmpC);
       }
       tokamakRibs.instanceMatrix.needsUpdate = true;
@@ -3250,7 +3720,11 @@ function tick() {
     cymaticU.uHarmM.value = K.m;
     cymaticU.uSymBreak.value = symBreak;
     cymaticU.uFibIntensity.value = fibInt;
+    cymaticU.uAccentBoost.value = accentBoost;
 
+    cymaticFloor.visible = showCoreSurface;
+    cymaticCeiling.visible = showCoreSurface;
+    cymCoreSphere.visible = showOnBlobFib;
     branchCymaticGroup.rotation.set(0.24 + orbit.pitch * 0.6, rotY * 0.65, 0);
     cymCoreSphere.rotation.set(rotX * 1.4, -rotY * 1.6, 0);
     cymCoreSphere.scale.setScalar(0.95 + bass * 0.22 + beatEnv * 0.14);
@@ -3279,8 +3753,7 @@ function tick() {
         dummy.scale.set(1.0 + beatEnv * 0.3, h, 1.0 + beatEnv * 0.3);
         dummy.updateMatrix();
         cymaticPillars.setMatrixAt(i, dummy.matrix);
-        const c = clamp(barVal[b] * 1.25, 0, 1);
-        tmpC.setRGB(lerp(pal.mid.x, pal.fib.x, c), lerp(pal.mid.y, pal.fib.y, c), lerp(pal.mid.z, pal.fib.z, c));
+        setWada4BarColor(tmpC, b, barVal[b], accentBoost);
         cymaticPillars.setColorAt(i, tmpC);
       }
       cymaticPillars.instanceMatrix.needsUpdate = true;
@@ -3288,14 +3761,17 @@ function tick() {
     }
   } else if (isLattice) {
     branchLatticeGroup.rotation.set(rotX * 0.85, rotY * 0.85, 0);
+    latticeInnerCore.visible = showCoreSurface;
     latticeInnerCore.rotation.set(-tAcc * 0.65, tAcc * 0.9, 0);
     latticeInnerCore.scale.setScalar(0.95 + bass * 0.25 + beatEnv * 0.15);
 
+    latticeMidShell.visible = showOnBlobFib;
     latticeMidShell.rotation.set(tAcc * 0.38, -tAcc * 0.52, Math.sin(now * 0.4) * 0.3);
     latticeMidShell.scale.setScalar(1.0 + mid * 0.16 + beatEnv * 0.08);
     latticeWireMat1.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
-    latticeWireMat1.opacity = (0.35 + treb * 0.45) * clamp(fibInt, 0.2, 1.3);
+    latticeWireMat1.opacity = (0.42 + treb * 0.45) * clamp(fibInt, 0.2, 1.3);
 
+    latticeOuterShell.visible = showOnBlobFib;
     latticeOuterShell.rotation.set(-tAcc * 0.22, tAcc * 0.31, -Math.cos(now * 0.3) * 0.25);
     latticeOuterShell.scale.setScalar(1.0 + level * 0.12 + Math.sin(phase * Math.PI * 2) * 0.03);
     latticeWireMat2.color.setRGB(pal.rim.x, pal.rim.y, pal.rim.z);
@@ -3315,8 +3791,7 @@ function tick() {
         dummy.scale.set(1.0 + bass * 0.6, h, 1.0 + bass * 0.6);
         dummy.updateMatrix();
         latticeSpires.setMatrixAt(i, dummy.matrix);
-        const c = clamp(barVal[b] * 1.3, 0, 1);
-        tmpC.setRGB(lerp(pal.mid.x, pal.fib.x, c), lerp(pal.mid.y, pal.fib.y, c), lerp(pal.mid.z, pal.fib.z, c));
+        setWada4BarColor(tmpC, b, barVal[b], accentBoost);
         latticeSpires.setColorAt(i, tmpC);
       }
       latticeSpires.instanceMatrix.needsUpdate = true;
@@ -3413,12 +3888,20 @@ function tick() {
     if (!AN.locked) $$('#bar i').forEach(el => el.classList.remove('on'));
     qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
 
-    // Live Tabular-Numeral Slider Readout Badges
+    // Live Tabular-Numeral Slider Readout Badges & 2D XY Pad Sync
+    if ($('#valAccent')) $('#valAccent').textContent = accentBoost.toFixed(2);
     $('#valFib').textContent = fibInt.toFixed(2);
     $('#valHarm').textContent = userL.toFixed(1);
     $('#valFree').textContent = freeRoom.toFixed(2);
     $('#valSym').textContent = symBreak.toFixed(2);
     $('#valGain').textContent = gain.toFixed(2);
+    if ($('#xyReadout')) $('#xyReadout').textContent = `l=${userL.toFixed(1)} · ε=${symBreak.toFixed(2)}`;
+    if ($('#xyPuck') && !xyDragging) {
+      const xPct = clamp(((userL - 2.0) / 5.0) * 100, 6, 94);
+      const yPct = clamp((1.0 - symBreak / 1.0) * 100, 8, 92);
+      $('#xyPuck').style.left = `${xPct.toFixed(1)}%`;
+      $('#xyPuck').style.top = `${yPct.toFixed(1)}%`;
+    }
 
     if (A.src === 'file' && A.media && A.media.duration) {
       const cur = A.media.currentTime || 0, dur = A.media.duration || 1;
@@ -3474,7 +3957,9 @@ function applyShowcaseScene(idx) {
   visMode = sc.mode;
   $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode)));
   paletteMode = sc.pal;
+  customWadaOverride = null;
   $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pal === paletteMode)));
+  applyAccentColor();
   camMode = sc.cam;
   $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === camMode)));
   harmEl.value = String(sc.l);
@@ -3559,15 +4044,20 @@ function saveAndSharePreset() {
   params.set('branch', activeBranch);
   params.set('mode', String(visMode));
   params.set('pal', paletteMode);
+  params.set('rot', String(wadaRolePermutation));
   params.set('cam', camMode);
   params.set('trk', String(activeTrackIdx));
+  if (accentPopEl) params.set('acc', accentPopEl.value);
   params.set('fib', fibEl.value);
   params.set('l', harmEl.value);
   params.set('free', freeEl.value);
   params.set('eps', symEl.value);
+  params.set('core', showCoreSurface ? '1' : '0');
   params.set('onblob', showOnBlobFib ? '1' : '0');
   params.set('orbital', showOrbitalFib ? '1' : '0');
   params.set('ring', showSpectrumRing ? '1' : '0');
+  params.set('wave', showWaveLoops ? '1' : '0');
+  params.set('pts', showParticleHalo ? '1' : '0');
   const hash = '#' + params.toString();
   try {
     history.replaceState(null, '', hash);
@@ -3589,6 +4079,9 @@ function loadPresetFromHashOrStorage() {
       visMode = clamp(parseInt(p.get('mode'), 10) || 0, 0, 4);
       $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode)));
     }
+    if (p.has('rot')) {
+      wadaRolePermutation = clamp(parseInt(p.get('rot'), 10) || 0, 0, 3);
+    }
     if (p.has('pal') && (WADA_PALETTES[p.get('pal')] || p.get('pal') === 'wada_auto')) {
       paletteMode = p.get('pal');
       $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pal === paletteMode)));
@@ -3602,10 +4095,15 @@ function loadPresetFromHashOrStorage() {
       activeTrackIdx = clamp(parseInt(p.get('trk'), 10) || 0, 0, TRACK_LIBRARY.length - 1);
       $('#trackSelect').value = String(activeTrackIdx);
     }
+    if (p.has('acc') && accentPopEl) accentPopEl.value = p.get('acc');
     if (p.has('fib')) fibEl.value = p.get('fib');
     if (p.has('l')) harmEl.value = p.get('l');
     if (p.has('free')) freeEl.value = p.get('free');
     if (p.has('eps')) symEl.value = p.get('eps');
+    if (p.has('core') && $('#bCoreSurfaceToggle')) {
+      showCoreSurface = p.get('core') !== '0';
+      $('#bCoreSurfaceToggle').setAttribute('aria-pressed', String(showCoreSurface));
+    }
     if (p.has('onblob')) {
       showOnBlobFib = p.get('onblob') !== '0';
       $('#bOnBlobFib').setAttribute('aria-pressed', String(showOnBlobFib));
@@ -3618,9 +4116,18 @@ function loadPresetFromHashOrStorage() {
       showSpectrumRing = p.get('ring') !== '0';
       $('#bRingToggle').setAttribute('aria-pressed', String(showSpectrumRing));
     }
+    if (p.has('wave') && $('#bWaveToggle')) {
+      showWaveLoops = p.get('wave') !== '0';
+      $('#bWaveToggle').setAttribute('aria-pressed', String(showWaveLoops));
+    }
+    if (p.has('pts') && $('#bParticlesToggle')) {
+      showParticleHalo = p.get('pts') !== '0';
+      $('#bParticlesToggle').setAttribute('aria-pressed', String(showParticleHalo));
+    }
   } catch (e) {}
 }
 loadPresetFromHashOrStorage();
+applyAccentColor();
 requestAnimationFrame(tick);
 
 /* ───────────────────────── UI Controls & Keyboard Shortcuts ───────────────────────── */
@@ -3645,7 +4152,7 @@ $('#bVoice').onclick = () => {
 };
 $('#bMic').onclick = () => A.src === 'mic' ? (stopAll(), setState('idle')) : startMic($('#micDeviceSelect').value);
 $('#bSysAudio').onclick = () => A.src === 'sys' ? (stopAll(), setState('idle')) : startSystemAudio();
-$('#bStop').onclick = () => { toggleShowcase(false); toggleTreeCycle(false); stopAll(); setState('idle'); };
+$('#bStop').onclick = () => { toggleShowcase(false); toggleTreeCycle(false); toggleDuetMode(false); stopAll(); setState('idle'); };
 let hasRunFirstTurn = false;
 $('#bTurn').onclick = () => {
   toggleShowcase(false);
@@ -3803,6 +4310,7 @@ function initSseControlBridge() {
           if (c.branch) setActiveBranch(c.branch);
           if (c.palette && (WADA_PALETTES[c.palette] || c.palette === 'wada_auto')) {
             paletteMode = c.palette;
+            customWadaOverride = null;
             applyAccentColor();
           }
           if (c.state) setState(c.state);
@@ -3859,14 +4367,14 @@ $('#micDeviceSelect').onchange = e => {
 
 $$('[data-state]').forEach(b => b.onclick = () => { turnId++; turnActive = false; setState(b.dataset.state); });
 
-// Tweak Drawer toggle
+// Studio Control Panel (Tweak Drawer) toggle
 const tweakDrawer = $('#tweakDrawer');
 const bTweaks = $('#bTweaks');
 bTweaks.onclick = () => {
   syncDockHeight();
   const open = tweakDrawer.classList.toggle('open');
   bTweaks.setAttribute('aria-pressed', String(open));
-  bTweaks.textContent = open ? 'Tweaks ▾' : 'Tweaks ▴';
+  bTweaks.textContent = open ? 'Controls ▾' : 'Controls ▴';
 };
 
 // Help Modal toggle
@@ -3894,14 +4402,55 @@ $$('[data-cam]').forEach(b => b.onclick = () => {
   $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
 });
 
-// Sanzo Wada & Monotone Palette buttons
+// Sanzo Wada & Monotone Palette buttons + 4-Pigment Role Rotation & Custom Color Pickers
 $$('[data-pal]').forEach(b => b.onclick = () => {
   paletteMode = b.dataset.pal;
+  customWadaOverride = null;
   $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
   applyAccentColor();
 });
+if ($('#bRotateWada')) {
+  $('#bRotateWada').onclick = () => rotateWadaRoles(1, true);
+}
+if ($('#bHudRotateWada')) {
+  $('#bHudRotateWada').onclick = () => rotateWadaRoles(1, true);
+}
+if ($('#bBeatRotateWada')) {
+  $('#bBeatRotateWada').onclick = function () {
+    beatRotateWada = !beatRotateWada;
+    this.setAttribute('aria-pressed', String(beatRotateWada));
+    toast(beatRotateWada ? 'Bar-Sync Wada Pigment Rotation: ON (rotates every 4 bars)' : 'Bar-Sync Wada Pigment Rotation: OFF');
+  };
+}
+['Core', 'Mid', 'Rim', 'Fib'].forEach(slot => {
+  const inp = $(`#colPicker${slot}`);
+  if (!inp) return;
+  inp.addEventListener('input', () => {
+    const cur = getActivePaletteTarget();
+    if (!customWadaOverride) {
+      customWadaOverride = {
+        label: 'Custom Wada 4-Pigment',
+        core: [...cur.core],
+        mid: [...cur.mid],
+        rim: [...cur.rim],
+        fib: [...cur.fib],
+        mono: 0
+      };
+    }
+    const key = slot.toLowerCase();
+    customWadaOverride[key] = hexToRgbArr(inp.value);
+    wadaRolePermutation = 0;
+    applyAccentColor();
+  });
+});
 
-// Fibroid, Ring & Auto-VAD toggles
+// 6-Layer 3D Element Matrix & Auto-VAD toggles
+if ($('#bCoreSurfaceToggle')) {
+  $('#bCoreSurfaceToggle').onclick = function () {
+    showCoreSurface = !showCoreSurface;
+    this.setAttribute('aria-pressed', String(showCoreSurface));
+  };
+}
 $('#bOnBlobFib').onclick = function () {
   showOnBlobFib = !showOnBlobFib;
   this.setAttribute('aria-pressed', String(showOnBlobFib));
@@ -3914,10 +4463,81 @@ $('#bRingToggle').onclick = function () {
   showSpectrumRing = !showSpectrumRing;
   this.setAttribute('aria-pressed', String(showSpectrumRing));
 };
+if ($('#bWaveToggle')) {
+  $('#bWaveToggle').onclick = function () {
+    showWaveLoops = !showWaveLoops;
+    this.setAttribute('aria-pressed', String(showWaveLoops));
+  };
+}
+if ($('#bParticlesToggle')) {
+  $('#bParticlesToggle').onclick = function () {
+    showParticleHalo = !showParticleHalo;
+    this.setAttribute('aria-pressed', String(showParticleHalo));
+  };
+}
 $('#bAutoVad').onclick = function () {
   autoVadOn = !autoVadOn;
   this.setAttribute('aria-pressed', String(autoVadOn));
 };
+
+// Interactive 2D XY Symplectic Morph Pad (Drag to sweep Harmonic Degree l vs Symmetry Breaking ε + Free Room)
+let xyDragging = false;
+const xyMorphPad = $('#xyMorphPad');
+if (xyMorphPad) {
+  const updateFromXYPad = e => {
+    const rect = xyMorphPad.getBoundingClientRect();
+    const nx = clamp((e.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
+    const ny = clamp((e.clientY - rect.top) / Math.max(1, rect.height), 0, 1);
+    const newL = 2.0 + nx * 5.0;
+    const newEps = (1.0 - ny) * 1.0;
+    const newFree = 0.45 + (nx * 0.45 + (1.0 - ny) * 0.65);
+    harmEl.value = newL.toFixed(1);
+    symEl.value = newEps.toFixed(2);
+    freeEl.value = clamp(newFree, 0.3, 1.8).toFixed(2);
+    if ($('#xyPuck')) {
+      $('#xyPuck').style.left = `${(nx * 90 + 5).toFixed(1)}%`;
+      $('#xyPuck').style.top = `${(ny * 86 + 7).toFixed(1)}%`;
+    }
+    if ($('#xyReadout')) {
+      $('#xyReadout').textContent = `l=${newL.toFixed(1)} · ε=${newEps.toFixed(2)}`;
+    }
+  };
+  xyMorphPad.addEventListener('pointerdown', e => {
+    xyDragging = true;
+    xyMorphPad.setPointerCapture(e.pointerId);
+    updateFromXYPad(e);
+  });
+  xyMorphPad.addEventListener('pointermove', e => {
+    if (!xyDragging) return;
+    updateFromXYPad(e);
+  });
+  const endXY = () => { xyDragging = false; };
+  xyMorphPad.addEventListener('pointerup', endXY);
+  xyMorphPad.addEventListener('pointercancel', endXY);
+}
+
+// Multi-Turn Socratic Duet Mode (Puck × Kore Continuous Dialogue across all 4 Quantum Topologies)
+let duetModeOn = false, duetTimer = 0;
+function toggleDuetMode(forceState) {
+  duetModeOn = typeof forceState === 'boolean' ? forceState : !duetModeOn;
+  if ($('#bDuetMode')) $('#bDuetMode').setAttribute('aria-pressed', String(duetModeOn));
+  clearTimeout(duetTimer);
+  if (!duetModeOn) return;
+  toggleShowcase(false);
+  toast('✦ Puck × Kore Socratic Duet Mode active: continuous multi-turn neural dialogue across quantum topologies.');
+  const stepDuet = () => {
+    if (!duetModeOn) return;
+    if (!turnActive) {
+      agentTurn('listening', null);
+      activeScenarioIdx = (activeScenarioIdx + 1) % NEURAL_TURN_BANK.length;
+    }
+    duetTimer = setTimeout(stepDuet, 2500);
+  };
+  stepDuet();
+}
+if ($('#bDuetMode')) {
+  $('#bDuetMode').onclick = () => toggleDuetMode();
+}
 
 // Musical Keyboard Chime Mapping (A S D F G H J K L) + Exploration Tree (Q W E R) + Scene Shortcuts (5-9) + State Shortcuts (1-4, Space, T, U, ?)
 const KEY_NOTES = { a: 57, s: 60, d: 62, f: 64, g: 67, h: 69, j: 72, k: 74, l: 76 };
@@ -3983,6 +4603,8 @@ window.noetherResonance = {
   toggleTreeCycle,
   runAgentTurn: (stage) => agentTurn(stage || 'listening'),
   askKore: (promptText) => runCustomAiTurn(promptText),
+  toggleDuetMode,
+  rotateWadaRoles,
   setScenario: (idx) => {
     activeScenarioIdx = clamp(idx, 0, NEURAL_TURN_BANK.length - 1);
     if ($('#turnScenarioSelect')) $('#turnScenarioSelect').value = String(activeScenarioIdx);
@@ -3990,7 +4612,7 @@ window.noetherResonance = {
   },
   turnBank: NEURAL_TURN_BANK,
   startDemo: () => startDemo(),
-  setPalette: (p) => { if (WADA_PALETTES[p] || p === 'wada_auto') { paletteMode = p; applyAccentColor(); } },
+  setPalette: (p) => { if (WADA_PALETTES[p] || p === 'wada_auto') { paletteMode = p; customWadaOverride = null; applyAccentColor(); } },
   setFieldMode: (m) => { visMode = clamp(m, 0, 4); },
   setCamera: (c) => { if (['front', 'iso', 'orbit', 'macro'].includes(c)) { camMode = c; $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === c))); } },
   setTrack: (idx) => { activeTrackIdx = clamp(idx, 0, TRACK_LIBRARY.length - 1); $('#trackSelect').value = String(activeTrackIdx); if (Demo.on) startDemo(); },
@@ -4001,9 +4623,9 @@ window.noetherResonance = {
   connectStream: (stream, label) => attachStream(stream, 'mic', label || 'External stream'),
   connectNode: node => { ensureAudio(); node.connect(A.analyser); setSource('node', 'External audio node'); },
   sequencer: window.NoetherSoundSequencer || null,
-  get telemetry() { return { branch: activeBranch, scenarioIdx: activeScenarioIdx, turnActive, state: stateName, visMode, paletteMode, camMode, showcaseOn, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
+  get telemetry() { return { branch: activeBranch, scenarioIdx: activeScenarioIdx, turnActive, state: stateName, visMode, paletteMode, wadaRolePermutation, camMode, showcaseOn, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
   get audioContext() { return ensureAudio(); },
-  stop: () => { toggleShowcase(false); toggleTreeCycle(false); stopAll(); setState('idle'); }
+  stop: () => { toggleShowcase(false); toggleTreeCycle(false); toggleDuetMode(false); stopAll(); setState('idle'); }
 };
 })();
 </script>
