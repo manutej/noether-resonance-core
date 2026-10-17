@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Noether Resonance Core — Quantum Field 3D Audio & Speech Visualizer (v4.0)</title>
+<title>Noether Resonance Core — Quantum Field 3D Audio & Speech Visualizer (v5.0 Quantum Horizon)</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='38%25' cy='35%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffe6bd'/%3E%3Cstop offset='50%25' stop-color='%23c23645'/%3E%3Cstop offset='100%25' stop-color='%23180c24'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='28' fill='url(%23g)' stroke='%23ebac3d' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='24' ry='10' fill='none' stroke='%23ffe6bd' stroke-opacity='0.65' stroke-width='1.5' transform='rotate(-28 32 32)'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -321,7 +322,7 @@ body.ui-off .hud {
   flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 5px;
+  gap: 4px;
 }
 .tweak-row + .tweak-row {
   padding-top: 6px;
@@ -338,14 +339,14 @@ body.ui-off .hud {
 .swatch-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   min-height: 29px;
-  padding: 5px 10px;
+  padding: 5px 9px;
   border-radius: 7px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
   color: var(--fg-dim);
-  font: 500 11px/1 var(--mono);
+  font: 500 10.5px/1 var(--mono);
   cursor: pointer;
   transition: all 0.15s ease;
   flex-shrink: 0;
@@ -378,9 +379,17 @@ body.ui-off .hud {
   color: var(--fg-dim);
   padding: 0 2px;
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.sl-wrap b {
+  color: var(--fg);
+  font-weight: 500;
+  font-size: 10px;
+  min-width: 22px;
+  text-align: right;
 }
 .sl-wrap input[type="range"] {
-  width: 56px;
+  width: 50px;
   accent-color: var(--accent);
   cursor: pointer;
 }
@@ -581,7 +590,7 @@ body.dragging .drop { opacity: 1; }
     </select>
   </div>
 
-  <!-- Row 2: Sanzo Wada & Monotone Color Combinations -->
+  <!-- Row 2: Sanzo Wada & Monotone Color Combinations + Custom Wada Pigment Duet Mixer -->
   <div class="tweak-row" role="group" aria-label="Sanzo Wada and Monotone Palettes">
     <span class="tweak-lbl">Palette</span>
     <button class="swatch-pill" data-pal="wada_auto" aria-pressed="true" title="Sanzo Wada Turn-Adaptive Combinations">
@@ -602,6 +611,9 @@ body.dragging .drop { opacity: 1; }
     <button class="swatch-pill" data-pal="wada_091" aria-pressed="false" title="Sanzo Wada #091: Kyoto Moss, Persimmon Silk, Pale Gold, Bamboo">
       <span class="swatch-dots"><i style="background:#131f16"></i><i style="background:#52796f"></i><i style="background:#e07a5f"></i><i style="background:#f2cc8f"></i></span>Wada #091
     </button>
+    <button class="swatch-pill" data-pal="wada_173" aria-pressed="false" title="Sanzo Wada #173: Aubergine Ink, Carmine Lacquer, Raw Amber, Warm Parchment">
+      <span class="swatch-dots"><i style="background:#1b0f1e"></i><i style="background:#9e2a2b"></i><i style="background:#e09f3e"></i><i style="background:#fff3b0"></i></span>Wada #173
+    </button>
     <button class="swatch-pill" data-pal="mono_silver" aria-pressed="false" title="Monotone I: Obsidian & Liquid Silver">
       <span class="swatch-dots"><i style="background:#10131a"></i><i style="background:#6c7587"></i><i style="background:#eef2f7"></i></span>Mono Silver
     </button>
@@ -616,22 +628,22 @@ body.dragging .drop { opacity: 1; }
   <!-- Row 3: Fibroids, Quantum Harmonics, Live VAD & Capture Controls -->
   <div class="tweak-row">
     <label class="sl-wrap" title="Intensity and clarity of quantum field fibroids on and around the blob">
-      Fibroids <input id="slFibroid" type="range" min="0" max="1.6" step="0.05" value="1.15">
+      Fibroids <input id="slFibroid" type="range" min="0" max="1.6" step="0.05" value="1.15"><b id="valFib">1.15</b>
     </label>
     <button class="btn" id="bOnBlobFib" aria-pressed="true" title="Toggle surface-hugging quantum fibroid veins directly on the moving blob">On-Blob Veins</button>
     <button class="btn" id="bOrbitalFib" aria-pressed="true" title="Toggle 3D Hopf & magnetic flux fibroid loops around the blob">3D Field Loops</button>
     <button class="btn" id="bRingToggle" aria-pressed="true" title="Toggle outer spectrum bar ring">Spectrum Ring</button>
     <label class="sl-wrap" title="Spherical Harmonic Multipole Order (l)">
-      Harmonic ℓ <input id="slHarmonic" type="range" min="2" max="7" step="1" value="3">
+      Harmonic ℓ <input id="slHarmonic" type="range" min="2" max="7" step="1" value="3"><b id="valHarm">3</b>
     </label>
     <label class="sl-wrap" title="Noether Second Theorem Free-Room Elasticity">
-      Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.0">
+      Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.0"><b id="valFree">1.00</b>
     </label>
     <label class="sl-wrap" title="Explicit Symmetry Breaking Perturbation (epsilon)">
-      Symmetry ε <input id="slSymBreak" type="range" min="0.0" max="1.0" step="0.05" value="0.18">
+      Symmetry ε <input id="slSymBreak" type="range" min="0.0" max="1.0" step="0.05" value="0.18"><b id="valSym">0.18</b>
     </label>
     <label class="sl-wrap" title="Audio Input Sensitivity / Gain">
-      Gain <input id="sens" type="range" min="0.4" max="2.5" step="0.05" value="1.15">
+      Gain <input id="sens" type="range" min="0.4" max="2.5" step="0.05" value="1.15"><b id="valGain">1.15</b>
     </label>
     <button class="btn" id="bAutoVad" aria-pressed="true" title="Hands-Free Mic Auto-Turn: automatically transitions Listening -> Thinking -> Speaking when you speak into Mic and pause">Auto-VAD</button>
     <select id="micDeviceSelect" class="sl-select" title="Select Microphone or Loopback Audio Input Device" style="display:none"></select>
@@ -675,7 +687,8 @@ body.dragging .drop { opacity: 1; }
     <kbd>5 – 9</kbd><span>Jump directly to Curated Showcase Scenes I – V</span>
     <kbd>A – L</kbd><span>Play polyphonic harmonic chimes & launch 3D vortex shockwaves</span>
     <kbd>T / U / ?</kbd><span>Toggle Tweak Drawer (`T`) · Toggle pure 3D canvas (`U`) · Help (`?`)</span>
-    <kbd>Drag / Wheel</kbd><span>Orbit 3D field (`Drag`) · Zoom camera (`Wheel`) · Pluck chime (`Dbl-Click`)</span>
+    <kbd>Drag / Wheel</kbd><span>Orbit 3D field + pan stereo soundstage (`Drag`) · Zoom (`Wheel`) · Pluck (`Dbl-Click`)</span>
+    <kbd>WebMIDI</kbd><span>MIDI Notes play quantum chimes · CC 1/74/71/73 sweep ℓ, Free Room, ε, Fibroids</span>
   </div>
 </aside>
 
@@ -737,6 +750,10 @@ const WADA_PALETTES = {
     // Wada #091: Kyoto Moss · Verdigris Pine · Persimmon Silk · Pale Bamboo Gold
     core: [0.05, 0.10, 0.07], mid: [0.32, 0.48, 0.43], rim: [0.95, 0.82, 0.56], fib: [0.89, 0.49, 0.38], accent: '#f2cc8f', mono: 0
   },
+  wada_173: {
+    // Wada #173: Aubergine Ink · Carmine Lacquer · Raw Amber · Warm Parchment
+    core: [0.09, 0.04, 0.10], mid: [0.62, 0.17, 0.17], rim: [0.98, 0.92, 0.69], fib: [0.90, 0.62, 0.24], accent: '#e09f3e', mono: 0
+  },
 
   // Pure Architectural Monotone Palettes:
   mono_silver: {
@@ -756,7 +773,7 @@ const SHOWCASE_SCENES = [
   { name: 'Scene II · Hopf Toroid Attractor & Wada #068', mode: 2, pal: 'wada_068', state: 'thinking', cam: 'iso', trk: 2, l: 4, free: 1.15, eps: 0.24 },
   { name: 'Scene III · Cymatic Chladni & Liquid Silver Monotone', mode: 1, pal: 'mono_silver', state: 'speaking', cam: 'front', trk: 1, l: 5, free: 1.10, eps: 0.12 },
   { name: 'Scene IV · Dirac Ferrofluid & Wada #219 Peacock Rose', mode: 3, pal: 'wada_219', state: 'listening', cam: 'orbit', trk: 3, l: 4, free: 1.25, eps: 0.22 },
-  { name: 'Scene V · Superfluid Vortex & Wada #091 Kyoto Persimmon', mode: 4, pal: 'wada_091', state: 'speaking', cam: 'iso', trk: 4, l: 3, free: 1.15, eps: 0.28 }
+  { name: 'Scene V · Superfluid Vortex & Wada #173 Carmine Amber', mode: 4, pal: 'wada_173', state: 'speaking', cam: 'iso', trk: 4, l: 3, free: 1.15, eps: 0.28 }
 ];
 
 /* ───────────────────────── Agent & Resonance States ───────────────────────── */
@@ -837,9 +854,9 @@ function setState(name) {
   $$('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === name)));
 }
 
-/* ───────────────────────── WebAudio Graph & Inputs ───────────────────────── */
+/* ───────────────────────── WebAudio Graph & Spatial Panner Inputs ───────────────────────── */
 const A = {
-  ctx: null, analyser: null, master: null,
+  ctx: null, analyser: null, master: null, panner: null,
   freq: null, prev: null, time: null,
   src: 'none', media: null, mediaNode: null,
   stream: null, streamNode: null, noise: null
@@ -854,7 +871,13 @@ function ensureAudio() {
     A.analyser.smoothingTimeConstant = 0.52;
     A.master = A.ctx.createGain();
     A.master.gain.value = 0.85;
-    A.master.connect(A.ctx.destination);
+    if (A.ctx.createStereoPanner) {
+      A.panner = A.ctx.createStereoPanner();
+      A.master.connect(A.panner);
+      A.panner.connect(A.ctx.destination);
+    } else {
+      A.master.connect(A.ctx.destination);
+    }
     A.master.connect(A.analyser);
     A.freq = new Uint8Array(A.analyser.frequencyBinCount);
     A.prev = new Float32Array(A.analyser.frequencyBinCount);
@@ -1087,7 +1110,7 @@ function playHarmonicChime(midiNote, lOrder, mOrder) {
 
   if (A.src === 'none') {
     A.src = 'chime';
-    $('#srcLabel').textContent = `Interactive Quantum Chime · f₀=${Math.round(f0)}Hz · Y_${Math.round(lOrder)}^${Math.round(mOrder)}`;
+    $('#srcLabel').textContent = `Interactive Quantum Chime · f₀=${Math.round(f0)}Hz · Y(ℓ=${Math.round(lOrder)}, m=${Math.round(mOrder)})`;
     setTimeout(() => { if (A.src === 'chime') A.src = 'none'; }, 1500);
   }
   fireBeat(0.75, false, true);
@@ -1627,7 +1650,7 @@ const orb = new THREE.Mesh(
     `,
     fragmentShader: `
       uniform vec3 uCore, uMidC, uRim, uFib;
-      uniform float uT, uLevel, uBeat, uFibIntensity, uShowSurfFib, uHarmL, uHarmM, uMono, uTorusMorph;
+      uniform float uT, uBass, uMid, uTreb, uLevel, uBeat, uFibIntensity, uShowSurfFib, uHarmL, uHarmM, uMono, uTorusMorph;
       varying vec3 vN;
       varying vec3 vV;
       varying float vD;
@@ -1655,7 +1678,7 @@ const orb = new THREE.Mesh(
         col = mix(col, uRim, fr * 0.82);
         col += uRim * fr * uBeat * 0.32;
 
-        // Crisp Dual-Band On-Surface Quantum Equipotential & Nodal Fibroid Veins
+        // Crisp Triple-Band On-Surface Quantum Equipotential, Nodal & Acoustic-Ripple Fibroid Veins
         if (uShowSurfFib > 0.5 && uFibIntensity > 0.01) {
           float waveCoord = vPhase * 2.65 + uT * 0.36;
           float fw = max(fwidth(waveCoord), 0.0075);
@@ -1671,9 +1694,15 @@ const orb = new THREE.Mesh(
           float geoDist = abs(fract(geoCoord) - 0.5);
           float geoLine = 1.0 - smoothstep(0.0, fw2 * 1.45, geoDist);
 
+          // Tertiary high-frequency acoustic-ripple interference filament (driven by treble & mid energy)
+          float acoustCoord = (theta * (uHarmL + 2.0) - phi * uHarmM) * 1.35 + vPhase * 1.8 + uT * 0.52;
+          float fw3 = max(fwidth(acoustCoord), 0.008);
+          float acoustDist = abs(fract(acoustCoord) - 0.5);
+          float acoustLine = (1.0 - smoothstep(0.0, fw3 * 1.25, acoustDist)) * clamp(0.28 + uTreb * 0.95 + uMid * 0.45, 0.0, 1.0);
+
           float torusDamp = 1.0 - 0.22 * uTorusMorph;
-          float combinedFib = (max(fibCore * 0.92, geoLine * 0.64) + fibAura * 0.24) * (0.48 + 0.52 * fr) * uFibIntensity * torusDamp;
-          vec3 veinColor = mix(uFib, uRim, fibCore * 0.50) * 1.18;
+          float combinedFib = (max(max(fibCore * 0.92, geoLine * 0.66), acoustLine * 0.58) + fibAura * 0.24) * (0.48 + 0.52 * fr) * uFibIntensity * torusDamp;
+          vec3 veinColor = mix(uFib, uRim, max(fibCore * 0.50, acoustLine * 0.65)) * 1.18;
           col = mix(col, veinColor, clamp(combinedFib, 0.0, 0.92));
         }
 
@@ -1893,7 +1922,7 @@ function makeLoop(opacity) {
 const wave = makeLoop(0.95), waveEcho = makeLoop(0.55);
 const waveBuf = new Float32Array(WN), echoBuf = new Float32Array(WN);
 
-/* ── 7. Conserved Noether Current Particle Halo (4,800 GPU Particles with 3D Curl/Hopf Advection) ── */
+/* ── 7. Conserved Noether Current Particle Halo (4,800 GPU Particles with Legendre Nodal & Biot-Savart Advection) ── */
 const PN = window.innerWidth < 720 ? 2600 : 4800;
 const pg = new THREE.BufferGeometry();
 const pDir = new Float32Array(PN * 3), pSeed = new Float32Array(PN * 4);
@@ -1906,37 +1935,49 @@ pg.setAttribute('position', new THREE.BufferAttribute(pDir, 3));
 pg.setAttribute('aSeed', new THREE.BufferAttribute(pSeed, 4));
 const pU = {
   uT: { value: 0 }, uSpin: { value: 0 }, uBurst: { value: 0 }, uBass: { value: 0 }, uTreb: { value: 0 },
-  uInward: { value: 0 }, uPx: { value: renderer.getPixelRatio() },
-  uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uOp: { value: 0.85 }
+  uInward: { value: 0 }, uHarmL: { value: 3 }, uHarmM: { value: 2 }, uSymBreak: { value: 0.35 }, uVisMode: { value: 0 },
+  uPx: { value: renderer.getPixelRatio() },
+  uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }, uOp: { value: 0.85 }
 };
 const points = new THREE.Points(pg, new THREE.ShaderMaterial({
   uniforms: pU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
   vertexShader: `
-    attribute vec4 aSeed; uniform float uT,uSpin,uBurst,uBass,uTreb,uInward,uPx;
-    varying float vA; varying float vR;
+    attribute vec4 aSeed;
+    uniform float uT, uSpin, uBurst, uBass, uTreb, uInward, uHarmL, uHarmM, uSymBreak, uVisMode, uPx;
+    varying float vA; varying float vR; varying float vNodal;
     void main(){
-      float r=2.08+aSeed.x*3.3;
-      // Conserved divergence-free Noether current precession on S^2
-      float ang=uSpin*(0.38+aSeed.y*0.92)/(0.52+aSeed.x);
-      vec3 d=position;
-      float c=cos(ang), s=sin(ang); d.xz=mat2(c,-s,s,c)*d.xz;
-      float a2=ang*0.32 + 0.25*sin(uT*0.4+aSeed.z*6.28);
-      d.xy=mat2(cos(a2),-sin(a2),sin(a2),cos(a2))*d.xy;
-      float push=uBurst*(0.22+aSeed.z*0.85)-uInward*0.45*aSeed.z;
-      float wob=sin(uT*(0.55+aSeed.w)+aSeed.x*21.0)*0.12;
-      vec3 p=d*(r+push+wob+uBass*0.35*aSeed.y);
-      p.z*=0.58;
-      vec4 mv=modelViewMatrix*vec4(p,1.0);
-      gl_Position=projectionMatrix*mv;
-      float tw=0.5+0.5*sin(uT*(2.0+aSeed.w*3.0)+aSeed.y*40.0);
-      gl_PointSize=uPx*(1.25+aSeed.w*2.15+uTreb*2.6*tw)*(6.5/-mv.z);
-      vA=(0.30+0.70*tw)*(1.0-aSeed.x*0.50);
-      vR=aSeed.x;
+      float r = 2.08 + aSeed.x * 3.3;
+      // Conserved divergence-free Noether current precession on S^2 coupled to active Spherical Harmonic numbers (l, m)
+      float ang = uSpin * (0.38 + aSeed.y * 0.92 + 0.06 * uHarmM) / (0.52 + aSeed.x);
+      vec3 d = position;
+      float c = cos(ang), s = sin(ang); d.xz = mat2(c, -s, s, c) * d.xz;
+      float a2 = ang * 0.32 + 0.25 * sin(uT * 0.4 + aSeed.z * 6.28 + uSymBreak * 2.0);
+      d.xy = mat2(cos(a2), -sin(a2), sin(a2), cos(a2)) * d.xy;
+
+      // Legendre nodal ring & Biot-Savart magnetic latitude attractor
+      float theta = acos(clamp(d.y, -1.0, 1.0));
+      float phi = atan(d.z, d.x);
+      float nodalBand = cos(theta * uHarmL + phi * uHarmM - uT * 0.65);
+      d.y = clamp(d.y + 0.08 * nodalBand * (0.4 + 0.6 * uSymBreak), -0.99, 0.99);
+      d = normalize(d);
+
+      float push = uBurst * (0.22 + aSeed.z * 0.85) - uInward * 0.45 * aSeed.z + 0.14 * abs(nodalBand) * uBass;
+      float wob = sin(uT * (0.55 + aSeed.w) + aSeed.x * 21.0 + uVisMode * 0.8) * 0.12;
+      vec3 p = d * (r + push + wob + uBass * 0.35 * aSeed.y);
+      p.z *= 0.58;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      float tw = 0.5 + 0.5 * sin(uT * (2.0 + aSeed.w * 3.0) + aSeed.y * 40.0);
+      gl_PointSize = uPx * (1.28 + aSeed.w * 2.18 + uTreb * 2.6 * tw + 0.45 * abs(nodalBand)) * (6.5 / -mv.z);
+      vA = (0.32 + 0.68 * tw) * (1.0 - aSeed.x * 0.48);
+      vR = aSeed.x;
+      vNodal = 0.5 + 0.5 * nodalBand;
     }`,
   fragmentShader: `
-    uniform vec3 uMidC,uRim; uniform float uOp; varying float vA; varying float vR;
-    void main(){ float d=length(gl_PointCoord-0.5); float a=smoothstep(0.5,0.0,d);
-      gl_FragColor=vec4(mix(uRim,uMidC,vR)*a*vA*uOp,1.0); }`
+    uniform vec3 uMidC, uRim, uFib; uniform float uOp; varying float vA; varying float vR; varying float vNodal;
+    void main(){ float d = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, d);
+      vec3 pCol = mix(mix(uRim, uMidC, vR), uFib, vNodal * 0.35);
+      gl_FragColor = vec4(pCol * a * vA * uOp, 1.0); }`
 }));
 world.add(points);
 
@@ -2169,6 +2210,7 @@ function tick() {
   // Particles
   pU.uT.value = now; pU.uSpin.value = spinAcc; pU.uBurst.value = burst;
   pU.uBass.value = bass; pU.uTreb.value = treb; pU.uInward.value = K.inward;
+  pU.uHarmL.value = K.l; pU.uHarmM.value = K.m; pU.uSymBreak.value = symBreak; pU.uVisMode.value = K.vis;
   pU.uOp.value = 0.62 + level * 0.38;
 
   // 3D Toroidal Quantized Vortex Ring Shockwaves
@@ -2188,10 +2230,10 @@ function tick() {
   const drawerOpen = $('#tweakDrawer').classList.contains('open');
   const isMobile = window.innerWidth < 760;
   const targetY = drawerOpen
-    ? (isMobile ? 1.05 : (camMode === 'macro' ? 0.32 : (camMode === 'orbit' ? 0.38 : 0.34)))
+    ? (isMobile ? 1.05 : (camMode === 'macro' ? 0.34 : (camMode === 'iso' ? 0.44 : (camMode === 'orbit' ? 0.40 : 0.38))))
     : (isMobile ? 0.28 : 0.05);
   const targetScale = drawerOpen
-    ? (isMobile ? 0.66 : (camMode === 'macro' ? 0.78 : (camMode === 'orbit' ? 0.80 : 0.84)))
+    ? (isMobile ? 0.66 : (camMode === 'macro' ? 0.78 : (camMode === 'iso' ? 0.78 : (camMode === 'orbit' ? 0.80 : 0.82))))
     : (isMobile ? 0.88 : 1.0);
   world.position.y = lerp(world.position.y, targetY, 0.14);
   world.scale.setScalar(lerp(world.scale.x, targetScale, 0.14));
@@ -2212,7 +2254,7 @@ function tick() {
     camX += 1.85;
     camY += 1.15;
     camZ = baseZ * 0.96;
-    lookY = drawerOpen ? -0.18 : 0.0;
+    lookY = drawerOpen ? -0.24 : 0.0;
   } else if (camMode === 'orbit') {
     const orbAng = now * 0.34;
     camX = Math.sin(orbAng) * baseZ * 0.56;
@@ -2229,6 +2271,12 @@ function tick() {
   camera.lookAt(0, lookY, 0);
   world.rotation.z = Math.sin(now * 0.05) * 0.04 * sway;
 
+  // 3D Spatial Stereo Panning coupled to Orb Yaw & Camera Azimuth
+  if (A.panner && A.ctx) {
+    const targetPan = clamp(Math.sin(orbit.yaw) * 0.55 + (camX / Math.max(4.0, baseZ)) * 0.38, -0.75, 0.75);
+    A.panner.pan.setTargetAtTime(targetPan, A.ctx.currentTime, 0.04);
+  }
+
   renderer.render(scene, camera);
 
   // Hands-Free Mic Voice-Activity Conversational Auto-Turn (VAD)
@@ -2236,7 +2284,7 @@ function tick() {
     stepMicVad(dt, AN.level);
   }
 
-  // Update HUD Readouts, Audio Scrubber & Conserved Quantum Telemetry
+  // Update HUD Readouts, Slider Value Badges, Audio Scrubber & Conserved Quantum Telemetry
   $('#pip').style.transform = `scale(${1 + beatEnv * 0.7})`;
   if (++hudTick % 4 === 0) {
     $('#bpm').textContent = AN.locked ? Math.round(AN.bpm) : '—';
@@ -2247,6 +2295,13 @@ function tick() {
     meterEls.forEach((el, i) => el.style.width = (clamp([bass, mid, treb][i], 0, 1) * 100).toFixed(1) + '%');
     if (!AN.locked) $$('#bar i').forEach(el => el.classList.remove('on'));
     qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
+
+    // Live Tabular-Numeral Slider Readout Badges
+    $('#valFib').textContent = fibInt.toFixed(2);
+    $('#valHarm').textContent = userL.toFixed(1);
+    $('#valFree').textContent = freeRoom.toFixed(2);
+    $('#valSym').textContent = symBreak.toFixed(2);
+    $('#valGain').textContent = gain.toFixed(2);
 
     if (A.src === 'file' && A.media && A.media.duration) {
       const cur = A.media.currentTime || 0, dur = A.media.duration || 1;
@@ -2568,6 +2623,33 @@ addEventListener('keydown', e => {
     playHarmonicChime(KEY_NOTES[kl], K.l, K.m);
   }
 });
+
+// Plug-and-Play WebMIDI Synthesizer & Controller Integration (MIDI Note-On -> Harmonic Chime; CC 1/74/71/73 -> Quantum Sliders)
+function initWebMIDI() {
+  if (!navigator.requestMIDIAccess) return;
+  navigator.requestMIDIAccess().then(midi => {
+    const bindInputs = () => {
+      for (const input of midi.inputs.values()) {
+        input.onmidimessage = msg => {
+          const [status, d1, d2] = msg.data;
+          const cmd = status & 0xf0;
+          if (cmd === 0x90 && d2 > 0) {
+            playHarmonicChime(d1, K.l, K.m);
+          } else if (cmd === 0xb0) {
+            const norm = d2 / 127;
+            if (d1 === 1 || d1 === 74) harmEl.value = (2 + norm * 6).toFixed(1);
+            else if (d1 === 71) freeEl.value = (0.3 + norm * 1.5).toFixed(2);
+            else if (d1 === 73) symEl.value = (norm * 1.0).toFixed(2);
+            else if (d1 === 72) fibEl.value = (norm * 1.4).toFixed(2);
+          }
+        };
+      }
+    };
+    bindInputs();
+    midi.onstatechange = bindInputs;
+  }).catch(() => {});
+}
+initWebMIDI();
 
 let dragDepth = 0;
 addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; document.body.classList.add('dragging'); });

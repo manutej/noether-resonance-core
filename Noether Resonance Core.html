@@ -1,0 +1,2683 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Noether Resonance Core — Quantum Field 3D Audio & Speech Visualizer (v5.0 Quantum Horizon)</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='38%25' cy='35%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffe6bd'/%3E%3Cstop offset='50%25' stop-color='%23c23645'/%3E%3Cstop offset='100%25' stop-color='%23180c24'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='28' fill='url(%23g)' stroke='%23ebac3d' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='24' ry='10' fill='none' stroke='%23ffe6bd' stroke-opacity='0.65' stroke-width='1.5' transform='rotate(-28 32 32)'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #05060b;
+  --ink-raise: rgba(10, 13, 22, 0.78);
+  --ink-drawer: rgba(8, 11, 19, 0.92);
+  --fg: #eef1f7;
+  --fg-dim: rgba(238, 241, 247, 0.68);
+  --line: rgba(238, 241, 247, 0.14);
+  --line-bright: rgba(238, 241, 247, 0.30);
+  --accent: #7ea8be;
+  --sans: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --dock-h: 58px;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--ink);
+  color: var(--fg);
+  font-family: var(--sans);
+  overflow: hidden;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+#stage {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 1;
+  cursor: grab;
+}
+#stage:active { cursor: grabbing; }
+
+/* Subtle vignette that never obscures the 3D field */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(circle at 50% 48%, transparent 50%, rgba(2, 3, 7, 0.72) 100%);
+}
+
+.hud {
+  position: fixed;
+  z-index: 2;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+body.ui-off .hud {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Top-Left Minimal State & Source Indicator */
+.id {
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  left: max(22px, calc(env(safe-area-inset-left, 0px) + 22px));
+  display: grid;
+  gap: 5px;
+  pointer-events: none;
+}
+.mark {
+  font-family: var(--mono);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.state {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  font-weight: 700;
+  font-size: clamp(28px, 4vw, 44px);
+  line-height: 1;
+  letter-spacing: -0.025em;
+  color: var(--accent);
+  transition: color 0.55s ease;
+}
+.state .pip {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 18px var(--accent);
+  transition: background 0.55s ease, box-shadow 0.55s ease;
+}
+.state .glyph {
+  font-size: 0.52em;
+  opacity: 0.88;
+  font-weight: 500;
+  transform: translateY(-1px);
+}
+.src {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--fg-dim);
+  max-width: min(72ch, 65vw);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Top-Right Tempo, Harmonic Telemetry & Spectrum Instrument */
+.tempo {
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  right: max(22px, calc(env(safe-area-inset-right, 0px) + 22px));
+  display: grid;
+  justify-items: end;
+  gap: 7px;
+  pointer-events: none;
+  font-family: var(--mono);
+}
+.bpm {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  font-variant-numeric: tabular-nums;
+}
+.bpm b {
+  font-weight: 500;
+  font-size: clamp(30px, 4.4vw, 50px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+}
+.bpm small {
+  font-size: 10.5px;
+  letter-spacing: 0.14em;
+  color: var(--fg-dim);
+}
+.lock {
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 3.5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--fg-dim);
+}
+.lock[data-on="1"] {
+  color: var(--ink);
+  background: var(--accent);
+  border-color: transparent;
+  font-weight: 600;
+}
+.bar { display: flex; gap: 5px; }
+.bar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  border: 1px solid var(--line);
+  transition: background 0.08s linear, transform 0.08s linear;
+}
+.bar i.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  transform: scale(1.16);
+}
+.meters {
+  display: grid;
+  gap: 5px;
+  width: 132px;
+  margin-top: 2px;
+}
+.meter {
+  display: grid;
+  grid-template-columns: 34px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+.meter span {
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.meter span u {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  text-decoration: none;
+}
+.q-telem {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: var(--fg-dim);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.q-telem sub, .q-telem sup {
+  font-size: 0.78em;
+  line-height: 0;
+}
+
+/* Non-Overlapping Bottom Control Dock */
+.dock {
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 6px 8px;
+  background: var(--ink-raise);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+.grp {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  align-items: center;
+}
+.grp + .grp {
+  padding-left: 6px;
+  border-left: 1px solid var(--line);
+}
+.btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--fg-dim);
+  font: 500 11.5px/1 var(--mono);
+  min-height: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.btn sub, .btn sup {
+  font-size: 0.78em;
+  line-height: 0;
+}
+.btn:hover {
+  background: rgba(255, 255, 255, 0.07);
+  color: var(--fg);
+}
+.btn:focus-visible, .swatch-pill:focus-visible, .sl-select:focus-visible, input[type="range"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.btn[aria-pressed="true"] {
+  color: var(--fg);
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 45%, transparent);
+}
+.btn.primary {
+  background: var(--accent);
+  color: var(--ink);
+  font-weight: 600;
+}
+.btn.primary:hover {
+  filter: brightness(1.08);
+  background: var(--accent);
+  color: var(--ink);
+}
+.vh {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Non-Overlapping Slim Tweak Bar (Docks cleanly above bottom bar, never over the 3D Orb) */
+.tweak-drawer {
+  left: 50%;
+  transform: translateX(-50%) translateY(14px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--dock-h, 46px) + 24px);
+  width: max-content;
+  max-width: calc(100vw - 28px);
+  background: var(--ink-drawer);
+  border: 1px solid var(--line-bright);
+  border-radius: 14px;
+  padding: 9px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  opacity: 0;
+  pointer-events: none;
+}
+.tweak-drawer.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.tweak-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.tweak-row + .tweak-row {
+  padding-top: 6px;
+  border-top: 1px solid var(--line);
+}
+.tweak-lbl {
+  font: 500 10px/1 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.swatch-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 29px;
+  padding: 5px 9px;
+  border-radius: 7px;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--fg-dim);
+  font: 500 10.5px/1 var(--mono);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+.swatch-pill:hover {
+  color: var(--fg);
+  border-color: var(--line-bright);
+}
+.swatch-pill[aria-pressed="true"] {
+  color: var(--fg);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+.swatch-dots {
+  display: inline-flex;
+  gap: 2px;
+}
+.swatch-dots i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.sl-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 29px;
+  font: 400 10.5px var(--mono);
+  color: var(--fg-dim);
+  padding: 0 2px;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+.sl-wrap b {
+  color: var(--fg);
+  font-weight: 500;
+  font-size: 10px;
+  min-width: 22px;
+  text-align: right;
+}
+.sl-wrap input[type="range"] {
+  width: 50px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.sl-select {
+  background: rgba(15, 20, 32, 0.92);
+  color: var(--fg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: 400 11px var(--mono);
+  min-height: 29px;
+  padding: 4px 7px;
+  max-width: 195px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.toast {
+  left: 50%;
+  transform: translateX(-50%);
+  top: calc(env(safe-area-inset-top, 0px) + 20px);
+  max-width: min(540px, calc(100vw - 32px));
+  font: 400 12px/1.5 var(--mono);
+  color: var(--fg);
+  background: var(--ink-drawer);
+  border: 1px solid var(--line-bright);
+  border-radius: 10px;
+  padding: 10px 15px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  backdrop-filter: blur(14px);
+}
+.toast.show { opacity: 1; }
+
+.drop {
+  position: fixed;
+  inset: 14px;
+  z-index: 3;
+  border: 1.5px dashed var(--accent);
+  border-radius: 18px;
+  display: grid;
+  place-items: center;
+  font: 500 14px var(--mono);
+  color: var(--accent);
+  background: rgba(5, 6, 11, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+body.dragging .drop { opacity: 1; }
+
+.media-scrub {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  pointer-events: auto;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--fg-dim);
+}
+.media-scrub.show { display: inline-flex; }
+.media-scrub input[type="range"] {
+  width: 140px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.btn.rec-on {
+  color: #ff6b6b;
+  border-color: rgba(255, 107, 107, 0.55);
+  background: rgba(255, 107, 107, 0.16);
+}
+
+/* Non-Overlapping Corner Shortcut & Physics Reference Card (?) */
+.help-modal {
+  right: max(22px, calc(env(safe-area-inset-right, 0px) + 22px));
+  top: calc(env(safe-area-inset-top, 0px) + 205px);
+  transform: translateY(-8px) scale(0.98);
+  width: min(350px, calc(100vw - 32px));
+  background: var(--ink-drawer);
+  border: 1px solid var(--line-bright);
+  border-radius: 14px;
+  padding: 13px 16px;
+  color: var(--fg);
+  font: 400 11px/1.5 var(--mono);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+.help-modal.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0) scale(1);
+}
+.help-modal h3 {
+  margin: 0 0 8px;
+  font: 600 11px/1.2 var(--mono);
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.help-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 10px;
+}
+.help-grid kbd {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--line-bright);
+  border-radius: 5px;
+  padding: 2px 5px;
+  color: var(--fg);
+  font: 500 10px/1.2 var(--mono);
+}
+
+@media (max-width: 760px) {
+  .meters, .q-telem { display: none; }
+  .dock {
+    width: calc(100vw - 20px);
+    padding: 5px 6px;
+    gap: 3px;
+  }
+  .grp + .grp { padding-left: 0; border-left: 0; }
+  .btn { padding: 6px 8px; font-size: 10.5px; min-height: 29px; }
+  .tweak-drawer {
+    width: calc(100vw - 20px);
+    padding: 7px 10px;
+    gap: 5px;
+  }
+  .tweak-row {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+  .tweak-row::-webkit-scrollbar { display: none; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="stage" aria-label="Noether Quantum Field 3D Audio Visualizer"></canvas>
+
+<!-- Top-Left Minimal State, Source & Practical Audio File Scrubber -->
+<header class="hud id">
+  <div class="mark">Noether Resonance</div>
+  <div class="state"><span class="pip" id="pip"></span><span class="glyph" id="stateGlyph" aria-hidden="true">◎</span><span id="stateLabel">Idle</span></div>
+  <div class="src" id="srcLabel">Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase</div>
+  <div class="media-scrub" id="mediaScrubWrap">
+    <button class="btn" id="bMediaPause">Pause</button>
+    <input id="mediaSeek" type="range" min="0" max="1000" step="1" value="0" title="Seek audio track">
+    <span id="mediaTime">0:00 / 0:00</span>
+  </div>
+</header>
+
+<!-- Top-Right Tempo & Harmonic Telemetry -->
+<section class="hud tempo" aria-label="Tempo and frequency levels">
+  <div class="bpm"><b id="bpm">—</b><small>BPM</small></div>
+  <div class="lock" id="lock" data-on="0">Harmonic</div>
+  <div class="bar" id="bar" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="meters" aria-hidden="true">
+    <div class="meter">Low<span><u id="mLow"></u></span></div>
+    <div class="meter">Mid<span><u id="mMid"></u></span></div>
+    <div class="meter">High<span><u id="mHigh"></u></span></div>
+  </div>
+  <div class="q-telem" id="qTelem">Y<sub>3.0</sub><sup>2.0</sup> · H 0.42 · ε 0.18</div>
+</section>
+
+<!-- Non-Overlapping Slim Tweak Drawer (Sits just above bottom dock) -->
+<aside class="hud tweak-drawer" id="tweakDrawer" aria-label="Visual, Palette and Quantum Field Tweaks">
+  <!-- Row 1: Visualizer Physics Technique, 3D Camera Choreography & Procedural Synth Track -->
+  <div class="tweak-row" role="group" aria-label="Quantum Field Visualizer Mode and Camera">
+    <span class="tweak-lbl">Field Mode</span>
+    <button class="btn" data-vismode="0" aria-pressed="true">Eigen-Orb (Y<sub>ℓ</sub><sup>m</sup>)</button>
+    <button class="btn" data-vismode="1" aria-pressed="false">Cymatic Chladni</button>
+    <button class="btn" data-vismode="2" aria-pressed="false">Hopf Torus</button>
+    <button class="btn" data-vismode="3" aria-pressed="false">Dirac Ferrofluid</button>
+    <button class="btn" data-vismode="4" aria-pressed="false">Superfluid Vortex</button>
+    <span class="tweak-lbl" style="margin-left:5px">Cam</span>
+    <button class="btn" data-cam="front" aria-pressed="true" title="Centered harmonic view">Front</button>
+    <button class="btn" data-cam="iso" aria-pressed="false" title="3/4 Isometric sculptural perspective">3/4 Iso</button>
+    <button class="btn" data-cam="orbit" aria-pressed="false" title="Continuous 360-degree orbital cinema">Orbit</button>
+    <button class="btn" data-cam="macro" aria-pressed="false" title="Close-up inspection of surface fibroid veins">Macro</button>
+    <span class="tweak-lbl" style="margin-left:5px">Synth</span>
+    <select id="trackSelect" class="sl-select" title="Select Built-In Offline Quantum Composition">
+      <option value="0">I. Noether Progression (98–134 BPM)</option>
+      <option value="1">II. Göttingen 1918 Cathedral (76 BPM)</option>
+      <option value="2">III. Hopf Fibration IDM Arp (124 BPM)</option>
+      <option value="3">IV. Superfluid Vortex Dub (88 BPM)</option>
+      <option value="4">V. Broken Symmetry Etude (112 BPM)</option>
+    </select>
+  </div>
+
+  <!-- Row 2: Sanzo Wada & Monotone Color Combinations + Custom Wada Pigment Duet Mixer -->
+  <div class="tweak-row" role="group" aria-label="Sanzo Wada and Monotone Palettes">
+    <span class="tweak-lbl">Palette</span>
+    <button class="swatch-pill" data-pal="wada_auto" aria-pressed="true" title="Sanzo Wada Turn-Adaptive Combinations">
+      <span class="swatch-dots"><i style="background:#7ea8be"></i><i style="background:#52b788"></i><i style="background:#b5838d"></i><i style="background:#e29578"></i></span>Wada Auto
+    </button>
+    <button class="swatch-pill" data-pal="wada_142" aria-pressed="false" title="Sanzo Wada #142: Deep Indigo, Verdigris, Terracotta Silk, Celadon">
+      <span class="swatch-dots"><i style="background:#14213d"></i><i style="background:#387d7a"></i><i style="background:#d8e6d5"></i><i style="background:#e29578"></i></span>Wada #142
+    </button>
+    <button class="swatch-pill" data-pal="wada_068" aria-pressed="false" title="Sanzo Wada #068: Slate Violet, Cinnabar, Warm Ochre, Ivory Silk">
+      <span class="swatch-dots"><i style="background:#23192d"></i><i style="background:#c84b31"></i><i style="background:#e9c46a"></i><i style="background:#faf0ca"></i></span>Wada #068
+    </button>
+    <button class="swatch-pill" data-pal="wada_219" aria-pressed="false" title="Sanzo Wada #219: Abyssal Peacock, Benzol Green, Hermosa Rose">
+      <span class="swatch-dots"><i style="background:#081c24"></i><i style="background:#167d7f"></i><i style="background:#f4b8b0"></i><i style="background:#98d7c2"></i></span>Wada #219
+    </button>
+    <button class="swatch-pill" data-pal="wada_284" aria-pressed="false" title="Sanzo Wada #284: Prussian Blue, Dusky Mallow, Citrine, Alabaster">
+      <span class="swatch-dots"><i style="background:#0d1b2a"></i><i style="background:#8e5b72"></i><i style="background:#e6c972"></i><i style="background:#f4f1ea"></i></span>Wada #284
+    </button>
+    <button class="swatch-pill" data-pal="wada_091" aria-pressed="false" title="Sanzo Wada #091: Kyoto Moss, Persimmon Silk, Pale Gold, Bamboo">
+      <span class="swatch-dots"><i style="background:#131f16"></i><i style="background:#52796f"></i><i style="background:#e07a5f"></i><i style="background:#f2cc8f"></i></span>Wada #091
+    </button>
+    <button class="swatch-pill" data-pal="wada_173" aria-pressed="false" title="Sanzo Wada #173: Aubergine Ink, Carmine Lacquer, Raw Amber, Warm Parchment">
+      <span class="swatch-dots"><i style="background:#1b0f1e"></i><i style="background:#9e2a2b"></i><i style="background:#e09f3e"></i><i style="background:#fff3b0"></i></span>Wada #173
+    </button>
+    <button class="swatch-pill" data-pal="mono_silver" aria-pressed="false" title="Monotone I: Obsidian & Liquid Silver">
+      <span class="swatch-dots"><i style="background:#10131a"></i><i style="background:#6c7587"></i><i style="background:#eef2f7"></i></span>Mono Silver
+    </button>
+    <button class="swatch-pill" data-pal="mono_sumi" aria-pressed="false" title="Monotone II: Sumi Ink & Warm Bone">
+      <span class="swatch-dots"><i style="background:#14120f"></i><i style="background:#7d7465"></i><i style="background:#f3ede2"></i></span>Mono Sumi
+    </button>
+    <button class="swatch-pill" data-pal="mono_ice" aria-pressed="false" title="Monotone III: Deep Cobalt & Ice Quartz">
+      <span class="swatch-dots"><i style="background:#071324"></i><i style="background:#2e6b9e"></i><i style="background:#d4eeff"></i></span>Mono Ice
+    </button>
+  </div>
+
+  <!-- Row 3: Fibroids, Quantum Harmonics, Live VAD & Capture Controls -->
+  <div class="tweak-row">
+    <label class="sl-wrap" title="Intensity and clarity of quantum field fibroids on and around the blob">
+      Fibroids <input id="slFibroid" type="range" min="0" max="1.6" step="0.05" value="1.15"><b id="valFib">1.15</b>
+    </label>
+    <button class="btn" id="bOnBlobFib" aria-pressed="true" title="Toggle surface-hugging quantum fibroid veins directly on the moving blob">On-Blob Veins</button>
+    <button class="btn" id="bOrbitalFib" aria-pressed="true" title="Toggle 3D Hopf & magnetic flux fibroid loops around the blob">3D Field Loops</button>
+    <button class="btn" id="bRingToggle" aria-pressed="true" title="Toggle outer spectrum bar ring">Spectrum Ring</button>
+    <label class="sl-wrap" title="Spherical Harmonic Multipole Order (l)">
+      Harmonic ℓ <input id="slHarmonic" type="range" min="2" max="7" step="1" value="3"><b id="valHarm">3</b>
+    </label>
+    <label class="sl-wrap" title="Noether Second Theorem Free-Room Elasticity">
+      Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.0"><b id="valFree">1.00</b>
+    </label>
+    <label class="sl-wrap" title="Explicit Symmetry Breaking Perturbation (epsilon)">
+      Symmetry ε <input id="slSymBreak" type="range" min="0.0" max="1.0" step="0.05" value="0.18"><b id="valSym">0.18</b>
+    </label>
+    <label class="sl-wrap" title="Audio Input Sensitivity / Gain">
+      Gain <input id="sens" type="range" min="0.4" max="2.5" step="0.05" value="1.15"><b id="valGain">1.15</b>
+    </label>
+    <button class="btn" id="bAutoVad" aria-pressed="true" title="Hands-Free Mic Auto-Turn: automatically transitions Listening -> Thinking -> Speaking when you speak into Mic and pause">Auto-VAD</button>
+    <select id="micDeviceSelect" class="sl-select" title="Select Microphone or Loopback Audio Input Device" style="display:none"></select>
+    <button class="btn" id="bSharePreset" title="Save preset & copy shareable URL hash">Save / Link</button>
+    <button class="btn" id="bSnapPng" title="Download high-resolution PNG snapshot of current quantum field">PNG</button>
+    <button class="btn" id="bRecVideo" title="Record 60fps WebM video + audio clip to share with others">Rec</button>
+  </div>
+</aside>
+
+<!-- Bottom Control Dock -->
+<nav class="hud dock" aria-label="Controls">
+  <div class="grp" role="group" aria-label="Audio Input Sources">
+    <button class="btn" id="bDemo" aria-pressed="false">Demo track</button>
+    <button class="btn" id="bVoice" aria-pressed="false">Agent voice</button>
+    <label class="btn" for="file" id="bFile">Audio file</label>
+    <input class="vh" id="file" type="file" accept="audio/*">
+    <button class="btn" id="bMic" aria-pressed="false" title="Listen to live speech or room music via Microphone / Loopback">Mic</button>
+    <button class="btn" id="bSysAudio" aria-pressed="false" title="Capture live System or Browser Tab audio (Spotify, YouTube, Apple Music)">System audio</button>
+    <button class="btn" id="bStop">Stop</button>
+  </div>
+  <div class="grp" role="group" aria-label="Agent & Resonance States">
+    <button class="btn" data-state="idle" aria-pressed="true">Idle</button>
+    <button class="btn" data-state="listening" aria-pressed="false">Listening</button>
+    <button class="btn" data-state="thinking" aria-pressed="false">Thinking</button>
+    <button class="btn" data-state="speaking" aria-pressed="false">Speaking</button>
+  </div>
+  <div class="grp">
+    <button class="btn primary" id="bTurn">Run agent turn</button>
+    <button class="btn" id="bShowcase" aria-pressed="false" title="Auto-cycle through 5 curated Sanzo Wada & Quantum Field scenes for live demos">Showcase</button>
+    <button class="btn" id="bTweaks" aria-pressed="false">Tweaks ▴</button>
+    <button class="btn" id="bHelp" aria-pressed="false" title="Keyboard shortcuts & Noether physics reference (?)">?</button>
+  </div>
+</nav>
+
+<!-- On-Demand Shortcut & Physics Reference Modal -->
+<aside class="hud help-modal" id="helpModal" role="dialog" aria-label="Keyboard Shortcuts and Physics Reference">
+  <h3><span>Noether Resonance · Controls & Symmetries</span><button class="btn" id="bCloseHelp">Close</button></h3>
+  <div class="help-grid">
+    <kbd>Space</kbd><span>Start / stop offline procedural quantum composition</span>
+    <kbd>1 – 4</kbd><span>Switch conversational state (Idle · Listening · Thinking · Speaking)</span>
+    <kbd>5 – 9</kbd><span>Jump directly to Curated Showcase Scenes I – V</span>
+    <kbd>A – L</kbd><span>Play polyphonic harmonic chimes & launch 3D vortex shockwaves</span>
+    <kbd>T / U / ?</kbd><span>Toggle Tweak Drawer (`T`) · Toggle pure 3D canvas (`U`) · Help (`?`)</span>
+    <kbd>Drag / Wheel</kbd><span>Orbit 3D field + pan stereo soundstage (`Drag`) · Zoom (`Wheel`) · Pluck (`Dbl-Click`)</span>
+    <kbd>WebMIDI</kbd><span>MIDI Notes play quantum chimes · CC 1/74/71/73 sweep ℓ, Free Room, ε, Fibroids</span>
+  </div>
+</aside>
+
+<div class="hud toast" id="toast" role="status" aria-live="polite"></div>
+<div class="drop">Drop any audio file (.mp3, .wav, .ogg, .flac, .m4a) to visualize it</div>
+
+<script src="./three.global.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const $$ = s => document.querySelectorAll(s);
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
+
+/* ───────────────────────── Sanzo Wada & Monotone Palettes ─────────────────────────
+   Derived from Sanzo Wada's "A Dictionary of Color Combinations" (Haishoku Soukan)
+   plus three pure architectural Monotone studies.
+   Each entry defines: core (deep shadow), mid (body tone), rim (Fresnel highlight),
+   fib (crisp fibroid filament color), accent (UI token), and mono (1 for strict monochrome).
+   ──────────────────────────────────────────────────────────────────────────────── */
+const WADA_PALETTES = {
+  auto_idle: {
+    // Wada #138: Deep Slate Indigo · Salvia Blue · Pale Ecru · Glaucous Celadon
+    core: [0.05, 0.08, 0.15], mid: [0.33, 0.49, 0.62], rim: [0.85, 0.90, 0.88], fib: [0.68, 0.85, 0.84], accent: '#88b8b8', mono: 0
+  },
+  auto_listening: {
+    // Wada #194: Abyssal Teal · Verdigris · Celadon Cream · Seafoam
+    core: [0.02, 0.12, 0.14], mid: [0.16, 0.58, 0.52], rim: [0.84, 0.95, 0.88], fib: [0.52, 0.94, 0.82], accent: '#68d8be', mono: 0
+  },
+  auto_thinking: {
+    // Wada #247: Night Indigo · Dusky Mallow · Warm Alabaster · Heliotrope Gold
+    core: [0.10, 0.06, 0.18], mid: [0.56, 0.36, 0.48], rim: [0.92, 0.84, 0.74], fib: [0.92, 0.78, 0.54], accent: '#c98ca7', mono: 0
+  },
+  auto_speaking: {
+    // Wada #052: Umber Ink · Cinnabar Terracotta · Apricot Ochre · Raw Silk
+    core: [0.15, 0.05, 0.04], mid: [0.82, 0.36, 0.24], rim: [0.97, 0.85, 0.66], fib: [0.98, 0.78, 0.54], accent: '#e88d67', mono: 0
+  },
+
+  // Manual Locked Sanzo Wada Combinations:
+  wada_142: {
+    // Wada #142: Deep Indigo · Verdigris · Pale Celadon · Terracotta Silk
+    core: [0.05, 0.09, 0.17], mid: [0.22, 0.49, 0.48], rim: [0.85, 0.91, 0.84], fib: [0.91, 0.60, 0.48], accent: '#7ab8b2', mono: 0
+  },
+  wada_068: {
+    // Wada #068: Slate Violet · Cinnabar · Warm Ochre · Ivory Silk
+    core: [0.12, 0.08, 0.16], mid: [0.78, 0.29, 0.19], rim: [0.96, 0.88, 0.68], fib: [0.93, 0.79, 0.44], accent: '#e9c46a', mono: 0
+  },
+  wada_219: {
+    // Wada #219: Abyssal Peacock · Benzol Green · Hermosa Rose · Seafoam
+    core: [0.03, 0.10, 0.14], mid: [0.09, 0.49, 0.50], rim: [0.96, 0.72, 0.69], fib: [0.62, 0.88, 0.78], accent: '#f4b8b0', mono: 0
+  },
+  wada_284: {
+    // Wada #284: Prussian Blue · Dusky Mallow · Citrine · Alabaster
+    core: [0.05, 0.10, 0.17], mid: [0.56, 0.36, 0.45], rim: [0.90, 0.79, 0.45], fib: [0.96, 0.94, 0.90], accent: '#e6c972', mono: 0
+  },
+  wada_091: {
+    // Wada #091: Kyoto Moss · Verdigris Pine · Persimmon Silk · Pale Bamboo Gold
+    core: [0.05, 0.10, 0.07], mid: [0.32, 0.48, 0.43], rim: [0.95, 0.82, 0.56], fib: [0.89, 0.49, 0.38], accent: '#f2cc8f', mono: 0
+  },
+  wada_173: {
+    // Wada #173: Aubergine Ink · Carmine Lacquer · Raw Amber · Warm Parchment
+    core: [0.09, 0.04, 0.10], mid: [0.62, 0.17, 0.17], rim: [0.98, 0.92, 0.69], fib: [0.90, 0.62, 0.24], accent: '#e09f3e', mono: 0
+  },
+
+  // Pure Architectural Monotone Palettes:
+  mono_silver: {
+    core: [0.04, 0.05, 0.07], mid: [0.42, 0.46, 0.53], rim: [0.95, 0.97, 0.99], fib: [0.90, 0.93, 0.98], accent: '#d8dee9', mono: 1
+  },
+  mono_sumi: {
+    core: [0.06, 0.05, 0.04], mid: [0.49, 0.45, 0.39], rim: [0.95, 0.93, 0.88], fib: [0.91, 0.87, 0.80], accent: '#e6dec8', mono: 1
+  },
+  mono_ice: {
+    core: [0.02, 0.06, 0.12], mid: [0.18, 0.42, 0.62], rim: [0.83, 0.93, 1.00], fib: [0.72, 0.90, 1.00], accent: '#a8dcff', mono: 1
+  }
+};
+
+/* ───────────────────────── Curated Showcase Scenes (For Live Demos) ───────────────────────── */
+const SHOWCASE_SCENES = [
+  { name: 'Scene I · DeepMind Eigen-Orb & Wada #142', mode: 0, pal: 'wada_142', state: 'speaking', cam: 'front', trk: 0, l: 3, free: 1.05, eps: 0.18 },
+  { name: 'Scene II · Hopf Toroid Attractor & Wada #068', mode: 2, pal: 'wada_068', state: 'thinking', cam: 'iso', trk: 2, l: 4, free: 1.15, eps: 0.24 },
+  { name: 'Scene III · Cymatic Chladni & Liquid Silver Monotone', mode: 1, pal: 'mono_silver', state: 'speaking', cam: 'front', trk: 1, l: 5, free: 1.10, eps: 0.12 },
+  { name: 'Scene IV · Dirac Ferrofluid & Wada #219 Peacock Rose', mode: 3, pal: 'wada_219', state: 'listening', cam: 'orbit', trk: 3, l: 4, free: 1.25, eps: 0.22 },
+  { name: 'Scene V · Superfluid Vortex & Wada #173 Carmine Amber', mode: 4, pal: 'wada_173', state: 'speaking', cam: 'iso', trk: 4, l: 3, free: 1.15, eps: 0.28 }
+];
+
+/* ───────────────────────── Agent & Resonance States ───────────────────────── */
+const STATES = {
+  idle:      { label: 'Idle',      glyph: '◎', amp: 0.48, spin: 0.24, inward: 0.0,  proc: 0.58, lTarget: 2.0, mTarget: 1.0 },
+  listening: { label: 'Listening', glyph: '◈', amp: 1.05, spin: 0.38, inward: 1.0,  proc: 0.14, lTarget: 3.0, mTarget: 2.0 },
+  thinking:  { label: 'Thinking',  glyph: '❖', amp: 0.85, spin: 1.65, inward: 0.38, proc: 1.00, lTarget: 5.0, mTarget: 3.0 },
+  speaking:  { label: 'Speaking',  glyph: '✦', amp: 1.18, spin: 0.68, inward: -1.0, proc: 0.10, lTarget: 4.0, mTarget: 2.0 },
+};
+
+let stateName = 'idle';
+let paletteMode = 'wada_auto';
+let visMode = 0; // 0: Eigen-Orb, 1: Cymatic Chladni, 2: Hopf Torus, 3: Dirac Ferrofluid, 4: Superfluid Vortex
+let camMode = 'front'; // 'front' | 'iso' | 'orbit' | 'macro'
+let zoomOffset = 0.0;
+let showOnBlobFib = true;
+let showOrbitalFib = true;
+let showSpectrumRing = true;
+let autoVadOn = true;
+let showcaseOn = false;
+let showcaseTimer = 0;
+let showcaseIdx = 0;
+let activeTrackIdx = 0;
+
+const K = { amp: 0.48, spin: 0.24, inward: 0, proc: 0.58, l: 3.0, m: 2.0, vis: 0.0, torusMorph: 0.0 };
+
+/* ── 2nd-Order Symplectic Hamiltonian Oscillator Bank for Conserved Energy Dynamics ──
+   Models d^2 q_k / dt^2 + 2*zeta*w_k * dq_k/dt + (w_k^2 / freeRoom) * q_k = F_audio_k(t) */
+const HAM = {
+  q: [0, 0, 0, 0], // Low, Mid, High, Radial Breathing coordinates
+  v: [0, 0, 0, 0], // Canonical conjugate velocities
+  omega: [8.5, 13.0, 19.5, 5.2],
+  zeta: [0.34, 0.38, 0.42, 0.26],
+  energy: 0.42     // Conserved + driven Hamiltonian H = T + V
+};
+
+function stepHamiltonian(dt, forces, freeRoom) {
+  const subDt = Math.min(dt, 0.033) * 0.5;
+  const invFree = 1.0 / Math.max(0.35, freeRoom);
+  let totalH = 0;
+  for (let s = 0; s < 2; s++) {
+    for (let i = 0; i < 4; i++) {
+      const w = HAM.omega[i] * Math.sqrt(invFree);
+      const acc = forces[i] * w * w - 2.0 * HAM.zeta[i] * w * HAM.v[i] - w * w * HAM.q[i];
+      HAM.v[i] += acc * subDt;
+      HAM.q[i] += HAM.v[i] * subDt;
+      HAM.q[i] = clamp(HAM.q[i], -0.45, 1.65);
+    }
+  }
+  for (let i = 0; i < 4; i++) {
+    const kinetic = 0.5 * (HAM.v[i] / HAM.omega[i]) ** 2;
+    const potential = 0.5 * HAM.q[i] ** 2;
+    totalH += (kinetic + potential) * 0.45;
+  }
+  HAM.energy = lerp(HAM.energy, clamp(0.18 + totalH, 0.12, 2.40), 0.18);
+}
+
+function getActivePaletteTarget() {
+  if (paletteMode === 'wada_auto') {
+    return WADA_PALETTES['auto_' + stateName] || WADA_PALETTES.auto_idle;
+  }
+  return WADA_PALETTES[paletteMode] || WADA_PALETTES.wada_142;
+}
+
+function applyAccentColor() {
+  const p = getActivePaletteTarget();
+  document.documentElement.style.setProperty('--accent', p.accent);
+}
+
+function setState(name) {
+  if (!STATES[name]) return;
+  stateName = name;
+  const s = STATES[name];
+  $('#stateLabel').textContent = s.label;
+  const gEl = $('#stateGlyph');
+  if (gEl) gEl.textContent = s.glyph;
+  applyAccentColor();
+  $$('[data-state]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.state === name)));
+}
+
+/* ───────────────────────── WebAudio Graph & Spatial Panner Inputs ───────────────────────── */
+const A = {
+  ctx: null, analyser: null, master: null, panner: null,
+  freq: null, prev: null, time: null,
+  src: 'none', media: null, mediaNode: null,
+  stream: null, streamNode: null, noise: null
+};
+
+function ensureAudio() {
+  if (!A.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    A.ctx = new AC();
+    A.analyser = A.ctx.createAnalyser();
+    A.analyser.fftSize = 2048;
+    A.analyser.smoothingTimeConstant = 0.52;
+    A.master = A.ctx.createGain();
+    A.master.gain.value = 0.85;
+    if (A.ctx.createStereoPanner) {
+      A.panner = A.ctx.createStereoPanner();
+      A.master.connect(A.panner);
+      A.panner.connect(A.ctx.destination);
+    } else {
+      A.master.connect(A.ctx.destination);
+    }
+    A.master.connect(A.analyser);
+    A.freq = new Uint8Array(A.analyser.frequencyBinCount);
+    A.prev = new Float32Array(A.analyser.frequencyBinCount);
+    A.time = new Float32Array(A.analyser.fftSize);
+  }
+  if (A.ctx.state === 'suspended') A.ctx.resume();
+  return A.ctx;
+}
+
+function noiseBuffer() {
+  if (A.noise) return A.noise;
+  const ctx = A.ctx, len = ctx.sampleRate * 1.5;
+  const b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+  return (A.noise = b);
+}
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+
+function setSource(kind, label) {
+  A.src = kind;
+  $('#srcLabel').textContent = label;
+  $('#bDemo').setAttribute('aria-pressed', String(kind === 'demo'));
+  $('#bVoice').setAttribute('aria-pressed', String(kind === 'voice'));
+  $('#bMic').setAttribute('aria-pressed', String(kind === 'mic'));
+  $('#bSysAudio').setAttribute('aria-pressed', String(kind === 'sys'));
+  $('#mediaScrubWrap').classList.toggle('show', kind === 'file');
+  resetTempo();
+}
+
+function stopAll(keepTurn) {
+  if (!keepTurn) turnId++;
+  stopDemo();
+  stopVoice();
+  if (A.media) {
+    A.media.pause();
+    try { A.mediaNode.disconnect(); } catch (e) {}
+    A.media = null; A.mediaNode = null;
+  }
+  if (A.stream) {
+    A.stream.getTracks().forEach(t => t.stop());
+    try { A.streamNode.disconnect(); } catch (e) {}
+    A.stream = null; A.streamNode = null;
+  }
+  setSource('none', 'Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase');
+}
+
+/* ── 5 Built-In Procedural Quantum Compositions (100% Offline WebAudio Synth) ── */
+const TRACK_LIBRARY = [
+  {
+    name: 'I. Noether Progression · Harmonic & tempo shifts',
+    sections: [{ bpm: 98, bars: 8 }, { bpm: 122, bars: 8 }, { bpm: 134, bars: 8 }, { bpm: 110, bars: 8 }],
+    prog: [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]],
+    roots: [33, 29, 36, 31],
+    style: 'progression'
+  },
+  {
+    name: 'II. Göttingen 1918 · Harmonic cathedral choral fifths',
+    sections: [{ bpm: 76, bars: 16 }],
+    prog: [[50, 57, 62, 69], [48, 55, 60, 67], [45, 52, 57, 64], [46, 53, 58, 65]],
+    roots: [26, 24, 33, 34],
+    style: 'cathedral'
+  },
+  {
+    name: 'III. Hopf Fibration Arp · 124 BPM IDM & crystalline overtones',
+    sections: [{ bpm: 124, bars: 16 }],
+    prog: [[60, 63, 67, 70], [58, 62, 65, 69], [56, 60, 63, 67], [55, 59, 62, 67]],
+    roots: [36, 34, 32, 31],
+    style: 'idm'
+  },
+  {
+    name: 'IV. Superfluid Vortex Dub · 88 BPM deep quantized sub-bass',
+    sections: [{ bpm: 88, bars: 16 }],
+    prog: [[51, 55, 58], [48, 51, 55], [46, 50, 53], [49, 53, 56]],
+    roots: [27, 24, 22, 25],
+    style: 'dub'
+  },
+  {
+    name: 'V. Broken Symmetry Etude · 112 BPM polymetric gauge study',
+    sections: [{ bpm: 112, bars: 16 }],
+    prog: [[54, 58, 61, 65], [52, 56, 59, 64], [49, 54, 57, 61], [51, 55, 60, 63]],
+    roots: [30, 28, 33, 27],
+    style: 'etude'
+  }
+];
+
+const Demo = { on: false, timer: 0, next: 0, step: 0, sec: 0, bar: 0, bus: null };
+
+function startDemo() {
+  ensureAudio(); stopAll();
+  const ctx = A.ctx;
+  const trk = TRACK_LIBRARY[activeTrackIdx] || TRACK_LIBRARY[0];
+  Demo.bus = ctx.createGain(); Demo.bus.gain.value = 0.82; Demo.bus.connect(A.master);
+  Object.assign(Demo, { on: true, next: ctx.currentTime + 0.08, step: 0, sec: 0, bar: 0 });
+  Demo.timer = setInterval(schedDemo, 25);
+  setSource('demo', trk.name);
+  if (stateName === 'idle') setState('speaking');
+}
+function stopDemo() {
+  if (!Demo.on) return;
+  Demo.on = false; clearInterval(Demo.timer);
+  const bus = Demo.bus;
+  if (bus && A.ctx) {
+    bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.05);
+    setTimeout(() => { try { bus.disconnect(); } catch (e) {} }, 380);
+  }
+}
+function schedDemo() {
+  const ctx = A.ctx;
+  const trk = TRACK_LIBRARY[activeTrackIdx] || TRACK_LIBRARY[0];
+  while (Demo.next < ctx.currentTime + 0.15) {
+    const curSec = trk.sections[Demo.sec % trk.sections.length];
+    playStep(Demo.step, Demo.next, trk, curSec.bpm);
+    Demo.next += 60 / curSec.bpm / 4;
+    Demo.step++;
+    if (Demo.step % 16 === 0) {
+      Demo.bar++;
+      if (Demo.bar >= curSec.bars) {
+        Demo.bar = 0;
+        Demo.sec = (Demo.sec + 1) % trk.sections.length;
+      }
+    }
+  }
+}
+function env(g, t, peak, a, d) {
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(peak, t + a);
+  g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
+}
+function playStep(s, t, trk, bpm) {
+  const s16 = s % 16, ch = Math.floor(s / 16) % trk.prog.length;
+  const spb = 60 / bpm, st = spb / 4;
+  const style = trk.style;
+
+  if (style === 'cathedral') {
+    if (s16 === 0) {
+      kick(t, 0.65);
+      pad(t, trk.prog[ch], spb * 4.2);
+      bass(t, trk.roots[ch] + 12, spb * 3.6);
+    }
+    if (s16 % 4 === 0) arp(t, trk.prog[ch][(s16 / 4) % trk.prog[ch].length] + 12, spb * 1.4);
+  } else if (style === 'idm') {
+    if (s16 === 0 || s16 === 6 || s16 === 10) kick(t, 0.95);
+    if (s16 === 4 || s16 === 12) clap(t);
+    if (s16 % 2 === 1) hat(t, s16 === 7 || s16 === 15);
+    if (s16 % 3 === 0) bass(t, trk.roots[ch] + 12, st * 2.2);
+    if (s16 === 0) pad(t, trk.prog[ch], spb * 4);
+    arp(t, trk.prog[ch][s16 % trk.prog[ch].length] + (s16 % 5 === 0 ? 24 : 12), st * 1.3);
+  } else if (style === 'dub') {
+    if (s16 === 0 || s16 === 8) kick(t, 1.05);
+    if (s16 === 4 || s16 === 12) clap(t);
+    if (s16 % 4 === 2) hat(t, true);
+    if (s16 === 0 || s16 === 6 || s16 === 10) bass(t, trk.roots[ch] + 12, st * 3.2);
+    if (s16 === 0 || s16 === 8) pad(t, trk.prog[ch], spb * 2.2);
+  } else if (style === 'etude') {
+    if (s16 % 5 === 0) kick(t, 0.9);
+    if (s16 === 4 || s16 === 11) clap(t);
+    if (s16 % 2 === 0) hat(t, s16 % 6 === 0);
+    if (s16 % 4 === 0) bass(t, trk.roots[ch] + 12, st * 2.4);
+    if (s16 === 0) pad(t, trk.prog[ch], spb * 4);
+    if (s16 % 3 !== 2) arp(t, trk.prog[ch][s16 % trk.prog[ch].length] + 12, st * 1.5);
+  } else {
+    // Default I. Noether Progression
+    const sec = Demo.sec;
+    if (s16 % 4 === 0) kick(t, 1);
+    if (sec === 2 && s16 === 14) kick(t, 0.55);
+    if (s16 === 4 || s16 === 12) clap(t);
+    if (s16 % 4 === 2) hat(t, true);
+    else if (sec >= 1 && s16 % 2 === 1) hat(t, false);
+    if (s16 % 4 === 2 || (sec === 2 && s16 % 4 === 3)) bass(t, trk.roots[ch] + 12, st * 1.7);
+    if (s16 === 0) pad(t, trk.prog[ch], spb * 4);
+    if ((sec === 1 || sec === 2) && s16 % 2 === 0) arp(t, trk.prog[ch][(s16 / 2) % 3] + 12 + (s16 >= 8 ? 12 : 0), st * 1.6);
+  }
+}
+function kick(t, v) {
+  const c = A.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = 'sine'; o.frequency.setValueAtTime(155, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.13);
+  env(g, t, 0.95 * v, 0.004, 0.36); o.connect(g); g.connect(Demo.bus); o.start(t); o.stop(t + 0.42);
+}
+function clap(t) {
+  const c = A.ctx, n = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  n.buffer = noiseBuffer(); f.type = 'bandpass'; f.frequency.value = 1600; f.Q.value = 0.9;
+  env(g, t, 0.52, 0.003, 0.2); n.connect(f); f.connect(g); g.connect(Demo.bus); n.start(t, Math.random()); n.stop(t + 0.25);
+}
+function hat(t, open) {
+  const c = A.ctx, n = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
+  n.buffer = noiseBuffer(); f.type = 'highpass'; f.frequency.value = 7200;
+  env(g, t, open ? 0.19 : 0.08, 0.002, open ? 0.15 : 0.04); n.connect(f); f.connect(g); g.connect(Demo.bus); n.start(t, Math.random()); n.stop(t + 0.2);
+}
+function bass(t, m, dur) {
+  const c = A.ctx, o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain();
+  o.type = 'sawtooth'; o.frequency.value = mtof(m);
+  f.type = 'lowpass'; f.Q.value = 5.5; f.frequency.setValueAtTime(880, t); f.frequency.exponentialRampToValueAtTime(135, t + dur);
+  env(g, t, 0.32, 0.006, dur); o.connect(f); f.connect(g); g.connect(Demo.bus); o.start(t); o.stop(t + dur + 0.05);
+}
+function pad(t, notes, dur) {
+  const c = A.ctx, f = c.createBiquadFilter(), g = c.createGain();
+  f.type = 'lowpass'; f.frequency.value = 1400; f.Q.value = 0.7;
+  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.11, t + dur * 0.25); g.gain.linearRampToValueAtTime(0.0001, t + dur);
+  f.connect(g); g.connect(Demo.bus);
+  notes.forEach(m => [-7, 7].forEach(cents => {
+    const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(m); o.detune.value = cents;
+    const og = c.createGain(); og.gain.value = 0.12; o.connect(og); og.connect(f); o.start(t); o.stop(t + dur + 0.05);
+  }));
+}
+function arp(t, m, dur) {
+  const c = A.ctx, o = c.createOscillator(), g = c.createGain();
+  o.type = 'triangle'; o.frequency.value = mtof(m);
+  env(g, t, 0.09, 0.004, dur); o.connect(g); g.connect(Demo.bus); o.start(t); o.stop(t + dur + 0.05);
+}
+
+/* ── Interactive Noether Harmonic Chime Synth (Playable via Keys A–K or Double-Click on Orb) ── */
+function playHarmonicChime(midiNote, lOrder, mOrder) {
+  const c = ensureAudio();
+  const now = c.currentTime;
+  const f0 = mtof(midiNote);
+  const out = c.createGain();
+  env(out, now, 0.28, 0.008, 1.45);
+  out.connect(A.master);
+
+  // Additive harmonic overtones weighted by spherical harmonic numbers (l, m)
+  [1, 1.5, 2, 2.5 + mOrder * 0.125, 3 + lOrder * 0.25].forEach((ratio, idx) => {
+    const o = c.createOscillator();
+    const g = c.createGain();
+    o.type = idx % 2 === 0 ? 'sine' : 'triangle';
+    o.frequency.setValueAtTime(f0 * ratio, now);
+    g.gain.value = 0.45 / (idx + 1);
+    o.connect(g); g.connect(out);
+    o.start(now); o.stop(now + 1.55);
+  });
+
+  if (A.src === 'none') {
+    A.src = 'chime';
+    $('#srcLabel').textContent = `Interactive Quantum Chime · f₀=${Math.round(f0)}Hz · Y(ℓ=${Math.round(lOrder)}, m=${Math.round(mOrder)})`;
+    setTimeout(() => { if (A.src === 'chime') A.src = 'none'; }, 1500);
+  }
+  fireBeat(0.75, false, true);
+}
+
+/* ── Formant Speech Synthesizer for Agent / User Turns ── */
+const VOWELS = [
+  [730, 1090, 2440, 2, 1],
+  [530, 1840, 2480, 3, 2],
+  [270, 2290, 3010, 4, 3],
+  [570, 840, 2410, 3, 1],
+  [300, 870, 2240, 2, 0],
+  [660, 1720, 2410, 4, 2],
+  [490, 1350, 1690, 3, 3]
+];
+let V = null;
+function startVoice(kind, dur) {
+  ensureAudio(); stopVoice();
+  const c = A.ctx;
+  const cfg = kind === 'user' ? { f0: 204, rate: 1.15, fs: 1.12, vol: 0.44 } : { f0: 124, rate: 1.0, fs: 1.0, vol: 0.56 };
+  const bus = c.createGain(); bus.gain.value = cfg.vol; bus.connect(A.master);
+  const out = c.createGain(); out.gain.value = 0; out.connect(bus);
+  const osc = c.createOscillator(); osc.type = 'sawtooth'; osc.frequency.value = cfg.f0;
+  const vib = c.createOscillator(); vib.frequency.value = 5.2;
+  const vibG = c.createGain(); vibG.gain.value = cfg.f0 * 0.013; vib.connect(vibG); vibG.connect(osc.frequency);
+  const pre = c.createBiquadFilter(); pre.type = 'lowpass'; pre.frequency.value = 4200; osc.connect(pre);
+  const forms = [0, 1, 2].map(i => {
+    const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = [7, 9, 10][i];
+    const g = c.createGain(); g.gain.value = [1.0, 0.55, 0.28][i] * 2.4;
+    pre.connect(f); f.connect(g); g.connect(out); return f;
+  });
+  const nz = c.createBufferSource(); nz.buffer = noiseBuffer(); nz.loop = true;
+  const nf = c.createBiquadFilter(); nf.type = 'highpass'; nf.frequency.value = 3400;
+  const ng = c.createGain(); ng.gain.value = 0; nz.connect(nf); nf.connect(ng); ng.connect(bus);
+  osc.start(); vib.start(); nz.start();
+  V = { cfg, osc, out, ng, bus, forms, nodes: [osc, vib, nz], next: c.currentTime + 0.08, syl: 0, phraseLen: 7, endAt: dur ? c.currentTime + dur : Infinity, timer: 0 };
+  V.timer = setInterval(schedVoice, 30);
+}
+function schedVoice() {
+  const c = A.ctx, v = V; if (!v) return;
+  while (v.next < c.currentTime + 0.2) {
+    const t = v.next;
+    if (t > v.endAt) { v.out.gain.setTargetAtTime(0, t, 0.05); clearInterval(v.timer); break; }
+    if (v.syl >= v.phraseLen) {
+      v.out.gain.setTargetAtTime(0, t, 0.04);
+      v.syl = 0; v.phraseLen = 6 + (Math.random() * 9 | 0);
+      v.next = t + (0.28 + Math.random() * 0.42) / v.cfg.rate; continue;
+    }
+    const d = (0.11 + Math.random() * 0.13) / v.cfg.rate;
+    const vw = VOWELS[Math.random() * VOWELS.length | 0];
+    v.forms.forEach((f, i) => f.frequency.setTargetAtTime(vw[i] * v.cfg.fs, t, 0.025));
+    const pos = v.syl / v.phraseLen, stress = Math.random() < 0.25 ? 1.12 : 1;
+    v.osc.frequency.setTargetAtTime(v.cfg.f0 * (1.12 - 0.24 * pos) * stress * (0.95 + Math.random() * 0.1), t, 0.03);
+    const amp = (0.55 + Math.random() * 0.45) * stress;
+    v.out.gain.setTargetAtTime(amp, t, 0.018);
+    v.out.gain.setTargetAtTime(amp * 0.16, t + d * 0.7, 0.025);
+    if (Math.random() < 0.35) {
+      v.ng.gain.setTargetAtTime(0.16, Math.max(c.currentTime, t - 0.02), 0.008);
+      v.ng.gain.setTargetAtTime(0, t + 0.03, 0.015);
+    }
+    v.syl++; v.next = t + d;
+  }
+}
+function stopVoice() {
+  if (!V) return;
+  const v = V; V = null; clearInterval(v.timer);
+  v.bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.04);
+  setTimeout(() => { v.nodes.forEach(n => { try { n.stop(); } catch (e) {} }); try { v.bus.disconnect(); } catch (e) {} }, 300);
+}
+
+/* ── Live File, Microphone (with Device Picker) & System/Tab Audio Capture ── */
+function playFile(file) {
+  if (!file) return;
+  ensureAudio(); stopAll();
+  const el = new Audio(); el.src = URL.createObjectURL(file); el.loop = true;
+  A.media = el; A.mediaNode = A.ctx.createMediaElementSource(el); A.mediaNode.connect(A.master);
+  el.play().catch(() => toast('Browser paused autoplay. Click Audio file or press Space.'));
+  setSource('file', 'File · ' + file.name);
+  if (stateName === 'idle') setState('speaking');
+}
+
+function attachStream(stream, kind, label) {
+  ensureAudio(); stopAll();
+  A.stream = stream;
+  A.streamNode = A.ctx.createMediaStreamSource(stream);
+  // Connect strictly to analyser (never destination) to prevent speaker feedback loops
+  A.streamNode.connect(A.analyser);
+  setSource(kind, label);
+  setState(kind === 'sys' ? 'speaking' : 'listening');
+}
+
+async function refreshAudioDevices() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+  try {
+    const devs = await navigator.mediaDevices.enumerateDevices();
+    const inputs = devs.filter(d => d.kind === 'audioinput');
+    const sel = $('#micDeviceSelect');
+    if (inputs.length > 1) {
+      sel.innerHTML = inputs.map((d, i) => `<option value="${d.deviceId}">${d.label || ('Audio Input ' + (i + 1))}</option>`).join('');
+      sel.style.display = 'inline-block';
+    }
+  } catch (e) {}
+}
+
+async function startMic(preferredDeviceId) {
+  ensureAudio();
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('unsupported');
+    const audioConstraint = {
+      echoCancellation: false,
+      noiseSuppression: false,
+      autoGainControl: false
+    };
+    if (preferredDeviceId) audioConstraint.deviceId = { exact: preferredDeviceId };
+    const s = await navigator.mediaDevices.getUserMedia({ audio: audioConstraint });
+    const trackLabel = (s.getAudioTracks()[0] && s.getAudioTracks()[0].label) || 'Live Input';
+    attachStream(s, 'mic', 'Mic · ' + trackLabel);
+    refreshAudioDevices();
+  } catch (e) {
+    toast('Microphone access requires http://localhost or HTTPS. Run `node server.js` in noether-resonance-app and open http://localhost:3333.');
+  }
+}
+
+async function startSystemAudio() {
+  ensureAudio();
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) throw new Error('unsupported');
+    const s = await navigator.mediaDevices.getDisplayMedia({
+      video: true,
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+    });
+    const audioTracks = s.getAudioTracks();
+    s.getVideoTracks().forEach(vt => vt.stop());
+    if (!audioTracks.length) {
+      toast('No audio track shared. Make sure to check "Share tab/system audio" in the browser picker.');
+      return;
+    }
+    const audioOnlyStream = new MediaStream(audioTracks);
+    attachStream(audioOnlyStream, 'sys', 'System / Tab Audio · ' + (audioTracks[0].label || 'Live Stream'));
+  } catch (e) {
+    toast('To capture System/Tab audio, select a browser tab or screen and toggle "Share audio" on.');
+  }
+}
+
+/* ── Agent Turn Sequencing: Listening → Thinking → Speaking → Idle ── */
+let turnId = 0;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function agentTurn() {
+  ensureAudio(); stopAll();
+  const id = ++turnId;
+  setState('listening'); setSource('voice', 'Agent turn · listening to user speech'); startVoice('user', 3.2);
+  await wait(3500); if (id !== turnId) return;
+  stopVoice(); setState('thinking'); setSource('none', 'Agent turn · quantum symmetry search');
+  await wait(2700); if (id !== turnId) return;
+  setState('speaking'); setSource('voice', 'Agent turn · harmonic response'); startVoice('agent', 6.2);
+  await wait(6600); if (id !== turnId) return;
+  stopVoice(); setSource('none', 'Agent turn complete · Quantum vacuum breathing'); setState('idle');
+}
+
+/* ───────────────────────── Real-Time Spectral, Formant (F1/F2) & PLL Beat Analysis ───────────────────────── */
+const AN = {
+  bands: [0, 0, 0], peaks: [0.25, 0.25, 0.25], level: 0, fullFlux: 0,
+  fluxHist: [], f1: 0, f2: 0, t1: 0, lastOnset: -1, onsets: [],
+  bpm: 0, cand: 0, candSince: 0, conf: 0, locked: false,
+  nextBeat: 0, period: 0.5, beatCount: 0, accent: [0, 0, 0, 0], downOff: 0,
+  centroid: 0.35, formantF1: 500, formantF2: 1500
+};
+
+function resetTempo() {
+  Object.assign(AN, {
+    fluxHist: [], onsets: [], bpm: 0, cand: 0, conf: 0, locked: false,
+    nextBeat: 0, beatCount: 0, accent: [0, 0, 0, 0], downOff: 0, lastOnset: -1
+  });
+}
+function binOf(hz) { return clamp(Math.round(hz / (A.ctx.sampleRate / A.analyser.fftSize)), 1, A.freq.length - 1); }
+function bandAvg(lo, hi) {
+  const a = binOf(lo), b = binOf(hi); let s = 0;
+  for (let i = a; i <= b; i++) s += A.freq[i];
+  return s / ((b - a + 1) * 255);
+}
+
+function analyse(now, dt, gain) {
+  A.analyser.getByteFrequencyData(A.freq);
+  A.analyser.getFloatTimeDomainData(A.time);
+
+  const raw = [bandAvg(25, 180), bandAvg(180, 2200), bandAvg(2200, 12000)];
+  const decay = Math.pow(0.5, dt / 4);
+  for (let i = 0; i < 3; i++) {
+    AN.peaks[i] = Math.max(raw[i], AN.peaks[i] * decay, 0.11);
+    const v = clamp((raw[i] / AN.peaks[i]) * gain, 0, 1.45);
+    AN.bands[i] += (v - AN.bands[i]) * (v > AN.bands[i] ? 0.55 : 0.13);
+  }
+
+  let rms = 0;
+  for (let i = 0; i < A.time.length; i += 4) rms += A.time[i] * A.time[i];
+  rms = Math.sqrt(rms / (A.time.length / 4));
+  AN.level += (clamp(rms * 4.2 * gain, 0, 1.25) - AN.level) * 0.32;
+
+  // Extract Live Speech Formants F1 (250–900 Hz) & F2 (900–2800 Hz) + Spectral Centroid
+  const hzPerBin = A.ctx.sampleRate / A.analyser.fftSize;
+  const f1Lo = binOf(250), f1Hi = binOf(900);
+  let maxF1 = 0, binF1 = f1Lo;
+  for (let i = f1Lo; i <= f1Hi; i++) {
+    if (A.freq[i] > maxF1) { maxF1 = A.freq[i]; binF1 = i; }
+  }
+  const f2Lo = binOf(900), f2Hi = binOf(2800);
+  let maxF2 = 0, binF2 = f2Lo;
+  for (let i = f2Lo; i <= f2Hi; i++) {
+    if (A.freq[i] > maxF2) { maxF2 = A.freq[i]; binF2 = i; }
+  }
+  if (maxF1 > 18) AN.formantF1 = lerp(AN.formantF1, binF1 * hzPerBin, 0.22);
+  if (maxF2 > 14) AN.formantF2 = lerp(AN.formantF2, binF2 * hzPerBin, 0.22);
+
+  const bLo = binOf(200), bHi = binOf(3400);
+  let num = 0, den = 0.001;
+  for (let i = bLo; i <= bHi; i++) {
+    const w = A.freq[i] / 255;
+    num += ((i - bLo) / (bHi - bLo)) * w;
+    den += w;
+  }
+  AN.centroid = lerp(AN.centroid, clamp(num / den, 0, 1), 0.16);
+
+  const loEnd = binOf(220), midEnd = binOf(2400);
+  let flux = 0, full = 0;
+  for (let i = 1; i < midEnd; i++) {
+    const d = A.freq[i] - A.prev[i];
+    if (d > 0) { flux += d * (i < loEnd ? 1 : 0.32); full += d; }
+    A.prev[i] = A.freq[i];
+  }
+  flux /= (loEnd + (midEnd - loEnd) * 0.32) * 255;
+  AN.fullFlux = full / (midEnd * 255);
+
+  AN.fluxHist.push({ t: now, v: flux });
+  while (AN.fluxHist.length && now - AN.fluxHist[0].t > 1.0) AN.fluxHist.shift();
+  let m = 0; AN.fluxHist.forEach(h => m += h.v); m /= AN.fluxHist.length;
+  let sd = 0; AN.fluxHist.forEach(h => sd += (h.v - m) * (h.v - m)); sd = Math.sqrt(sd / AN.fluxHist.length);
+  const thr = m + 1.35 * sd + 0.012;
+  if (AN.f1 > thr && AN.f1 >= flux && AN.f1 > AN.f2 && AN.t1 - AN.lastOnset > 0.17) {
+    onOnset(AN.t1, clamp((AN.f1 - m) / (sd * 4 + 1e-4), 0.25, 1));
+  }
+  AN.f2 = AN.f1; AN.f1 = flux; AN.t1 = now;
+}
+
+function onOnset(t, strength) {
+  AN.lastOnset = t;
+  AN.onsets.push({ t, s: strength });
+  while (AN.onsets.length && t - AN.onsets[0].t > 8) AN.onsets.shift();
+  estimateTempo(t);
+  if (AN.locked) {
+    const p = AN.period, prev = AN.nextBeat - p;
+    const near = Math.abs(t - prev) < Math.abs(t - AN.nextBeat) ? prev : AN.nextBeat;
+    const e = t - near;
+    if (Math.abs(e) < 0.3 * p) AN.nextBeat += e * 0.32;
+  } else {
+    fireBeat(strength * 0.85, false);
+  }
+}
+
+const HIST = new Float32Array(81);
+function estimateTempo(now) {
+  HIST.fill(0);
+  const o = AN.onsets; let total = 0;
+  for (let i = 0; i < o.length; i++) for (let j = i + 1; j < o.length; j++) {
+    const d = o[j].t - o[i].t; if (d < 0.25 || d > 3.2) continue;
+    let bpm = 60 / d; while (bpm < 80) bpm *= 2; while (bpm >= 160) bpm /= 2;
+    const n = Math.max(1, Math.round(d * bpm / 60));
+    const age = Math.exp(-(now - o[j].t) / 4);
+    const w = o[i].s * o[j].s * age / (1 + 0.45 * (n - 1));
+    const x = bpm - 80, k = Math.floor(x), f = x - k;
+    HIST[k] += w * (1 - f); if (k + 1 < 81) HIST[k + 1] += w * f;
+    total += w;
+  }
+  if (total <= 0 || o.length < 5) { AN.conf *= 0.9; AN.locked = AN.bpm > 0 && AN.conf > 0.14; return; }
+  let best = 0, bi = 0;
+  for (let i = 1; i < 80; i++) {
+    const v = HIST[i - 1] * 0.25 + HIST[i] * 0.5 + HIST[i + 1] * 0.25;
+    if (v > best) { best = v; bi = i; }
+  }
+  const a = HIST[bi - 1], b = HIST[bi], c = HIST[bi + 1] || 0;
+  const off = (a - c) / (2 * (a - 2 * b + c) || 1);
+  const est = 80 + bi + clamp(off, -0.5, 0.5);
+  let win = 0; for (let i = Math.max(0, bi - 2); i <= Math.min(80, bi + 2); i++) win += HIST[i];
+  AN.conf = AN.conf * 0.6 + (win / total) * 0.4;
+
+  if (!AN.bpm) { if (AN.conf > 0.16) { AN.bpm = est; AN.nextBeat = now + 60 / est; } }
+  else if (Math.abs(est - AN.bpm) < 3.5) { AN.bpm += (est - AN.bpm) * 0.2; AN.cand = 0; }
+  else {
+    if (!AN.cand || Math.abs(est - AN.cand) > 3) { AN.cand = est; AN.candSince = now; }
+    else if (now - AN.candSince > 1.4) { AN.bpm = est; AN.cand = 0; AN.nextBeat = now + 60 / est; }
+  }
+  const recent = o.filter(x => now - x.t < 3).length;
+  AN.locked = AN.bpm > 0 && AN.conf > 0.14 && recent >= 3;
+}
+
+function beatClock(now) {
+  if (AN.locked && now - AN.lastOnset > 2.5) AN.locked = false;
+  if (!AN.locked || !AN.bpm) return;
+  AN.period = 60 / AN.bpm;
+  if (now - AN.nextBeat > AN.period * 2) AN.nextBeat = AN.lastOnset + AN.period;
+  while (now >= AN.nextBeat) {
+    const slot = AN.beatCount % 4;
+    AN.accent[slot] = AN.accent[slot] * 0.8 + (AN.fullFlux + AN.bands[0] * 0.5) * 0.2;
+    AN.downOff = AN.accent.indexOf(Math.max(...AN.accent));
+    const down = ((AN.beatCount - AN.downOff) % 4 + 4) % 4 === 0;
+    fireBeat(down ? 1 : 0.75, true, down);
+    AN.beatCount++;
+    AN.nextBeat += AN.period;
+  }
+}
+function beatPhase(now) {
+  if (AN.locked && AN.bpm) return clamp(1 - (AN.nextBeat - now) / AN.period, 0, 1);
+  return 0;
+}
+
+/* ───────────────────────── Three.js WebGL2 Quantum Field Scene ───────────────────────── */
+const canvas = $('#stage');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+const bgClearColor = new THREE.Color(0x05060b);
+renderer.setClearColor(bgClearColor, 1);
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 100);
+const world = new THREE.Group();
+scene.add(world);
+
+// User orbit drag + mouse-wheel zoom + double-click harmonic chime pluck
+const orbit = { dragging: false, lx: 0, ly: 0, yaw: 0, pitch: 0, tyaw: 0, tpitch: 0 };
+canvas.addEventListener('pointerdown', e => {
+  orbit.dragging = true; orbit.lx = e.clientX; orbit.ly = e.clientY;
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!orbit.dragging) return;
+  orbit.tyaw += (e.clientX - orbit.lx) * 0.006;
+  orbit.tpitch = clamp(orbit.tpitch + (e.clientY - orbit.ly) * 0.006, -1.1, 1.1);
+  orbit.lx = e.clientX; orbit.ly = e.clientY;
+});
+canvas.addEventListener('pointerup', () => orbit.dragging = false);
+canvas.addEventListener('pointercancel', () => orbit.dragging = false);
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  zoomOffset = clamp(zoomOffset + e.deltaY * 0.0025, -2.4, 2.8);
+}, { passive: false });
+canvas.addEventListener('dblclick', e => {
+  const nx = (e.clientX / window.innerWidth) * 2 - 1;
+  const ny = 1 - (e.clientY / window.innerHeight) * 2;
+  const notes = [57, 60, 62, 64, 67, 69, 72, 74, 76];
+  const note = notes[clamp(Math.floor((nx + 1) * 0.5 * notes.length), 0, notes.length - 1)];
+  playHarmonicChime(note + (ny > 0.25 ? 12 : 0), K.l, K.m);
+});
+
+const initPal = getActivePaletteTarget();
+const pal = {
+  core: new THREE.Vector3(...initPal.core),
+  mid: new THREE.Vector3(...initPal.mid),
+  rim: new THREE.Vector3(...initPal.rim),
+  fib: new THREE.Vector3(...initPal.fib)
+};
+const tgt = {
+  core: new THREE.Vector3(),
+  mid: new THREE.Vector3(),
+  rim: new THREE.Vector3(),
+  fib: new THREE.Vector3()
+};
+
+/* ── Shared GLSL Quantum Field, True Associated Legendre Spherical Harmonics & Clifford Torus Kernel ──
+   Used by BOTH the 3D Orb Mesh AND the On-Blob Geodesic Fibroid Veins
+   so the fibroids hug the moving, undulating quantum surface with 0 lag! */
+const QUANTUM_FIELD_GLSL = `
+vec3 mod289(vec3 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 mod289(vec4 x){return x-floor(x*(1.0/289.0))*289.0;}
+vec4 permute(vec4 x){return mod289(((x*34.0)+1.0)*x);}
+vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+float snoise(vec3 v){
+  const vec2 C=vec2(1.0/6.0,1.0/3.0); const vec4 D=vec4(0.0,0.5,1.0,2.0);
+  vec3 i=floor(v+dot(v,C.yyy)); vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz); vec3 l=1.0-g; vec3 i1=min(g.xyz,l.zxy); vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx; vec3 x2=x0-i2+C.yyy; vec3 x3=x0-D.yyy;
+  i=mod289(i);
+  vec4 p=permute(permute(permute(i.z+vec4(0.0,i1.z,i2.z,1.0))+i.y+vec4(0.0,i1.y,i2.y,1.0))+i.x+vec4(0.0,i1.x,i2.x,1.0));
+  float n_=0.142857142857; vec3 ns=n_*D.wyz-D.xzx;
+  vec4 j=p-49.0*floor(p*ns.z*ns.z); vec4 x_=floor(j*ns.z); vec4 y_=floor(j-7.0*x_);
+  vec4 x=x_*ns.x+ns.yyyy; vec4 y=y_*ns.x+ns.yyyy; vec4 h=1.0-abs(x)-abs(y);
+  vec4 b0=vec4(x.xy,y.xy); vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.0+1.0; vec4 s1=floor(b1)*2.0+1.0; vec4 sh=-step(h,vec4(0.0));
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy; vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x); vec3 p1=vec3(a0.zw,h.y); vec3 p2=vec3(a1.xy,h.z); vec3 p3=vec3(a1.zw,h.w);
+  vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+  p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+  vec4 m=max(0.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.0); m=m*m;
+  return 42.0*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}
+
+uniform float uT, uBass, uMid, uTreb, uBeat, uR, uSharp;
+uniform float uHarmL, uHarmM, uFreeRoom, uSymBreak, uVisMode, uTorusMorph;
+
+// Normalized Associated Legendre Polynomial surrogate + exact recurrence P_l^m(x)
+float evalSphericalHarmonic(float theta, float phi, float lVal, float mVal, float timePhase) {
+  float x = cos(theta);
+  float sinT = max(0.0, sin(theta));
+  // Exact low-order Legendre polynomials P_2, P_3, P_4, P_5 blended smoothly across fractional lVal
+  float p2 = 0.5 * (3.0 * x * x - 1.0);
+  float p3 = 0.5 * (5.0 * x * x * x - 3.0 * x);
+  float p4 = 0.125 * (35.0 * x * x * x * x - 30.0 * x * x + 3.0);
+  float p5 = 0.125 * (63.0 * x * x * x * x * x - 70.0 * x * x * x + 15.0 * x);
+  float legLat = mix(
+    mix(p2, p3, clamp(lVal - 2.0, 0.0, 1.0)),
+    mix(p4, p5, clamp(lVal - 4.0, 0.0, 1.0)),
+    clamp((lVal - 3.0) * 0.5, 0.0, 1.0)
+  );
+  float sectorial = pow(sinT, clamp(mVal * 0.45, 0.3, 2.2)) * cos(lVal * theta - timePhase * 0.42);
+  float azim = cos(mVal * phi + timePhase * 0.72 + uSymBreak * 1.8 * sin(theta * 2.0 - phi));
+  return mix(legLat, sectorial, 0.58) * azim;
+}
+
+// Evaluate continuous Noetherian Spherical Harmonics + Cymatic Standing Waves on unit sphere q
+vec2 quantumField(vec3 q) {
+  float theta = acos(clamp(q.y, -1.0, 1.0));
+  float phi = atan(q.z, q.x);
+  float sinT = sin(theta);
+
+  // Spherical Harmonic Eigenmode Y_l^m(theta, phi) + Overtone Y_{l+2}^{m+1}
+  float yPrimary = evalSphericalHarmonic(theta, phi, uHarmL, uHarmM, uT);
+  float yOvertone = evalSphericalHarmonic(theta, phi, uHarmL + 2.0, uHarmM + 1.0, -uT * 1.35);
+
+  // Explicit Symmetry Breaking term epsilon * cos(m*phi - l*theta)
+  float symTerm = uSymBreak * 0.12 * sin((uHarmM + 1.0) * phi - uHarmL * theta + uT * 0.9);
+
+  // Chladni 3D Nodal Standing Wave
+  float chladni = cos(uHarmL * q.x * 3.14159) * cos(uHarmM * q.y * 3.14159) * cos(uHarmL * q.z * 3.14159)
+                - cos(uHarmM * q.x * 3.14159) * cos(uHarmL * q.y * 3.14159);
+
+  // Curl-advected superfluid ripple
+  float n1 = snoise(q * 1.35 + vec3(0.0, uT * 0.28, uT * 0.22));
+  float n2 = snoise(q * 2.75 + vec3(uT * 0.48, -uT * 0.31, 0.0) + yPrimary * 0.45);
+  float n3 = snoise(q * uSharp - vec3(0.0, uT * 0.95, uT * 0.4));
+
+  float baseHarm = yPrimary * (0.10 + uBass * 0.25) + yOvertone * (0.045 + uMid * 0.15) + symTerm;
+  float fluidNoise = n1 * (0.04 + uBass * 0.15) + n2 * (0.02 + uMid * 0.08) + n3 * (0.006 + uTreb * 0.045);
+
+  float dispVal = 0.0;
+  float phaseVal = yPrimary * 2.4 + yOvertone * 1.45 + n2 * 0.85 + symTerm * 4.0;
+
+  if (uVisMode < 0.5) {
+    // 0: Noether Eigen-Orb (True Legendre Spherical Eigenmodes + Superfluid Condensate)
+    dispVal = (baseHarm * 1.18 + fluidNoise * 0.82) * uFreeRoom + uBeat * 0.068 * cos(uHarmL * theta);
+  } else if (uVisMode < 1.5) {
+    // 1: Cymatic Chladni Shell (Crisp Standing-Wave Nodal Ridges)
+    dispVal = (chladni * (0.085 + uBass * 0.21 + uMid * 0.14) + baseHarm * 0.65 + n2 * 0.03) * uFreeRoom + uBeat * 0.06;
+    phaseVal = chladni * 3.2 + yPrimary;
+  } else if (uVisMode < 2.5) {
+    // 2: Hopf Torus Attractor (Villarceau Spiral Undulation along Clifford Torus)
+    float villarceau = sin(uHarmL * (2.0 * theta + phi) - uT * 1.35);
+    dispVal = (villarceau * (0.09 + uBass * 0.20) + yOvertone * (0.05 + uMid * 0.12) + fluidNoise * 0.42) * uFreeRoom + uBeat * 0.06;
+    phaseVal = villarceau * 2.8 + phi + theta * 2.0;
+  } else if (uVisMode < 3.5) {
+    // 3: Dirac Ferrofluid Crown (Magnetized Harmonic Multipole Peaks)
+    float peak = pow(abs(yPrimary * 0.78 + n1 * 0.42), 1.62) * sign(yPrimary + 0.001);
+    dispVal = (peak * (0.14 + uBass * 0.34 + uMid * 0.16) + n3 * 0.03 + symTerm) * uFreeRoom + uBeat * 0.085;
+    phaseVal = peak * 3.5;
+  } else {
+    // 4: Superfluid Vortex Nebula (Quantized Swirling Condensate)
+    float vortex = sin(uHarmM * phi - uT * 1.85 + 2.5 * cos(uHarmL * theta)) * sinT;
+    dispVal = (vortex * (0.105 + uBass * 0.26) + fluidNoise * 1.12 + symTerm) * uFreeRoom + uBeat * 0.072;
+    phaseVal = vortex * 3.3 + n1 * 1.5;
+  }
+  return vec2(dispVal, phaseVal);
+}
+
+vec3 disp(vec3 q) {
+  vec2 qf = quantumField(q);
+  float theta = acos(clamp(q.y, -1.0, 1.0));
+  float phi = atan(q.z, q.x);
+  float sinT = sin(theta);
+
+  // Spherical base position
+  vec3 spherePos = q * uR * (1.0 + qf.x);
+
+  // Topology-preserving 3D Toroidal Vortex Funnel & Villarceau Spiral Attractor (zero polar triangle stretching!)
+  float villarceau1 = sin(uHarmL * (theta * 2.0 + phi) - uT * 1.4) * sinT;
+  float villarceau2 = cos(uHarmM * (theta * 2.0 - phi) + uT * 1.1) * sinT;
+  float torusWave = (villarceau1 * 0.14 + villarceau2 * 0.09 + qf.x * 0.65);
+
+  vec3 toroidQ = q;
+  // Deeply pinch polar vortex funnels while expanding the equatorial Clifford torus ring
+  toroidQ.y *= (0.28 + 0.72 * pow(sinT, 1.85));
+  toroidQ.xz *= (1.16 + 0.24 * sinT);
+  vec3 torusPos = toroidQ * uR * (1.0 + torusWave);
+
+  // Tilt 38 degrees toward camera so the upper toroidal vortex funnel & Villarceau spirals are on full display
+  float ct = cos(0.66), st = sin(0.66);
+  torusPos.yz = mat2(ct, -st, st, ct) * torusPos.yz;
+
+  return mix(spherePos, torusPos, uTorusMorph);
+}
+`;
+
+/* ── 1. The Central Quantum Field Orb (with Analytical Normal Reconstruction & Surface Fibroid Veins) ── */
+const orbU = {
+  uT: { value: 0 }, uBass: { value: 0 }, uMid: { value: 0 }, uTreb: { value: 0 },
+  uBeat: { value: 0 }, uR: { value: 0.88 }, uSharp: { value: 6.2 },
+  uHarmL: { value: 3.0 }, uHarmM: { value: 2.0 }, uFreeRoom: { value: 1.0 },
+  uSymBreak: { value: 0.18 }, uVisMode: { value: 0.0 }, uTorusMorph: { value: 0.0 },
+  uCore: { value: pal.core }, uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib },
+  uLevel: { value: 0 }, uFibIntensity: { value: 1.15 }, uShowSurfFib: { value: 1.0 }, uMono: { value: 0.0 }
+};
+
+const orb = new THREE.Mesh(
+  new THREE.IcosahedronGeometry(1, window.innerWidth < 720 ? 38 : 60),
+  new THREE.ShaderMaterial({
+    uniforms: orbU,
+    extensions: { derivatives: true },
+    vertexShader: QUANTUM_FIELD_GLSL + `
+      varying vec3 vN;
+      varying vec3 vV;
+      varying float vD;
+      varying float vPhase;
+      varying vec3 vUnitPos;
+      void main() {
+        vec3 n = normalize(position);
+        vec3 t = normalize(cross(n, abs(n.y) < 0.99 ? vec3(0.0, 1.0, 0.0) : vec3(1.0, 0.0, 0.0)));
+        vec3 b = cross(n, t);
+        vec3 p0 = disp(n);
+        vec3 p1 = disp(normalize(n + t * 0.011));
+        vec3 p2 = disp(normalize(n + b * 0.011));
+        vec3 nn = normalize(cross(p1 - p0, p2 - p0));
+        vec2 qf = quantumField(n);
+        vD = qf.x;
+        vPhase = qf.y;
+        vUnitPos = n;
+        vec4 mv = modelViewMatrix * vec4(p0, 1.0);
+        vN = normalize(normalMatrix * nn);
+        vV = -mv.xyz;
+        gl_Position = projectionMatrix * mv;
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uCore, uMidC, uRim, uFib;
+      uniform float uT, uBass, uMid, uTreb, uLevel, uBeat, uFibIntensity, uShowSurfFib, uHarmL, uHarmM, uMono, uTorusMorph;
+      varying vec3 vN;
+      varying vec3 vV;
+      varying float vD;
+      varying float vPhase;
+      varying vec3 vUnitPos;
+
+      void main() {
+        vec3 N = normalize(vN);
+        vec3 V = normalize(vV);
+        float ndv = max(dot(N, V), 0.0);
+        float fr = pow(1.0 - ndv, 2.20);
+
+        // Smooth Sanzo Wada / Monotone body shading
+        float h = clamp(vD * 2.65 + 0.48, 0.0, 1.0);
+        vec3 col = mix(uCore, uMidC, smoothstep(0.06, 0.94, h));
+
+        // Sanzo Wada 4-pigment thin-film interference sheen along Noether action phase S
+        float sheen = 0.5 + 0.5 * cos(6.28318 * (ndv * 0.55 + uT * 0.04 + vPhase * 0.25));
+        vec3 sheenPigment = mix(uMidC, mix(uFib, uRim, 0.45), sheen);
+        col = mix(col, sheenPigment, (uMono > 0.5 ? 0.05 : 0.14) * (0.45 + uLevel));
+
+        // Key specular highlight + Fresnel rim
+        float key = pow(max(dot(N, normalize(vec3(-0.42, 0.62, 0.66))), 0.0), 16.0);
+        col += uRim * key * 0.58;
+        col = mix(col, uRim, fr * 0.82);
+        col += uRim * fr * uBeat * 0.32;
+
+        // Crisp Triple-Band On-Surface Quantum Equipotential, Nodal & Acoustic-Ripple Fibroid Veins
+        if (uShowSurfFib > 0.5 && uFibIntensity > 0.01) {
+          float waveCoord = vPhase * 2.65 + uT * 0.36;
+          float fw = max(fwidth(waveCoord), 0.0075);
+          float distToLine = abs(fract(waveCoord) - 0.5);
+          float fibCore = 1.0 - smoothstep(0.0, fw * 1.55, distToLine);
+          float fibAura = 1.0 - smoothstep(0.0, fw * 4.20, distToLine);
+
+          // Secondary orthogonal geodesic meridian fibroid
+          float theta = acos(clamp(vUnitPos.y, -1.0, 1.0));
+          float phi = atan(vUnitPos.z, vUnitPos.x);
+          float geoCoord = (phi * uHarmM + theta * uHarmL) * 0.95 - uT * 0.25;
+          float fw2 = max(fwidth(geoCoord), 0.0075);
+          float geoDist = abs(fract(geoCoord) - 0.5);
+          float geoLine = 1.0 - smoothstep(0.0, fw2 * 1.45, geoDist);
+
+          // Tertiary high-frequency acoustic-ripple interference filament (driven by treble & mid energy)
+          float acoustCoord = (theta * (uHarmL + 2.0) - phi * uHarmM) * 1.35 + vPhase * 1.8 + uT * 0.52;
+          float fw3 = max(fwidth(acoustCoord), 0.008);
+          float acoustDist = abs(fract(acoustCoord) - 0.5);
+          float acoustLine = (1.0 - smoothstep(0.0, fw3 * 1.25, acoustDist)) * clamp(0.28 + uTreb * 0.95 + uMid * 0.45, 0.0, 1.0);
+
+          float torusDamp = 1.0 - 0.22 * uTorusMorph;
+          float combinedFib = (max(max(fibCore * 0.92, geoLine * 0.66), acoustLine * 0.58) + fibAura * 0.24) * (0.48 + 0.52 * fr) * uFibIntensity * torusDamp;
+          vec3 veinColor = mix(uFib, uRim, max(fibCore * 0.50, acoustLine * 0.65)) * 1.18;
+          col = mix(col, veinColor, clamp(combinedFib, 0.0, 0.92));
+        }
+
+        // Soft filmic highlight protection so pigments remain saturated and never clip
+        col = col / (1.0 + max(vec3(0.0), col - 0.85) * 0.45);
+        gl_FragColor = vec4(col, 1.0);
+      }
+    `
+  })
+);
+world.add(orb);
+
+/* ── 2. Surface-Hugging 3D Geodesic Fibroid Veins (Multi-Strand Filaments Riding on Top of the Moving Blob!) ── */
+const SURF_FIB_COUNT = 24;
+const SURF_FIB_SEGS = 180;
+const surfFibGroup = new THREE.Group();
+world.add(surfFibGroup);
+
+const surfFibMat = new THREE.ShaderMaterial({
+  uniforms: {
+    uT: orbU.uT, uBass: orbU.uBass, uMid: orbU.uMid, uTreb: orbU.uTreb,
+    uBeat: orbU.uBeat, uR: orbU.uR, uSharp: orbU.uSharp,
+    uHarmL: orbU.uHarmL, uHarmM: orbU.uHarmM, uFreeRoom: orbU.uFreeRoom,
+    uSymBreak: orbU.uSymBreak, uVisMode: orbU.uVisMode, uTorusMorph: orbU.uTorusMorph,
+    uFib: { value: pal.fib }, uRim: { value: pal.rim }, uFibIntensity: orbU.uFibIntensity
+  },
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  vertexShader: QUANTUM_FIELD_GLSL + `
+    attribute float aArc;
+    attribute float aFibId;
+    varying float vArc;
+    varying float vFibId;
+    void main() {
+      vec3 n = normalize(position);
+      // Displace by exact same disp(n) + surface hover offset so veins ride cleanly on top of the blob or torus
+      float hover = 1.013 + 0.007 * mod(aFibId, 2.0) + 0.008 * sin(aArc * 12.566 - uT * 2.2 + aFibId);
+      vec3 p = disp(n) * hover;
+      vArc = aArc;
+      vFibId = aFibId;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform vec3 uFib, uRim;
+    uniform float uT, uFibIntensity, uBeat, uTorusMorph;
+    varying float vArc;
+    varying float vFibId;
+    void main() {
+      // Traveling Noether current wave-packets along each surface fibroid
+      float pulse1 = pow(0.5 + 0.5 * sin(vArc * 18.8495 - uT * 3.4 + vFibId * 1.7), 2.5);
+      float pulse2 = 0.5 + 0.5 * cos(vArc * 6.28318 + uT * 1.6 - vFibId);
+      float torusScale = 1.0 - 0.42 * uTorusMorph;
+      float alpha = (0.34 + 0.66 * pulse1) * (0.70 + 0.30 * pulse2) * clamp(uFibIntensity, 0.0, 1.5) * torusScale;
+      vec3 col = mix(uFib, uRim, pulse1 * 0.55) * (1.05 + uBeat * 0.32);
+      gl_FragColor = vec4(col * alpha, alpha);
+    }
+  `
+});
+
+for (let f = 0; f < SURF_FIB_COUNT; f++) {
+  const g = new THREE.BufferGeometry();
+  const pos = new Float32Array(SURF_FIB_SEGS * 3);
+  const arc = new Float32Array(SURF_FIB_SEGS);
+  const fid = new Float32Array(SURF_FIB_SEGS);
+  const inc = (f / SURF_FIB_COUNT) * Math.PI;
+  const azm = (f / SURF_FIB_COUNT) * Math.PI * 2;
+  const pWind = (f % 3) + 1;
+  const qWind = ((f + 1) % 4) + 1;
+
+  for (let i = 0; i < SURF_FIB_SEGS; i++) {
+    const u = i / SURF_FIB_SEGS;
+    const t = u * Math.PI * 2;
+    const th = Math.PI * 0.5 + 0.44 * Math.sin(pWind * t + inc) * Math.cos(t + azm * 0.5);
+    const ph = qWind * t + azm;
+    pos[i * 3]     = Math.sin(th) * Math.cos(ph);
+    pos[i * 3 + 1] = Math.cos(th);
+    pos[i * 3 + 2] = Math.sin(th) * Math.sin(ph);
+    arc[i] = u;
+    fid[i] = f;
+  }
+  g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  g.setAttribute('aArc', new THREE.BufferAttribute(arc, 1));
+  g.setAttribute('aFibId', new THREE.BufferAttribute(fid, 1));
+  const loop = new THREE.LineLoop(g, surfFibMat);
+  loop.frustumCulled = false;
+  surfFibGroup.add(loop);
+}
+
+/* ── 3. 3D Orbital Hopf Fibration & Magnetic Flux Fibroids (32 Linked Clifford Loops Around the Blob) ── */
+const ORB_FIB_COUNT = 32;
+const ORB_FIB_SEGS = 150;
+const orbitalFibGroup = new THREE.Group();
+world.add(orbitalFibGroup);
+
+const orbitalFibMat = new THREE.ShaderMaterial({
+  uniforms: {
+    uT: orbU.uT, uBass: orbU.uBass, uMid: orbU.uMid, uTreb: orbU.uTreb,
+    uBeat: orbU.uBeat, uFreeRoom: orbU.uFreeRoom, uSymBreak: orbU.uSymBreak, uInward: { value: 0 },
+    uFib: { value: pal.fib }, uRim: { value: pal.rim }, uMidC: { value: pal.mid },
+    uFibIntensity: orbU.uFibIntensity
+  },
+  transparent: true,
+  depthWrite: false,
+  blending: THREE.AdditiveBlending,
+  vertexShader: `
+    attribute float aArc;
+    attribute float aFibId;
+    attribute float aEta;
+    uniform float uT, uBass, uMid, uBeat, uFreeRoom, uSymBreak, uInward;
+    varying float vArc;
+    varying float vFibId;
+
+    void main() {
+      float xi2 = aArc * 6.2831853;
+      float xi1 = (aFibId / 32.0) * 6.2831853 + uT * 0.19 * (mod(aFibId, 2.0) < 0.5 ? 1.0 : -1.0);
+      float eta = clamp(aEta + 0.14 * sin(uT * 0.55 + aFibId * 0.4) + uBass * 0.12 * uFreeRoom, 0.25, 1.32);
+
+      // Exact 4D -> 3D Stereographic Hopf Fibration Fiber
+      float sinE = sin(eta), cosE = cos(eta);
+      float x4 = cosE * cos(xi2);
+      float y4 = cosE * sin(xi2);
+      float z4 = sinE * cos(xi1 + xi2);
+      float w4 = sinE * sin(xi1 + xi2);
+
+      float denom = max(0.42, 1.0 - (0.56 + uSymBreak * 0.12) * w4);
+      vec3 hopfPos = vec3(x4, z4, y4) / denom;
+
+      // Scale so fibers orbit cleanly between the blob (r ~ 0.9) and the outer spectrum ring (r ~ 1.88)
+      float targetR = 1.15 + 0.35 * fract(aFibId * 0.37) + uBass * 0.14 * uFreeRoom - uInward * 0.12 + uBeat * 0.06;
+      vec3 p = normalize(hopfPos) * targetR * (0.86 + 0.22 * length(hopfPos));
+
+      // Gentle harmonic breathing along the loop
+      p += normalize(p) * 0.048 * (1.0 + uMid * 1.5) * sin(xi2 * 3.0 - uT * 2.4 + aFibId);
+
+      vArc = aArc;
+      vFibId = aFibId;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+    }
+  `,
+  fragmentShader: `
+    uniform vec3 uFib, uRim, uMidC;
+    uniform float uT, uFibIntensity, uBeat;
+    varying float vArc;
+    varying float vFibId;
+    void main() {
+      // High-clarity traveling phase packets so orbital fibroids are unmistakable and crisp
+      float packet = pow(0.5 + 0.5 * sin(vArc * 12.56637 - uT * 2.8 + vFibId * 1.1), 2.3);
+      float baseLine = 0.34 + 0.66 * packet;
+      float alpha = clamp(baseLine * uFibIntensity * (0.90 + uBeat * 0.32), 0.0, 1.0);
+      vec3 col = mix(uMidC, mix(uFib, uRim, packet), 0.80) * 1.20;
+      gl_FragColor = vec4(col * alpha, alpha);
+    }
+  `
+});
+
+for (let f = 0; f < ORB_FIB_COUNT; f++) {
+  const g = new THREE.BufferGeometry();
+  const dummyPos = new Float32Array(ORB_FIB_SEGS * 3);
+  const arc = new Float32Array(ORB_FIB_SEGS);
+  const fid = new Float32Array(ORB_FIB_SEGS);
+  const etaArr = new Float32Array(ORB_FIB_SEGS);
+  const baseEta = 0.40 + (f % 4) * 0.18;
+
+  for (let i = 0; i < ORB_FIB_SEGS; i++) {
+    arc[i] = i / ORB_FIB_SEGS;
+    fid[i] = f;
+    etaArr[i] = baseEta;
+  }
+  g.setAttribute('position', new THREE.BufferAttribute(dummyPos, 3));
+  g.setAttribute('aArc', new THREE.BufferAttribute(arc, 1));
+  g.setAttribute('aFibId', new THREE.BufferAttribute(fid, 1));
+  g.setAttribute('aEta', new THREE.BufferAttribute(etaArr, 1));
+  const loop = new THREE.LineLoop(g, orbitalFibMat);
+  loop.frustumCulled = false;
+  orbitalFibGroup.add(loop);
+}
+
+/* ── 4. Volumetric Back-Faced Halo ── */
+const haloU = { uCol: { value: pal.mid }, uI: { value: 0.42 } };
+const halo = new THREE.Mesh(
+  new THREE.SphereGeometry(1, 48, 48),
+  new THREE.ShaderMaterial({
+    uniforms: haloU, side: THREE.BackSide, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `varying vec3 vN; void main(){ vN=normalize(normalMatrix*normal); gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0); }`,
+    fragmentShader: `uniform vec3 uCol; uniform float uI; varying vec3 vN;
+      void main(){ float k=pow(max(0.0,0.64-dot(vN,vec3(0.,0.,1.))),3.0); gl_FragColor=vec4(uCol*k*uI,1.0); }`
+  })
+);
+world.add(halo);
+
+/* ── 5. Mirrored Logarithmic Spectrum Ring (144 Instanced Bars) ── */
+const HALF = 72, NB = HALF * 2, RING_R = 1.88;
+const barGeo = new THREE.BoxGeometry(1, 1, 1);
+barGeo.translate(0, 0.5, 0);
+const bars = new THREE.InstancedMesh(
+  barGeo,
+  new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false }),
+  NB
+);
+const tmpC = new THREE.Color(), dummy = new THREE.Object3D();
+for (let i = 0; i < NB; i++) bars.setColorAt(i, tmpC.setRGB(0.5, 0.6, 0.9));
+world.add(bars);
+const barVal = new Float32Array(HALF);
+const edges = Array.from({ length: HALF + 1 }, (_, k) => 32 * Math.pow(14000 / 32, k / HALF));
+
+/* ── 6. Crisp Harmonic Waveform Loops ── */
+const WN = 256;
+function makeLoop(opacity) {
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(WN * 3), 3));
+  const l = new THREE.LineLoop(g, new THREE.LineBasicMaterial({ transparent: true, opacity, blending: THREE.AdditiveBlending, depthWrite: false }));
+  world.add(l);
+  return l;
+}
+const wave = makeLoop(0.95), waveEcho = makeLoop(0.55);
+const waveBuf = new Float32Array(WN), echoBuf = new Float32Array(WN);
+
+/* ── 7. Conserved Noether Current Particle Halo (4,800 GPU Particles with Legendre Nodal & Biot-Savart Advection) ── */
+const PN = window.innerWidth < 720 ? 2600 : 4800;
+const pg = new THREE.BufferGeometry();
+const pDir = new Float32Array(PN * 3), pSeed = new Float32Array(PN * 4);
+for (let i = 0; i < PN; i++) {
+  const u = Math.random() * 2 - 1, th = Math.random() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+  pDir[i * 3] = s * Math.cos(th); pDir[i * 3 + 1] = s * Math.sin(th); pDir[i * 3 + 2] = u;
+  pSeed[i * 4] = Math.pow(Math.random(), 1.5); pSeed[i * 4 + 1] = Math.random(); pSeed[i * 4 + 2] = Math.random(); pSeed[i * 4 + 3] = Math.random();
+}
+pg.setAttribute('position', new THREE.BufferAttribute(pDir, 3));
+pg.setAttribute('aSeed', new THREE.BufferAttribute(pSeed, 4));
+const pU = {
+  uT: { value: 0 }, uSpin: { value: 0 }, uBurst: { value: 0 }, uBass: { value: 0 }, uTreb: { value: 0 },
+  uInward: { value: 0 }, uHarmL: { value: 3 }, uHarmM: { value: 2 }, uSymBreak: { value: 0.35 }, uVisMode: { value: 0 },
+  uPx: { value: renderer.getPixelRatio() },
+  uMidC: { value: pal.mid }, uRim: { value: pal.rim }, uFib: { value: pal.fib }, uOp: { value: 0.85 }
+};
+const points = new THREE.Points(pg, new THREE.ShaderMaterial({
+  uniforms: pU, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+  vertexShader: `
+    attribute vec4 aSeed;
+    uniform float uT, uSpin, uBurst, uBass, uTreb, uInward, uHarmL, uHarmM, uSymBreak, uVisMode, uPx;
+    varying float vA; varying float vR; varying float vNodal;
+    void main(){
+      float r = 2.08 + aSeed.x * 3.3;
+      // Conserved divergence-free Noether current precession on S^2 coupled to active Spherical Harmonic numbers (l, m)
+      float ang = uSpin * (0.38 + aSeed.y * 0.92 + 0.06 * uHarmM) / (0.52 + aSeed.x);
+      vec3 d = position;
+      float c = cos(ang), s = sin(ang); d.xz = mat2(c, -s, s, c) * d.xz;
+      float a2 = ang * 0.32 + 0.25 * sin(uT * 0.4 + aSeed.z * 6.28 + uSymBreak * 2.0);
+      d.xy = mat2(cos(a2), -sin(a2), sin(a2), cos(a2)) * d.xy;
+
+      // Legendre nodal ring & Biot-Savart magnetic latitude attractor
+      float theta = acos(clamp(d.y, -1.0, 1.0));
+      float phi = atan(d.z, d.x);
+      float nodalBand = cos(theta * uHarmL + phi * uHarmM - uT * 0.65);
+      d.y = clamp(d.y + 0.08 * nodalBand * (0.4 + 0.6 * uSymBreak), -0.99, 0.99);
+      d = normalize(d);
+
+      float push = uBurst * (0.22 + aSeed.z * 0.85) - uInward * 0.45 * aSeed.z + 0.14 * abs(nodalBand) * uBass;
+      float wob = sin(uT * (0.55 + aSeed.w) + aSeed.x * 21.0 + uVisMode * 0.8) * 0.12;
+      vec3 p = d * (r + push + wob + uBass * 0.35 * aSeed.y);
+      p.z *= 0.58;
+      vec4 mv = modelViewMatrix * vec4(p, 1.0);
+      gl_Position = projectionMatrix * mv;
+      float tw = 0.5 + 0.5 * sin(uT * (2.0 + aSeed.w * 3.0) + aSeed.y * 40.0);
+      gl_PointSize = uPx * (1.28 + aSeed.w * 2.18 + uTreb * 2.6 * tw + 0.45 * abs(nodalBand)) * (6.5 / -mv.z);
+      vA = (0.32 + 0.68 * tw) * (1.0 - aSeed.x * 0.48);
+      vR = aSeed.x;
+      vNodal = 0.5 + 0.5 * nodalBand;
+    }`,
+  fragmentShader: `
+    uniform vec3 uMidC, uRim, uFib; uniform float uOp; varying float vA; varying float vR; varying float vNodal;
+    void main(){ float d = length(gl_PointCoord - 0.5); float a = smoothstep(0.5, 0.0, d);
+      vec3 pCol = mix(mix(uRim, uMidC, vR), uFib, vNodal * 0.35);
+      gl_FragColor = vec4(pCol * a * vA * uOp, 1.0); }`
+}));
+world.add(points);
+
+/* ── 8. 3D Quantized Vortex Ring Shockwaves (TorusGeometry with Angular Momentum Tilt) ── */
+const shocks = [];
+const shockGeo = new THREE.TorusGeometry(1.0, 0.0085, 12, 144);
+for (let i = 0; i < 8; i++) {
+  const m = new THREE.Mesh(
+    shockGeo,
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false })
+  );
+  m.visible = false; m.userData = { age: 0, life: 1, s: 1, str: 0, rx: 0, ry: 0 };
+  world.add(m); shocks.push(m);
+}
+let shockIdx = 0, beatEnv = 0, burst = 0, punch = 0;
+
+function fireBeat(strength, isClock, down) {
+  beatEnv = Math.max(beatEnv, strength);
+  burst = Math.max(burst, strength * (reduceMotion ? 0.35 : 1));
+  punch = Math.max(punch, strength);
+  const m = shocks[shockIdx++ % shocks.length];
+  const life = clamp((AN.locked ? AN.period : 0.5) * (down ? 2.2 : 1.5), 0.45, 1.6);
+  const tilt = (shockIdx % 3 === 0) ? 0.32 : (shockIdx % 3 === 1 ? -0.28 : 0.0);
+  m.userData = {
+    age: 0, life, s: down ? 1.15 : 1.0, str: strength * (down ? 1 : 0.68),
+    rx: tilt * Math.cos(shockIdx), ry: tilt * Math.sin(shockIdx)
+  };
+  m.visible = true;
+  if (isClock) updateBarDots();
+}
+function updateBarDots() {
+  const idx = ((AN.beatCount - AN.downOff) % 4 + 4) % 4;
+  $$('#bar i').forEach((el, i) => el.classList.toggle('on', i === idx));
+}
+
+/* ───────────────────────── Responsive Frustum & Non-Overlapping Camera ───────────────────────── */
+function syncDockHeight() {
+  const dockEl = document.querySelector('.dock');
+  if (dockEl) {
+    const h = Math.round(dockEl.getBoundingClientRect().height);
+    if (h > 20) document.documentElement.style.setProperty('--dock-h', h + 'px');
+  }
+}
+function resize() {
+  const w = window.innerWidth, h = window.innerHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
+  camera.userData.z = Math.max(6.4, 3.3 / (Math.tan(THREE.MathUtils.degToRad(20)) * camera.aspect));
+  camera.updateProjectionMatrix();
+  syncDockHeight();
+}
+addEventListener('resize', resize);
+resize();
+
+let last = performance.now() / 1000, tAcc = 0, spinAcc = 0, procPulse = 0, hudTick = 0;
+const gainEl = $('#sens');
+const fibEl = $('#slFibroid');
+const harmEl = $('#slHarmonic');
+const freeEl = $('#slFreeRoom');
+const symEl = $('#slSymBreak');
+const meterEls = [$('#mLow'), $('#mMid'), $('#mHigh')];
+const qTelemEl = $('#qTelem');
+
+function tick() {
+  requestAnimationFrame(tick);
+  const now = performance.now() / 1000;
+  const dt = Math.min(0.05, now - last); last = now;
+
+  const st = STATES[stateName];
+  const k = 1 - Math.pow(0.02, dt);
+  K.amp = lerp(K.amp, st.amp, k);
+  K.spin = lerp(K.spin, st.spin, k);
+  K.inward = lerp(K.inward, st.inward, k);
+  K.proc = lerp(K.proc, st.proc, k);
+  K.vis = lerp(K.vis, visMode, k * 1.4);
+  K.torusMorph = lerp(K.torusMorph, visMode === 2 ? 0.88 : 0.0, k * 1.3);
+
+  const pTgt = getActivePaletteTarget();
+  tgt.core.set(...pTgt.core); tgt.mid.set(...pTgt.mid); tgt.rim.set(...pTgt.rim); tgt.fib.set(...pTgt.fib);
+  pal.core.lerp(tgt.core, k); pal.mid.lerp(tgt.mid, k); pal.rim.lerp(tgt.rim, k); pal.fib.lerp(tgt.fib, k);
+  orbU.uMono.value = pTgt.mono || 0;
+
+  const live = A.ctx && A.src !== 'none';
+  const gain = parseFloat(gainEl.value);
+  const fibInt = parseFloat(fibEl.value);
+  const userL = parseFloat(harmEl.value);
+  const freeRoom = parseFloat(freeEl.value);
+  const symBreak = parseFloat(symEl.value);
+
+  const audioTime = live ? A.ctx.currentTime : now;
+  if (live) {
+    analyse(audioTime, dt, gain);
+    beatClock(audioTime);
+  } else {
+    AN.bands.forEach((v, i) => AN.bands[i] = v * 0.92);
+    AN.level *= 0.92;
+  }
+
+  // Smoothly adapt Spherical Harmonic numbers (l, m) to live vocal formants (F1, F2) + user slider
+  const f1Norm = clamp((AN.formantF1 - 260) / 600, 0, 1);
+  const f2Norm = clamp((AN.formantF2 - 900) / 1800, 0, 1);
+  const targetL = userL + (live ? (f1Norm * 1.4 + AN.centroid * 1.1) : 0.4 * Math.sin(now * 0.4));
+  const targetM = Math.max(1.0, Math.min(targetL, st.mTarget + (live ? (f2Norm * 1.8 + AN.bands[1] * 0.9) : 0)));
+  K.l = lerp(K.l, targetL, k * 0.85);
+  K.m = lerp(K.m, targetM, k * 0.85);
+
+  const procW = live ? K.proc : 1;
+  const pb = 0.18 + 0.14 * Math.sin(now * 1.1) + (stateName === 'thinking' ? 0.22 * Math.sin(now * 2.3) : 0);
+  const pm = 0.25 + 0.20 * Math.sin(now * 1.7 + 1) + (stateName === 'thinking' ? 0.30 * Math.abs(Math.sin(now * 3.1)) : 0);
+  const pt = 0.20 + 0.20 * Math.sin(now * 2.9 + 2) + (stateName === 'thinking' ? 0.35 * Math.abs(Math.sin(now * 4.7)) : 0);
+
+  const rawBass = lerp(AN.bands[0], pb, procW) * K.amp;
+  const rawMid  = lerp(AN.bands[1], pm, procW) * K.amp;
+  const rawTreb = lerp(AN.bands[2], pt, procW) * K.amp;
+  const rawLvl  = Math.max(AN.level, procW * 0.25) * K.amp;
+
+  // Step 2nd-Order Symplectic Hamiltonian Oscillator Bank
+  stepHamiltonian(dt, [rawBass, rawMid, rawTreb, rawLvl], freeRoom);
+  const bass = Math.max(0.02, lerp(rawBass, HAM.q[0], 0.55));
+  const mid  = Math.max(0.02, lerp(rawMid,  HAM.q[1], 0.55));
+  const treb = Math.max(0.02, lerp(rawTreb, HAM.q[2], 0.50));
+  const level = Math.max(0.05, lerp(rawLvl, HAM.q[3], 0.50));
+
+  if (!AN.locked) {
+    procPulse -= dt;
+    if (procPulse <= 0) {
+      if (stateName === 'thinking') { fireBeat(0.45, false); procPulse = 0.55 + Math.random() * 0.35; }
+      else if (!live) { fireBeat(0.28, false); procPulse = 3.2; }
+      else procPulse = 0.5;
+    }
+  }
+
+  const period = AN.locked ? AN.period : 0.5;
+  beatEnv *= Math.exp(-dt / (period * 0.32));
+  burst   *= Math.exp(-dt / (period * 0.55));
+  punch   *= Math.exp(-dt / 0.12);
+  const tempoK = AN.locked ? AN.bpm / 120 : 1;
+  const phase = live ? beatPhase(audioTime) : 0;
+
+  tAcc += dt * (0.52 + level * 1.05 + mid * 0.42) * tempoK;
+  spinAcc += dt * K.spin * tempoK * (reduceMotion ? 0.4 : 1);
+
+  // Update Orb & Fibroid Uniforms
+  orbU.uT.value = tAcc;
+  orbU.uBass.value = bass;
+  orbU.uMid.value = mid;
+  orbU.uTreb.value = treb;
+  orbU.uBeat.value = beatEnv * K.amp;
+  orbU.uLevel.value = level;
+  orbU.uHarmL.value = K.l;
+  orbU.uHarmM.value = K.m;
+  orbU.uFreeRoom.value = freeRoom;
+  orbU.uSymBreak.value = symBreak;
+  orbU.uVisMode.value = K.vis;
+  orbU.uTorusMorph.value = K.torusMorph;
+  orbU.uFibIntensity.value = fibInt;
+  orbU.uShowSurfFib.value = showOnBlobFib ? 1.0 : 0.0;
+  orbU.uSharp.value = stateName === 'listening' ? 8.0 : 6.2;
+
+  surfFibGroup.visible = showOnBlobFib && fibInt > 0.02;
+  orbitalFibGroup.visible = showOrbitalFib && fibInt > 0.02;
+  orbitalFibMat.uniforms.uInward.value = K.inward;
+
+  orbit.yaw = lerp(orbit.yaw, orbit.tyaw, 0.12);
+  orbit.pitch = lerp(orbit.pitch, orbit.tpitch, 0.12);
+
+  const rotY = spinAcc * 0.14 + orbit.yaw;
+  const rotX = Math.sin(now * 0.21) * 0.22 + orbit.pitch;
+  orb.rotation.set(rotX, rotY, 0);
+  surfFibGroup.rotation.set(rotX, rotY, 0);
+  orbitalFibGroup.rotation.set(rotX * 0.65, -rotY * 0.8, Math.sin(now * 0.15) * 0.18);
+
+  halo.scale.setScalar(0.88 * (1.52 + level * 0.32 + beatEnv * 0.14));
+  haloU.uI.value = 0.34 + level * 0.52 + beatEnv * 0.35;
+
+  // Spectrum Ring Bars
+  bars.visible = showSpectrumRing;
+  if (showSpectrumRing) {
+    for (let b = 0; b < HALF; b++) {
+      let v;
+      if (live) {
+        const lo = binOf(edges[b]), hi = Math.max(lo, binOf(edges[b + 1]));
+        let s = 0; for (let i = lo; i <= hi; i++) s = Math.max(s, A.freq[i]);
+        v = Math.pow(s / 255, 1.55) * gain * (0.75 + (b / HALF) * 0.6);
+      } else v = 0;
+      const pv = 0.06 + 0.42 * Math.pow(0.5 + 0.5 * Math.sin(b * 0.23 - now * (stateName === 'thinking' ? 4.2 : 1.4)), 4);
+      v = lerp(v, pv, procW * 0.9) * K.amp;
+      barVal[b] += (v - barVal[b]) * (v > barVal[b] ? 0.6 : 0.14);
+    }
+    const ringR = RING_R + beatEnv * 0.06;
+    for (let i = 0; i < NB; i++) {
+      const b = i < HALF ? i : NB - 1 - i;
+      const a = Math.PI / 2 + (i / NB) * Math.PI * 2 + spinAcc * 0.05;
+      const h = 0.03 + clamp(barVal[b], 0, 1.3) * 0.85;
+      dummy.position.set(Math.cos(a) * ringR, Math.sin(a) * ringR, 0);
+      dummy.rotation.set(0, 0, a - Math.PI / 2);
+      dummy.scale.set(0.022, h, 0.022);
+      dummy.updateMatrix();
+      bars.setMatrixAt(i, dummy.matrix);
+      const c = clamp(barVal[b] * 1.2, 0, 1);
+      tmpC.setRGB(lerp(pal.mid.x, pal.rim.x, c), lerp(pal.mid.y, pal.rim.y, c), lerp(pal.mid.z, pal.rim.z, c));
+      bars.setColorAt(i, tmpC);
+    }
+    bars.instanceMatrix.needsUpdate = true;
+    bars.instanceColor.needsUpdate = true;
+  }
+
+  // Waveform & Echo Loops
+  const step = live ? Math.floor(A.time.length / WN) : 0;
+  for (let i = 0; i < WN; i++) {
+    const win = Math.sin((Math.PI * i) / WN);
+    let s = live ? A.time[i * step] * gain * 2.2 : 0;
+    s = lerp(s, 0.18 * Math.sin(i * 0.18 + now * 2.2) * Math.sin(i * 0.05 - now * 0.7), procW * 0.8);
+    echoBuf[i] = lerp(echoBuf[i], waveBuf[i], 0.18);
+    waveBuf[i] = s * win * K.amp;
+  }
+  const wp = wave.geometry.attributes.position.array, ep = waveEcho.geometry.attributes.position.array;
+  const wr = 1.52 + beatEnv * 0.04;
+  for (let i = 0; i < WN; i++) {
+    const a = (i / WN) * Math.PI * 2 + Math.PI / 2;
+    const r1 = wr + clamp(waveBuf[i], -0.35, 0.35), r2 = wr * 1.035 + clamp(echoBuf[i], -0.35, 0.35);
+    wp[i * 3] = Math.cos(a) * r1; wp[i * 3 + 1] = Math.sin(a) * r1; wp[i * 3 + 2] = 0;
+    ep[i * 3] = Math.cos(a) * r2; ep[i * 3 + 1] = Math.sin(a) * r2; ep[i * 3 + 2] = 0;
+  }
+  wave.geometry.attributes.position.needsUpdate = true;
+  waveEcho.geometry.attributes.position.needsUpdate = true;
+  wave.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
+  waveEcho.material.color.setRGB(pal.mid.x, pal.mid.y, pal.mid.z);
+
+  // Particles
+  pU.uT.value = now; pU.uSpin.value = spinAcc; pU.uBurst.value = burst;
+  pU.uBass.value = bass; pU.uTreb.value = treb; pU.uInward.value = K.inward;
+  pU.uHarmL.value = K.l; pU.uHarmM.value = K.m; pU.uSymBreak.value = symBreak; pU.uVisMode.value = K.vis;
+  pU.uOp.value = 0.62 + level * 0.38;
+
+  // 3D Toroidal Quantized Vortex Ring Shockwaves
+  shocks.forEach(m => {
+    if (!m.visible) return;
+    const u = m.userData; u.age += dt;
+    const p = u.age / u.life;
+    if (p >= 1) { m.visible = false; return; }
+    const e = 1 - Math.pow(1 - p, 3);
+    m.scale.setScalar(u.s * (1.02 + e * 2.55));
+    m.rotation.set(u.rx * (1 + p * 0.4), u.ry * (1 + p * 0.4), now * 0.25);
+    m.material.opacity = (1 - p) * (1 - p) * u.str * 0.88;
+    m.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
+  });
+
+  // Non-overlapping vertical shift & scale when Tweak Drawer is open so the entire 3D visual & ring stay 100% unobstructed on both desktop and mobile
+  const drawerOpen = $('#tweakDrawer').classList.contains('open');
+  const isMobile = window.innerWidth < 760;
+  const targetY = drawerOpen
+    ? (isMobile ? 1.05 : (camMode === 'macro' ? 0.34 : (camMode === 'iso' ? 0.44 : (camMode === 'orbit' ? 0.40 : 0.38))))
+    : (isMobile ? 0.28 : 0.05);
+  const targetScale = drawerOpen
+    ? (isMobile ? 0.66 : (camMode === 'macro' ? 0.78 : (camMode === 'iso' ? 0.78 : (camMode === 'orbit' ? 0.80 : 0.82))))
+    : (isMobile ? 0.88 : 1.0);
+  world.position.y = lerp(world.position.y, targetY, 0.14);
+  world.scale.setScalar(lerp(world.scale.x, targetScale, 0.14));
+
+  // Dynamic Sanzo Wada / Monotone deep atmospheric room tone
+  bgClearColor.setRGB(pal.core.x * 0.22, pal.core.y * 0.22, pal.core.z * 0.26);
+  renderer.setClearColor(bgClearColor, 1);
+
+  // 4-Mode 3D Camera Choreography + Mouse-Wheel Zoom
+  const baseZ = clamp(camera.userData.z + zoomOffset, 3.2, 11.5);
+  const sway = reduceMotion ? 0 : 1;
+  let camX = Math.sin(now * 0.11) * 0.42 * sway;
+  let camY = Math.cos(now * 0.13) * 0.28 * sway;
+  let camZ = baseZ - punch * 0.18 * sway - Math.sin(phase * Math.PI) * 0.04 * sway;
+  let lookY = 0;
+
+  if (camMode === 'iso') {
+    camX += 1.85;
+    camY += 1.15;
+    camZ = baseZ * 0.96;
+    lookY = drawerOpen ? -0.24 : 0.0;
+  } else if (camMode === 'orbit') {
+    const orbAng = now * 0.34;
+    camX = Math.sin(orbAng) * baseZ * 0.56;
+    camY = 0.62 * Math.sin(orbAng * 0.65);
+    camZ = Math.max(baseZ * 0.88, Math.cos(orbAng) * baseZ * 0.98);
+    lookY = drawerOpen ? -0.22 : 0.0;
+  } else if (camMode === 'macro') {
+    camX = Math.sin(now * 0.18) * 0.45 * sway;
+    camY = 0.24 + Math.cos(now * 0.15) * 0.18 * sway;
+    camZ = Math.max(3.65, baseZ * 0.72 - punch * 0.10);
+    lookY = drawerOpen ? 0.06 : 0.05;
+  }
+  camera.position.set(camX, camY, camZ);
+  camera.lookAt(0, lookY, 0);
+  world.rotation.z = Math.sin(now * 0.05) * 0.04 * sway;
+
+  // 3D Spatial Stereo Panning coupled to Orb Yaw & Camera Azimuth
+  if (A.panner && A.ctx) {
+    const targetPan = clamp(Math.sin(orbit.yaw) * 0.55 + (camX / Math.max(4.0, baseZ)) * 0.38, -0.75, 0.75);
+    A.panner.pan.setTargetAtTime(targetPan, A.ctx.currentTime, 0.04);
+  }
+
+  renderer.render(scene, camera);
+
+  // Hands-Free Mic Voice-Activity Conversational Auto-Turn (VAD)
+  if (A.src === 'mic' && autoVadOn) {
+    stepMicVad(dt, AN.level);
+  }
+
+  // Update HUD Readouts, Slider Value Badges, Audio Scrubber & Conserved Quantum Telemetry
+  $('#pip').style.transform = `scale(${1 + beatEnv * 0.7})`;
+  if (++hudTick % 4 === 0) {
+    $('#bpm').textContent = AN.locked ? Math.round(AN.bpm) : '—';
+    const lock = $('#lock');
+    const isVoice = (A.src === 'voice' || A.src === 'mic');
+    const lt = !live ? 'Harmonic' : AN.locked ? 'Locked' : (isVoice ? `Voice · F1 ${Math.round(AN.formantF1)}Hz` : 'Searching');
+    if (lock.textContent !== lt) { lock.textContent = lt; lock.dataset.on = AN.locked ? '1' : '0'; }
+    meterEls.forEach((el, i) => el.style.width = (clamp([bass, mid, treb][i], 0, 1) * 100).toFixed(1) + '%');
+    if (!AN.locked) $$('#bar i').forEach(el => el.classList.remove('on'));
+    qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
+
+    // Live Tabular-Numeral Slider Readout Badges
+    $('#valFib').textContent = fibInt.toFixed(2);
+    $('#valHarm').textContent = userL.toFixed(1);
+    $('#valFree').textContent = freeRoom.toFixed(2);
+    $('#valSym').textContent = symBreak.toFixed(2);
+    $('#valGain').textContent = gain.toFixed(2);
+
+    if (A.src === 'file' && A.media && A.media.duration) {
+      const cur = A.media.currentTime || 0, dur = A.media.duration || 1;
+      $('#mediaSeek').value = String(Math.round((cur / dur) * 1000));
+      const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+      $('#mediaTime').textContent = `${fmt(cur)} / ${fmt(dur)}`;
+    }
+  }
+}
+
+/* ── Hands-Free Live Microphone Voice-Activity Auto-Turn State Machine ── */
+const VAD = { speakingTime: 0, silenceTime: 0, phase: 'listen', phaseTimer: 0 };
+function stepMicVad(dt, lvl) {
+  if (VAD.phase === 'listen') {
+    if (lvl > 0.16) {
+      VAD.speakingTime += dt;
+      VAD.silenceTime = 0;
+      if (stateName !== 'listening') setState('listening');
+    } else if (VAD.speakingTime > 0.45) {
+      VAD.silenceTime += dt;
+      if (VAD.silenceTime > 1.15) {
+        VAD.phase = 'think';
+        VAD.phaseTimer = 1.4;
+        VAD.speakingTime = 0;
+        VAD.silenceTime = 0;
+        setState('thinking');
+      }
+    }
+  } else if (VAD.phase === 'think') {
+    VAD.phaseTimer -= dt;
+    if (VAD.phaseTimer <= 0) {
+      VAD.phase = 'respond';
+      VAD.phaseTimer = 2.8;
+      setState('speaking');
+      playHarmonicChime(60, K.l, K.m);
+    }
+  } else if (VAD.phase === 'respond') {
+    VAD.phaseTimer -= dt;
+    if (lvl > 0.22 || VAD.phaseTimer <= 0) {
+      VAD.phase = 'listen';
+      setState('listening');
+    }
+  }
+}
+
+[orb, halo, bars, wave, waveEcho, points].forEach(o => o.frustumCulled = false);
+
+/* ───────────────────────── Curated Showcase Auto-Director & Scene Presets ───────────────────────── */
+function applyShowcaseScene(idx) {
+  const sc = SHOWCASE_SCENES[idx % SHOWCASE_SCENES.length];
+  visMode = sc.mode;
+  $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode)));
+  paletteMode = sc.pal;
+  $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pal === paletteMode)));
+  camMode = sc.cam;
+  $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === camMode)));
+  harmEl.value = String(sc.l);
+  freeEl.value = String(sc.free);
+  symEl.value = String(sc.eps);
+  setState(sc.state);
+  if (activeTrackIdx !== sc.trk || !Demo.on) {
+    activeTrackIdx = sc.trk;
+    $('#trackSelect').value = String(activeTrackIdx);
+    startDemo();
+  }
+  $('#srcLabel').textContent = sc.name;
+}
+
+function toggleShowcase(forceState) {
+  showcaseOn = typeof forceState === 'boolean' ? forceState : !showcaseOn;
+  $('#bShowcase').setAttribute('aria-pressed', String(showcaseOn));
+  clearInterval(showcaseTimer);
+  if (showcaseOn) {
+    applyShowcaseScene(showcaseIdx);
+    showcaseTimer = setInterval(() => {
+      showcaseIdx = (showcaseIdx + 1) % SHOWCASE_SCENES.length;
+      applyShowcaseScene(showcaseIdx);
+    }, 7500);
+  }
+}
+
+/* ───────────────────────── High-Res PNG Snapshot & 60fps WebM Video/Audio Recorder ───────────────────────── */
+function downloadPngSnapshot() {
+  renderer.render(scene, camera);
+  const url = canvas.toDataURL('image/png');
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `noether-resonance-mode${visMode}-${paletteMode}.png`;
+  a.click();
+  toast('Downloaded high-resolution PNG snapshot');
+}
+
+let mediaRec = null, recChunks = [];
+function toggleVideoRecord() {
+  const btn = $('#bRecVideo');
+  if (mediaRec && mediaRec.state === 'recording') {
+    mediaRec.stop();
+    btn.classList.remove('rec-on');
+    btn.textContent = 'Rec';
+    return;
+  }
+  try {
+    ensureAudio();
+    const canvasStream = canvas.captureStream(60);
+    const audioDest = A.ctx.createMediaStreamDestination();
+    A.master.connect(audioDest);
+    const tracks = [...canvasStream.getVideoTracks(), ...audioDest.stream.getAudioTracks()];
+    const combined = new MediaStream(tracks);
+    const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
+      ? 'video/webm;codecs=vp9,opus'
+      : 'video/webm';
+    recChunks = [];
+    mediaRec = new MediaRecorder(combined, { mimeType: mime, videoBitsPerSecond: 8000000 });
+    mediaRec.ondataavailable = e => { if (e.data && e.data.size > 0) recChunks.push(e.data); };
+    mediaRec.onstop = () => {
+      const blob = new Blob(recChunks, { type: 'video/webm' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `noether-resonance-capture-${Date.now()}.webm`;
+      a.click();
+      toast('Saved 60fps WebM video + audio recording');
+    };
+    mediaRec.start();
+    btn.classList.add('rec-on');
+    btn.textContent = 'Stop Rec';
+    toast('Recording 60fps WebM video + audio... Click Stop Rec when finished.');
+  } catch (e) {
+    toast('Video recording requires Chrome, Edge, Arc, or Firefox.');
+  }
+}
+
+/* ───────────────────────── Preset Persistence (URL Hash + LocalStorage) ───────────────────────── */
+function saveAndSharePreset() {
+  const params = new URLSearchParams();
+  params.set('mode', String(visMode));
+  params.set('pal', paletteMode);
+  params.set('cam', camMode);
+  params.set('trk', String(activeTrackIdx));
+  params.set('fib', fibEl.value);
+  params.set('l', harmEl.value);
+  params.set('free', freeEl.value);
+  params.set('eps', symEl.value);
+  params.set('onblob', showOnBlobFib ? '1' : '0');
+  params.set('orbital', showOrbitalFib ? '1' : '0');
+  params.set('ring', showSpectrumRing ? '1' : '0');
+  const hash = '#' + params.toString();
+  try {
+    history.replaceState(null, '', hash);
+    localStorage.setItem('noether_resonance_preset', params.toString());
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(location.href).catch(() => {});
+    }
+  } catch (e) {}
+  toast('Saved preset to browser & copied shareable URL hash (' + hash + ')');
+}
+
+function loadPresetFromHashOrStorage() {
+  try {
+    const raw = location.hash.length > 1 ? location.hash.slice(1) : localStorage.getItem('noether_resonance_preset');
+    if (!raw) return;
+    const p = new URLSearchParams(raw);
+    if (p.has('mode')) {
+      visMode = clamp(parseInt(p.get('mode'), 10) || 0, 0, 4);
+      $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode)));
+    }
+    if (p.has('pal') && (WADA_PALETTES[p.get('pal')] || p.get('pal') === 'wada_auto')) {
+      paletteMode = p.get('pal');
+      $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pal === paletteMode)));
+      applyAccentColor();
+    }
+    if (p.has('cam')) {
+      camMode = p.get('cam');
+      $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === camMode)));
+    }
+    if (p.has('trk')) {
+      activeTrackIdx = clamp(parseInt(p.get('trk'), 10) || 0, 0, TRACK_LIBRARY.length - 1);
+      $('#trackSelect').value = String(activeTrackIdx);
+    }
+    if (p.has('fib')) fibEl.value = p.get('fib');
+    if (p.has('l')) harmEl.value = p.get('l');
+    if (p.has('free')) freeEl.value = p.get('free');
+    if (p.has('eps')) symEl.value = p.get('eps');
+    if (p.has('onblob')) {
+      showOnBlobFib = p.get('onblob') !== '0';
+      $('#bOnBlobFib').setAttribute('aria-pressed', String(showOnBlobFib));
+    }
+    if (p.has('orbital')) {
+      showOrbitalFib = p.get('orbital') !== '0';
+      $('#bOrbitalFib').setAttribute('aria-pressed', String(showOrbitalFib));
+    }
+    if (p.has('ring')) {
+      showSpectrumRing = p.get('ring') !== '0';
+      $('#bRingToggle').setAttribute('aria-pressed', String(showSpectrumRing));
+    }
+  } catch (e) {}
+}
+loadPresetFromHashOrStorage();
+requestAnimationFrame(tick);
+
+/* ───────────────────────── UI Controls & Keyboard Shortcuts ───────────────────────── */
+let toastT = 0;
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4200);
+}
+
+$('#bDemo').onclick = () => Demo.on ? stopAll() : startDemo();
+$('#trackSelect').onchange = e => {
+  activeTrackIdx = parseInt(e.target.value, 10) || 0;
+  startDemo();
+};
+$('#bVoice').onclick = () => {
+  if (V) { stopAll(); setState('idle'); return; }
+  ensureAudio(); stopAll(); startVoice('agent', 0); setSource('voice', 'Agent voice · harmonic formant synthesis'); setState('speaking');
+};
+$('#bMic').onclick = () => A.src === 'mic' ? (stopAll(), setState('idle')) : startMic($('#micDeviceSelect').value);
+$('#bSysAudio').onclick = () => A.src === 'sys' ? (stopAll(), setState('idle')) : startSystemAudio();
+$('#bStop').onclick = () => { toggleShowcase(false); stopAll(); setState('idle'); };
+$('#bTurn').onclick = () => { toggleShowcase(false); agentTurn(); };
+$('#bShowcase').onclick = () => toggleShowcase();
+$('#bSharePreset').onclick = saveAndSharePreset;
+$('#bSnapPng').onclick = downloadPngSnapshot;
+$('#bRecVideo').onclick = toggleVideoRecord;
+$('#file').onchange = e => { const f = e.target.files[0]; if (f) { toggleShowcase(false); playFile(f); } e.target.value = ''; };
+
+$('#bMediaPause').onclick = () => {
+  if (!A.media) return;
+  if (A.media.paused) { A.media.play(); $('#bMediaPause').textContent = 'Pause'; }
+  else { A.media.pause(); $('#bMediaPause').textContent = 'Play'; }
+};
+$('#mediaSeek').oninput = e => {
+  if (A.media && A.media.duration) {
+    A.media.currentTime = (parseFloat(e.target.value) / 1000) * A.media.duration;
+  }
+};
+
+$('#micDeviceSelect').onchange = e => {
+  if (A.src === 'mic') startMic(e.target.value);
+};
+
+$$('[data-state]').forEach(b => b.onclick = () => { turnId++; setState(b.dataset.state); });
+
+// Tweak Drawer toggle
+const tweakDrawer = $('#tweakDrawer');
+const bTweaks = $('#bTweaks');
+bTweaks.onclick = () => {
+  syncDockHeight();
+  const open = tweakDrawer.classList.toggle('open');
+  bTweaks.setAttribute('aria-pressed', String(open));
+  bTweaks.textContent = open ? 'Tweaks ▾' : 'Tweaks ▴';
+};
+
+// Help Modal toggle
+const helpModal = $('#helpModal');
+const bHelp = $('#bHelp');
+function toggleHelp(force) {
+  const open = typeof force === 'boolean' ? force : !helpModal.classList.contains('open');
+  helpModal.classList.toggle('open', open);
+  bHelp.setAttribute('aria-pressed', String(open));
+}
+bHelp.onclick = () => toggleHelp();
+$('#bCloseHelp').onclick = () => toggleHelp(false);
+
+// Visualizer Field Mode buttons
+$$('[data-vismode]').forEach(b => b.onclick = () => {
+  visMode = parseInt(b.dataset.vismode, 10);
+  $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+});
+
+// Camera Choreography buttons
+$$('[data-cam]').forEach(b => b.onclick = () => {
+  camMode = b.dataset.cam;
+  zoomOffset = 0;
+  orbit.tyaw = 0; orbit.tpitch = 0;
+  $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+});
+
+// Sanzo Wada & Monotone Palette buttons
+$$('[data-pal]').forEach(b => b.onclick = () => {
+  paletteMode = b.dataset.pal;
+  $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
+  applyAccentColor();
+});
+
+// Fibroid, Ring & Auto-VAD toggles
+$('#bOnBlobFib').onclick = function () {
+  showOnBlobFib = !showOnBlobFib;
+  this.setAttribute('aria-pressed', String(showOnBlobFib));
+};
+$('#bOrbitalFib').onclick = function () {
+  showOrbitalFib = !showOrbitalFib;
+  this.setAttribute('aria-pressed', String(showOrbitalFib));
+};
+$('#bRingToggle').onclick = function () {
+  showSpectrumRing = !showSpectrumRing;
+  this.setAttribute('aria-pressed', String(showSpectrumRing));
+};
+$('#bAutoVad').onclick = function () {
+  autoVadOn = !autoVadOn;
+  this.setAttribute('aria-pressed', String(autoVadOn));
+};
+
+// Musical Keyboard Chime Mapping (A S D F G H J K L) + Scene Shortcuts (5-9) + State Shortcuts (1-4, Space, T, U, ?)
+const KEY_NOTES = { a: 57, s: 60, d: 62, f: 64, g: 67, h: 69, j: 72, k: 74, l: 76 };
+addEventListener('keydown', e => {
+  if (e.target.closest && e.target.closest('input, select')) return;
+  const map = { '1': 'idle', '2': 'listening', '3': 'thinking', '4': 'speaking' };
+  const sceneMap = { '5': 0, '6': 1, '7': 2, '8': 3, '9': 4 };
+  const kl = e.key.toLowerCase();
+  if (e.key === 'Escape') { toggleHelp(false); }
+  else if (e.key === '?' || e.key === '/') { toggleHelp(); }
+  else if (map[e.key]) { turnId++; setState(map[e.key]); }
+  else if (sceneMap[e.key] !== undefined) { applyShowcaseScene(sceneMap[e.key]); }
+  else if (e.key === ' ') { e.preventDefault(); Demo.on ? stopAll() : startDemo(); }
+  else if (kl === 't') bTweaks.click();
+  else if (kl === 'u') document.body.classList.toggle('ui-off');
+  else if (KEY_NOTES[kl]) {
+    playHarmonicChime(KEY_NOTES[kl], K.l, K.m);
+  }
+});
+
+// Plug-and-Play WebMIDI Synthesizer & Controller Integration (MIDI Note-On -> Harmonic Chime; CC 1/74/71/73 -> Quantum Sliders)
+function initWebMIDI() {
+  if (!navigator.requestMIDIAccess) return;
+  navigator.requestMIDIAccess().then(midi => {
+    const bindInputs = () => {
+      for (const input of midi.inputs.values()) {
+        input.onmidimessage = msg => {
+          const [status, d1, d2] = msg.data;
+          const cmd = status & 0xf0;
+          if (cmd === 0x90 && d2 > 0) {
+            playHarmonicChime(d1, K.l, K.m);
+          } else if (cmd === 0xb0) {
+            const norm = d2 / 127;
+            if (d1 === 1 || d1 === 74) harmEl.value = (2 + norm * 6).toFixed(1);
+            else if (d1 === 71) freeEl.value = (0.3 + norm * 1.5).toFixed(2);
+            else if (d1 === 73) symEl.value = (norm * 1.0).toFixed(2);
+            else if (d1 === 72) fibEl.value = (norm * 1.4).toFixed(2);
+          }
+        };
+      }
+    };
+    bindInputs();
+    midi.onstatechange = bindInputs;
+  }).catch(() => {});
+}
+initWebMIDI();
+
+let dragDepth = 0;
+addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; document.body.classList.add('dragging'); });
+addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; document.body.classList.remove('dragging'); } });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', e => {
+  e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging');
+  const f = e.dataTransfer.files[0]; if (f) { toggleShowcase(false); playFile(f); }
+});
+
+/* External Integration API for Real AI Voice / Audio Agents */
+window.noetherResonance = {
+  setState,
+  setPalette: (p) => { if (WADA_PALETTES[p] || p === 'wada_auto') { paletteMode = p; applyAccentColor(); } },
+  setFieldMode: (m) => { visMode = clamp(m, 0, 4); },
+  setCamera: (c) => { if (['front', 'iso', 'orbit', 'macro'].includes(c)) { camMode = c; $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === c))); } },
+  setTrack: (idx) => { activeTrackIdx = clamp(idx, 0, TRACK_LIBRARY.length - 1); $('#trackSelect').value = String(activeTrackIdx); if (Demo.on) startDemo(); },
+  applyScene: (idx) => applyShowcaseScene(idx),
+  toggleShowcase,
+  snapshotPng: downloadPngSnapshot,
+  playChime: (midi, l, m) => playHarmonicChime(midi || 64, l || K.l, m || K.m),
+  connectStream: (stream, label) => attachStream(stream, 'mic', label || 'External stream'),
+  connectNode: node => { ensureAudio(); node.connect(A.analyser); setSource('node', 'External audio node'); },
+  get telemetry() { return { state: stateName, visMode, paletteMode, camMode, showcaseOn, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
+  get audioContext() { return ensureAudio(); },
+  stop: () => { toggleShowcase(false); stopAll(); setState('idle'); }
+};
+})();
+</script>
+</body>
+</html>
