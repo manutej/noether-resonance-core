@@ -142,7 +142,7 @@ function callEdgeNeuralTTS(text, speaker = 'Kore') {
     const edgeVoice = speaker === 'Puck' ? 'en-US-AndrewMultilingualNeural' : 'en-US-AvaMultilingualNeural';
     const rate = speaker === 'Puck' ? '+4%' : '+2%';
     const tmpFile = path.join(os.tmpdir(), `noether_tts_${Date.now()}_${Math.random().toString(36).slice(2, 7)}.mp3`);
-    const uvBin = fs.existsSync('/Users/cairo/.local/bin/uv') ? '/Users/cairo/.local/bin/uv' : 'uv';
+    const uvBin = fs.existsSync('~/.local/bin/uv') ? '~/.local/bin/uv' : 'uv';
 
     const pyCode = [
       'import asyncio, sys, edge_tts',

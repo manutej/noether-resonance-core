@@ -14,12 +14,12 @@
 | **Live Deployed Web Server (Local)** | `http://localhost:3333` | **LIVE DAEMON** |
 | **Live Deployed Web Server (LAN / Wi-Fi Demo)** | `http://192.168.4.30:3333` | **LIVE DAEMON** |
 | **Health Telemetry Endpoint** | `http://localhost:3333/health` | **LIVE JSON** |
-| **Primary Web Application (`v5.0`)** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/index.html` | **READY (`v5.0 QUANTUM HORIZON`)** |
-| **Standalone Portable Bundle (`v5.0`)** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/Noether Resonance Core.html` | **READY (SYNCED)** |
-| **Local HTTP Server (`server.js`)** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/server.js` | **READY (LAN + CORS)** |
-| **Adversarial & Operadic Ledger** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/ADVERSARIAL-EVAL-LEDGER.md` | **COMPLETE (ROUNDS 1–5)** |
-| **Engineering Handoff & Roadmap** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/HANDOFF.md` | **COMPLETE** |
-| **Legacy Studio Edition (Preserved)** | `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/legacy-studio/index.html` | **PRESERVED** |
+| **Primary Web Application (`v5.0`)** | `<workspace>/noether-resonance-app/index.html` | **READY (`v5.0 QUANTUM HORIZON`)** |
+| **Standalone Portable Bundle (`v5.0`)** | `<workspace>/Noether Resonance Core.html` | **READY (SYNCED)** |
+| **Local HTTP Server (`server.js`)** | `<workspace>/noether-resonance-app/server.js` | **READY (LAN + CORS)** |
+| **Adversarial & Operadic Ledger** | `<workspace>/noether-resonance-app/ADVERSARIAL-EVAL-LEDGER.md` | **COMPLETE (ROUNDS 1–5)** |
+| **Engineering Handoff & Roadmap** | `<workspace>/noether-resonance-app/HANDOFF.md` | **COMPLETE** |
+| **Legacy Studio Edition (Preserved)** | `<workspace>/noether-resonance-app/legacy-studio/index.html` | **PRESERVED** |
 
 ---
 

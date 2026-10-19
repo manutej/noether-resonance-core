@@ -1,6 +1,6 @@
 # Adversarial Iteration Report — Round 5 (`v4.0` $\to$ `v5.0 Quantum Horizon`)
 
-**Application:** [index.html](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/noether-resonance-app/index.html) · [Noether Resonance Core.html](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/Noether%20Resonance%20Core.html)  
+**Application:** [index.html](file://WORKSPACE/noether-resonance-app/index.html) · [Noether Resonance Core.html](file://WORKSPACE/Noether%20Resonance%20Core.html)  
 **GitHub Repository:** `https://github.com/manutej/noether-resonance-core` (`v5.0.0-quantum-horizon`)  
 **Production URL:** `https://noether-resonance-core.vercel.app`  
 **Local Server:** `http://localhost:3333`  
@@ -35,11 +35,11 @@ flowchart LR
 ## 2. Visual Verification Gallery (`v5.0 Quantum Horizon`)
 
 ````carousel
-![v5.0 — Scene V: Superfluid Vortex with Sanzo Wada #173 (Carmine Lacquer & Raw Amber), Triple-Band Fibroids, and Live Slider Badges](/Users/cairo/.gemini/antigravity/brain/f61ec99f-beb5-40a7-8eee-4b042517e308/screenshots/v5_1_wada173_superfluid.png)
+![v5.0 — Scene V: Superfluid Vortex with Sanzo Wada #173 (Carmine Lacquer & Raw Amber), Triple-Band Fibroids, and Live Slider Badges](~/.gemini/antigravity/brain/f61ec99f-beb5-40a7-8eee-4b042517e308/screenshots/v5_1_wada173_superfluid.png)
 <!-- slide -->
-![v5.0 — Cymatic Chladni Mode (ℓ=6.0, Free Room=1.35, ε=0.70) with Wada #219, Interactive 440Hz Quantum Chime, and 45px 3/4 Iso Clearance](/Users/cairo/.gemini/antigravity/brain/f61ec99f-beb5-40a7-8eee-4b042517e308/screenshots/v5_2_slider_badges_chladni.png)
+![v5.0 — Cymatic Chladni Mode (ℓ=6.0, Free Room=1.35, ε=0.70) with Wada #219, Interactive 440Hz Quantum Chime, and 45px 3/4 Iso Clearance](~/.gemini/antigravity/brain/f61ec99f-beb5-40a7-8eee-4b042517e308/screenshots/v5_2_slider_badges_chladni.png)
 <!-- slide -->
-![v4.0 — Mobile Viewport (390×844) Non-Overlapping Horizontal-Ribbon Tweak Drawer](/Users/cairo/.gemini/antigravity/brain/f61ec99f-beb5-40a7-8eee-4b042517e308/screenshots/v4_3_mobile_390_clean.png)
+![v4.0 — Mobile Viewport (390×844) Non-Overlapping Horizontal-Ribbon Tweak Drawer](~/.gemini/antigravity/brain/f61ec99f-beb5-40a7-8eee-4b042517e308/screenshots/v4_3_mobile_390_clean.png)
 ````
 
 ---
@@ -48,28 +48,28 @@ flowchart LR
 
 ### `QH-01` · `A1 Physics & Shaders` — Legendre Nodal & Biot-Savart Particle Halo Coupling
 - **Adversarial Probe:** In `v4.0`, the 4,800 conserved Noether current particles (`points`) orbited using `uSpin`, `uBass`, and `uTreb`, which meant sweeping `Harmonic ℓ` (`2 → 8`) or `Symmetry ε` (`0 → 1`) deformed the central manifold and fibroids while the surrounding particle halo remained distributionally invariant.
-- **Resolution ([index.html](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/noether-resonance-app/index.html#L1924-L1974)):**
+- **Resolution ([index.html](file://WORKSPACE/noether-resonance-app/index.html#L1924-L1974)):**
   - Passed `uHarmL`, `uHarmM`, `uSymBreak`, `uVisMode`, and `uFib` into `pU`.
   - Added a spherical harmonic nodal ring attractor (`nodalBand = cos(theta * uHarmL + phi * uHarmM - uT * 0.65)`) in the particle vertex shader that gently pulls particle latitudes toward active Legendre nodal bands (`d.y += 0.08 * nodalBand * (0.4 + 0.6 * uSymBreak)`), modulates radial acoustic burst (`+ 0.14 * abs(nodalBand) * uBass`), and blends the active Wada fibroid pigment (`uFib`) into particles riding nodal crests.
 
 ### `QH-02` · `A1 Fibroid Clarity` — Triple-Band Acoustic-Ripple Surface Filaments
 - **Adversarial Probe:** The on-blob fibroid shader rendered two orthogonal families (`fibCore` equipotential contours + `geoLine` geodesic meridians). High-frequency percussive transients and vocal sibilants (`uTreb`, `uMid`) needed a dedicated fine-scale interference wave on the surface of the blob.
-- **Resolution ([index.html](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/noether-resonance-app/index.html#L1680-L1705)):**
+- **Resolution ([index.html](file://WORKSPACE/noether-resonance-app/index.html#L1680-L1705)):**
   - Added a 3rd screen-space anti-aliased (`fwidth`) filament band (`acoustCoord = (theta * (uHarmL + 2.0) - phi * uHarmM) * 1.35 + vPhase * 1.8 + uT * 0.52`) gated by `clamp(0.28 + uTreb * 0.95 + uMid * 0.45, 0.0, 1.0)`.
 
 ### `QH-03` · `A3 Visual Semiology & Wada Color` — Sanzo Wada #173 (`Carmine Lacquer · Raw Amber`)
 - **Adversarial Probe:** `Scene V` (*Superfluid Quantized Vortices*) previously reused `wada_284` (*Obsidian ·Cinnabar · Ochre*), leaving the 5-scene showcase without a dedicated 5th Sanzo Wada combination.
-- **Resolution ([index.html](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/noether-resonance-app/index.html#L755-L762)):**
+- **Resolution ([index.html](file://WORKSPACE/noether-resonance-app/index.html#L755-L762)):**
   - Added **Sanzo Wada #173 (`Aubergine Ink #241129 · Carmine Lacquer #C23645 · Raw Amber #EBAC3D · Warm Parchment #FFE6BD`)** (`wada_173`) to `WADA_PALETTES`, added its 4-dot swatch pill to Row 2 of `#tweakDrawer`, and assigned it to `Scene V`.
 
 ### `QH-04` · `A2 Precision UX` — Live Tabular-Numeral Slider Readout Badges
 - **Adversarial Probe:** Power users adjusting `Fibroids`, `Harmonic ℓ`, `Free Room`, `Symmetry ε`, and `Gain` could not see exact numeric values directly on the sliders in Row 3.
-- **Resolution ([index.html](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/noether-resonance-app/index.html#L636-L658)):**
+- **Resolution ([index.html](file://WORKSPACE/noether-resonance-app/index.html#L636-L658)):**
   - Added `<b id="valFib">`, `<b id="valHarm">`, `<b id="valFree">`, `<b id="valSym">`, and `<b id="valGain">` styled with `font-variant-numeric: tabular-nums` and `--accent` pigment, updated in `tick()`. Verified at `1440×900` that all 3 rows of `#tweakDrawer` remain single-line (`drawerHeight = 135px`, `gapPx = 10px`).
 
 ### `QH-05` · `A2 Spatial Audio & Hardware Control` — 3D Stereo Panning & WebMIDI
 - **Adversarial Probe:** Rotating the 3D quantum field or orbiting the camera was purely visual, and external MIDI controllers could not trigger chimes or sweep field parameters.
-- **Resolution ([index.html](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/noether-resonance-app/index.html#L2270-L2275) & [L2607-L2632](file:///Users/cairo/Documents/CETI/ACCENTURE/content-factory%20v2/noether-resonance-app/index.html#L2607-L2632)):**
+- **Resolution ([index.html](file://WORKSPACE/noether-resonance-app/index.html#L2270-L2275) & [L2607-L2632](file://WORKSPACE/noether-resonance-app/index.html#L2607-L2632)):**
   - Inserted a WebAudio `StereoPannerNode` (`A.panner`) between `A.master` and `A.an`, dynamically panning the stereo field (`[-0.75, +0.75]`) based on `Math.sin(orbit.yaw)` and camera azimuth `camX / baseZ`.
   - Added `initWebMIDI()` via `navigator.requestMIDIAccess()` so any connected MIDI keyboard triggers `playHarmonicChime(note, K.l, K.m)` and MIDI CC `1/74`, `71`, `73`, `72` sweep `Harmonic ℓ`, `Free Room`, `Symmetry ε`, and `Fibroids`.
 

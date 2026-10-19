@@ -1,8 +1,8 @@
 # HANDOFF.md — Noether Resonance Core (`v3.0 Operadic Diamond`)
 
 **Project:** Noether Resonance Core — Quantum Field Audio Synthesizer & AI Voice Interface  
-**Application Root:** `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/`  
-**Standalone Bundle:** `/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/Noether Resonance Core.html`  
+**Application Root:** `<workspace>/noether-resonance-app/`  
+**Standalone Bundle:** `<workspace>/Noether Resonance Core.html`  
 **Live Server:** `http://localhost:3333` (Local) · `http://192.168.4.30:3333` (LAN / Wi-Fi Demo)
 
 ---
@@ -17,7 +17,7 @@ The live deployment server is running as a background daemon on port `3333`:
 
 If you ever need to restart the server from the CLI:
 ```bash
-node "/Users/cairo/Documents/CETI/ACCENTURE/content-factory v2/noether-resonance-app/server.js" 3333 --open
+node "<workspace>/noether-resonance-app/server.js" 3333 --open
 ```
 
 ### B. 1-Click Demo & Export Workflow (How to Demo to Others)

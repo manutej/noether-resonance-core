@@ -47,7 +47,7 @@ async function run() {
 
   if (cmd === 'rebuild-voices') {
     const scriptPath = path.join(__dirname, '..', 'scripts', 'build_neural_voice_bank.py');
-    const child = spawn('/Users/cairo/.local/bin/uv', ['run', '--with', 'edge-tts', 'python3', scriptPath], { stdio: 'inherit' });
+    const child = spawn('~/.local/bin/uv', ['run', '--with', 'edge-tts', 'python3', scriptPath], { stdio: 'inherit' });
     child.on('exit', code => process.exit(code || 0));
     return;
   }
