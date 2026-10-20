@@ -1,0 +1,29 @@
+{
+  "name": "noether-resonance-jarvis",
+  "version": "9.0.0",
+  "displayName": "Noether Resonance Core // Jarvis Voice & Quantum Field SDK",
+  "description": "Real-time 3D WebGL2 Quantum Field Conversational AI (Jarvis Mode) + Separate Quantum Music Exploration Studio + Antigravity MCP & CLI Bridge.",
+  "entry": {
+    "web": "./index.html",
+    "musicStudio": "./index.html?workspace=music",
+    "sdk": "./sdk/noether-jarvis-plugin.js",
+    "server": "./server.js",
+    "cli": "./bin/noether-cli.js",
+    "mcp": "./services/agy-mcp-bridge.js"
+  },
+  "mcpServers": {
+    "noether-resonance": {
+      "command": "node",
+      "args": ["bin/noether-cli.js", "mcp"],
+      "description": "Exposes noether_run_turn, noether_speak, noether_set_branch, and noether_get_status tools to Antigravity agents."
+    }
+  },
+  "capabilities": [
+    "live-voice-conversation",
+    "multi-turn-memory",
+    "3d-quantum-field-visualization",
+    "sanzo-wada-4-pigment-kubelka-munk",
+    "separate-music-exploration-studio",
+    "embeddable-plugin-sdk"
+  ]
+}

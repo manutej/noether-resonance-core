@@ -6,9 +6,11 @@
  *
  * Engine Cascade:
  *   1. Google `gemini-2.5-flash-preview-tts` (24kHz PCM -> RIFF WAV, voices: `Kore`, `Puck`, `Aoede`, `Fenrir`, `Charon`)
- *   2. OpenAI `tts-1` (`nova` for Kore, `onyx` for Puck) when `OPENAI_API_KEY` is set
- *   3. Microsoft Edge Multilingual Neural TTS (`en-US-AvaMultilingualNeural` for Kore,
+ *   2. Microsoft Edge Multilingual Neural TTS (`en-US-AvaMultilingualNeural` for Kore,
  *      `en-US-AndrewMultilingualNeural` for Puck) via `uv run --with edge-tts` on local server
+ *   3. OpenAI `tts-1` (`nova` for Kore, `onyx` for Puck) when `OPENAI_API_KEY` (`sk-...`) is set
+ *   4. Zero-dependency Cloud Neural MP3 TTS (`callCloudNeuralTTS`) for serverless environments (Vercel)
+ *      where Python/uv binaries are unavailable.
  */
 'use strict';
 
@@ -169,6 +171,63 @@ function callEdgeNeuralTTS(text, speaker = 'Kore') {
   });
 }
 
+function fetchMp3Chunk(chunkText, tl = 'en') {
+  return new Promise((resolve, reject) => {
+    const q = encodeURIComponent(chunkText.trim());
+    const url = `https://translate.googleapis.com/translate_tts?ie=UTF-8&client=tw-ob&tl=${tl}&q=${q}`;
+    const req = https.get(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' },
+      timeout: 10000
+    }, res => {
+      const chunks = [];
+      res.on('data', c => chunks.push(c));
+      res.on('end', () => {
+        const buf = Buffer.concat(chunks);
+        if (res.statusCode >= 200 && res.statusCode < 300 && buf.length > 256) {
+          resolve(buf);
+        } else {
+          reject(new Error(`Cloud TTS chunk HTTP ${res.statusCode}`));
+        }
+      });
+    });
+    req.on('error', reject);
+    req.on('timeout', () => { req.destroy(); reject(new Error('Cloud TTS timeout')); });
+  });
+}
+
+async function callCloudNeuralTTS(text, speaker = 'Kore') {
+  // Split text into <=180 char natural clauses so serverless HTTPS synthesis is instantaneous
+  const rawSentences = String(text || '').match(/[^.!?]+[.!?]*/g) || [String(text || '')];
+  const chunks = [];
+  for (const s of rawSentences) {
+    const trimmed = s.trim();
+    if (!trimmed) continue;
+    if (trimmed.length <= 180) {
+      chunks.push(trimmed);
+    } else {
+      const words = trimmed.split(/\s+/);
+      let cur = '';
+      for (const w of words) {
+        if ((cur + ' ' + w).trim().length > 175) {
+          if (cur) chunks.push(cur.trim());
+          cur = w;
+        } else {
+          cur = (cur + ' ' + w).trim();
+        }
+      }
+      if (cur) chunks.push(cur.trim());
+    }
+  }
+  const tl = speaker === 'Puck' ? 'en-GB' : 'en-US';
+  const buffers = await Promise.all(chunks.map(c => fetchMp3Chunk(c, tl)));
+  const combined = Buffer.concat(buffers);
+  return {
+    mimeType: 'audio/mpeg',
+    audioBase64: combined.toString('base64'),
+    engine: `cloud-neural-tts (${speaker})`
+  };
+}
+
 async function synthesizeSpeech({ text, speaker = 'Kore', geminiApiKey }) {
   const cleanText = String(text || '').trim();
   if (!cleanText) throw new Error('Empty text for speech synthesis');
@@ -184,14 +243,14 @@ async function synthesizeSpeech({ text, speaker = 'Kore', geminiApiKey }) {
     return await callEdgeNeuralTTS(cleanText, speaker);
   } catch (_) {}
 
-  const oKey = (process.env.OPENAI_API_KEY || '').trim();
+  const oKey = (process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY.startsWith('xai-') ? process.env.OPENAI_API_KEY : '').trim();
   if (oKey) {
     try {
       return await callOpenAITTS(cleanText, speaker, oKey);
     } catch (_) {}
   }
 
-  throw new Error('No neural TTS engine available');
+  return await callCloudNeuralTTS(cleanText, speaker);
 }
 
 module.exports = {

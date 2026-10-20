@@ -1,8 +1,14 @@
 {
   "name": "noether-resonance-core",
-  "version": "7.0.0",
-  "description": "Noether Resonance Core — Real-time 3D WebGL2 Quantum Field Audio Synthesizer, Gemini 2.5 Flash & Neural Voice Conversational AI Studio, and Antigravity CLI (agy) Microservices Monorepo.",
+  "version": "9.0.0",
+  "description": "Noether Resonance Core — Jarvis-Class Live Conversational AI Voice Interface, Separate Quantum Music Exploration Studio, 4-Pigment Sanzo Wada WebGL2 Engine, and Embeddable Plugin SDK + Antigravity CLI Package.",
   "main": "server.js",
+  "exports": {
+    ".": "./server.js",
+    "./sdk": "./sdk/noether-jarvis-plugin.js",
+    "./sequencer": "./sequencer.js",
+    "./plugin": "./plugins/antigravity-plugin.json"
+  },
   "bin": {
     "noether": "./bin/noether-cli.js",
     "noether-cli": "./bin/noether-cli.js"
@@ -16,12 +22,13 @@
   },
   "keywords": [
     "noether-theorem",
+    "jarvis-voice-agent",
     "quantum-fields",
     "threejs",
     "webgl2",
     "webaudio",
     "gemini-2.5-flash",
-    "gemini-tts",
+    "grok-4",
     "sanzo-wada",
     "antigravity-cli",
     "mcp"
