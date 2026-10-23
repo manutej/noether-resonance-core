@@ -190,7 +190,7 @@ server.listen(PORT, '0.0.0.0', () => {
 
   if (process.argv.includes('--open')) {
     const cmd = process.platform === 'darwin' ? `open "${localUrl}"`
-              : process.platform === 'win32' ? `start "${localUrl}"`
+              : process.platform === 'win32' ? `start "" "${localUrl}"`
               : `xdg-open "${localUrl}"`;
     exec(cmd);
   }

@@ -137,12 +137,32 @@ function callOpenAITTS(text, speaker = 'Kore', apiKey) {
   });
 }
 
+function resolveUvBinary() {
+  const home = os.homedir();
+  const candidates = process.platform === 'win32'
+    ? [
+        path.join(home, '.local', 'bin', 'uv.exe'),
+        path.join(home, '.cargo', 'bin', 'uv.exe')
+      ]
+    : [
+        path.join(home, '.local', 'bin', 'uv'),
+        path.join(home, '.cargo', 'bin', 'uv'),
+        '/opt/homebrew/bin/uv',
+        '/usr/local/bin/uv'
+      ];
+  for (const c of candidates) {
+    try { if (fs.existsSync(c)) return c; } catch (_) {}
+  }
+  return 'uv';
+}
+
 function callEdgeNeuralTTS(text, speaker = 'Kore') {
   return new Promise((resolve, reject) => {
     const edgeVoice = speaker === 'Puck' ? 'en-US-AndrewMultilingualNeural' : 'en-US-AvaMultilingualNeural';
     const rate = speaker === 'Puck' ? '+4%' : '+2%';
     const tmpFile = path.join(os.tmpdir(), `noether_tts_${Date.now()}_${Math.random().toString(36).slice(2, 7)}.mp3`);
-    const uvBin = fs.existsSync('~/.local/bin/uv') ? '~/.local/bin/uv' : 'uv';
+    const uvBin = resolveUvBinary();
+    const pyBin = process.platform === 'win32' ? 'python' : 'python3';
 
     const pyCode = [
       'import asyncio, sys, edge_tts',
@@ -152,10 +172,7 @@ function callEdgeNeuralTTS(text, speaker = 'Kore') {
       'asyncio.run(run())'
     ].join('\n');
 
-    execFile(uvBin, ['run', '--with', 'edge-tts', 'python3', '-c', pyCode, text, edgeVoice, rate, tmpFile], { timeout: 18000 }, (err) => {
-      if (err || !fs.existsSync(tmpFile)) {
-        return reject(err || new Error('edge-tts output missing'));
-      }
+    const finishWithFile = () => {
       try {
         const buf = fs.readFileSync(tmpFile);
         fs.unlinkSync(tmpFile);
@@ -167,6 +184,19 @@ function callEdgeNeuralTTS(text, speaker = 'Kore') {
       } catch (e) {
         reject(e);
       }
+    };
+
+    execFile(uvBin, ['run', '--with', 'edge-tts', pyBin, '-c', pyCode, text, edgeVoice, rate, tmpFile], { timeout: 18000, windowsHide: true }, (err) => {
+      if (!err && fs.existsSync(tmpFile)) {
+        return finishWithFile();
+      }
+      // Cross-platform fallback: try system python / python3 directly if edge_tts is installed
+      execFile(pyBin, ['-c', pyCode, text, edgeVoice, rate, tmpFile], { timeout: 18000, windowsHide: true }, (err2) => {
+        if (err2 || !fs.existsSync(tmpFile)) {
+          return reject(err2 || err || new Error('edge-tts output missing'));
+        }
+        finishWithFile();
+      });
     });
   });
 }

@@ -1078,14 +1078,14 @@ body.idle-monitor.hide-hud-idle .tempo {
       <span class="ctrl-lbl" id="activeAudioBadge" style="margin:0;color:var(--wada-fib)">Standby</span>
     </div>
     <div class="ctrl-subrow">
-      <button class="btn primary" id="bSysAudioDrawer" style="flex:1" title="Capture live music from another Chrome tab (Spotify, YouTube, Apple Music) or macOS/Windows system audio">🔊 Capture Chrome Tab / System Audio</button>
+      <button class="btn primary" id="bSysAudioDrawer" style="flex:1" title="Capture live music from another Chrome/Edge tab (Spotify, YouTube, Apple Music) or Windows/macOS System Audio">🔊 Capture Chrome Tab / System Audio</button>
     </div>
     <div class="ctrl-subrow">
-      <button class="btn" id="bMicDrawer" style="flex:1" title="Connect Microphone, Audio Interface, or Virtual Loopback (BlackHole 2ch / Loopback)">🎙 Mic / Loopback</button>
+      <button class="btn" id="bMicDrawer" style="flex:1" title="Connect Microphone, Audio Interface, or Virtual Loopback (macOS BlackHole / Windows Stereo Mix &amp; VB-Cable)">🎙 Mic / Loopback</button>
       <label class="btn" for="file" style="flex:1" title="Open local MP3, WAV, FLAC, OGG, or M4A music file">🎵 Open Audio File</label>
     </div>
-    <select id="micDeviceSelect" class="sl-select" title="Select Hardware Input or Virtual Loopback Device (e.g., BlackHole 2ch for zero-popup system audio)">
-      <option value="">Default Audio Input (Mic / BlackHole Loopback)</option>
+    <select id="micDeviceSelect" class="sl-select" title="Select Hardware Input or Virtual Loopback Device (macOS BlackHole / Windows Stereo Mix / VB-Cable)">
+      <option value="">Default Audio Input (Mic / Mac BlackHole / Win Stereo Mix)</option>
     </select>
     <div class="media-scrub" id="mediaScrubWrap">
       <button class="btn" id="bMediaPause" style="min-height:22px;padding:2px 7px;font-size:10px">Pause</button>
@@ -1915,7 +1915,7 @@ async function refreshAudioDevices() {
     const sel = $('#micDeviceSelect');
     if (sel && inputs.length > 0) {
       const prevVal = sel.value;
-      sel.innerHTML = `<option value="">Default Audio Input (Mic / BlackHole / Loopback)</option>` +
+      sel.innerHTML = `<option value="">Default Audio Input (Mic / Mac BlackHole / Win Stereo Mix)</option>` +
         inputs.map((d, i) => `<option value="${d.deviceId}">${d.label || ('Audio Input ' + (i + 1))}</option>`).join('');
       if (prevVal && inputs.some(d => d.deviceId === prevVal)) sel.value = prevVal;
     }
@@ -1946,12 +1946,14 @@ async function startMic(preferredDeviceId) {
 
 async function startSystemAudio() {
   ensureAudio();
+  const isWin = /Win/i.test(navigator.platform || navigator.userAgent || '');
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) throw new Error('unsupported');
-    // Request Tab or System Audio.
+    // Request Chrome/Edge Tab or Windows/macOS System Audio.
     // IMPORTANT: Keep a lightweight video constraint AND DO NOT stop the video track while capturing!
-    // In Chromium, stopping the video track returned by getDisplayMedia immediately kills the audio capture session.
-    // Also set suppressLocalAudioPlayback: false so music in the other Chrome tab keeps playing out of your speakers.
+    // In Chromium on both Windows and macOS, stopping the video track returned by getDisplayMedia
+    // immediately terminates the entire capture session and kills the audio track.
+    // Also set suppressLocalAudioPlayback: false so music in the other tab/app keeps playing out loud.
     const s = await navigator.mediaDevices.getDisplayMedia({
       video: {
         width: { ideal: 320, max: 640 },
@@ -1967,26 +1969,33 @@ async function startSystemAudio() {
         sampleRate: { ideal: 48000 }
       },
       systemAudio: 'include',
+      windowAudio: 'system',
       preferCurrentTab: false,
       selfBrowserSurface: 'exclude'
     });
 
     const audioTracks = s.getAudioTracks();
     if (!audioTracks.length) {
-      // User forgot to toggle "Also share tab audio" / "Share system audio" in the picker
+      // User forgot to toggle "Also share tab audio" or "Share system audio" in the picker
       s.getTracks().forEach(t => t.stop());
-      toast('No audio track detected! Please click "System / Tab Audio" again, pick your music tab or screen, and make sure "Also share tab audio" is switched ON.');
+      const osHint = isWin
+        ? 'On Windows: select a Chrome/Edge Tab (with "Also share tab audio" ON) OR select "Entire Screen" (with "Share system audio" ON).'
+        : 'On macOS: select a Chrome Tab (with "Also share tab audio" ON) or select Entire Screen (macOS 13+ with "Share system audio" ON).';
+      toast(`No audio track detected! ${osHint}`);
       return;
     }
 
     const rawLabel = audioTracks[0].label || (s.getVideoTracks()[0] && s.getVideoTracks()[0].label) || 'Live Music Stream';
     attachStream(s, 'sys', 'System / Tab Audio · ' + rawLabel);
-    toast(`Listening to live System / Tab Audio (${rawLabel}). Put in Fullscreen to enjoy!`);
+    toast(`Listening to live System / Tab Audio (${rawLabel}). Press F for Fullscreen Monitor!`);
   } catch (e) {
     if (e && e.name === 'NotAllowedError') {
-      toast('Tab / System Audio selection cancelled. Click "🔊 System / Tab Audio", select the Chrome tab playing your music, and keep "Also share tab audio" ON.');
+      const cancelHint = isWin
+        ? 'Click "🔊 System / Tab Audio", pick your music tab or "Entire Screen" (Windows System Audio), and keep "Share audio" ON.'
+        : 'Click "🔊 System / Tab Audio", pick the Chrome tab playing your music (or Entire Screen), and keep "Share audio" ON.';
+      toast(`Audio capture cancelled. ${cancelHint}`);
     } else {
-      toast('To capture Chrome Tab or System Audio, select a tab or screen and ensure "Share audio" is enabled.');
+      toast('To capture Chrome/Edge Tab or Windows/macOS System Audio, select a tab or screen and ensure "Share audio" is enabled.');
     }
   }
 }

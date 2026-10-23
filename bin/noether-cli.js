@@ -46,8 +46,13 @@ async function run() {
   }
 
   if (cmd === 'rebuild-voices') {
+    const os = require('os');
+    const fs = require('fs');
     const scriptPath = path.join(__dirname, '..', 'scripts', 'build_neural_voice_bank.py');
-    const child = spawn('~/.local/bin/uv', ['run', '--with', 'edge-tts', 'python3', scriptPath], { stdio: 'inherit' });
+    const uvCandidate = path.join(os.homedir(), '.local', 'bin', process.platform === 'win32' ? 'uv.exe' : 'uv');
+    const uvBin = fs.existsSync(uvCandidate) ? uvCandidate : 'uv';
+    const pyBin = process.platform === 'win32' ? 'python' : 'python3';
+    const child = spawn(uvBin, ['run', '--with', 'edge-tts', pyBin, scriptPath], { stdio: 'inherit', shell: process.platform === 'win32' });
     child.on('exit', code => process.exit(code || 0));
     return;
   }
