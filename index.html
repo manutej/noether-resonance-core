@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Noether Resonance Core — Quantum Field 3D Audio & Speech Visualizer (v5.0 Quantum Horizon)</title>
+<title>Noether Resonance Core — 3D Quantum Audio Visualizer &amp; Voice Intelligence</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3CradialGradient id='g' cx='38%25' cy='35%25' r='60%25'%3E%3Cstop offset='0%25' stop-color='%23ffe6bd'/%3E%3Cstop offset='50%25' stop-color='%23c23645'/%3E%3Cstop offset='100%25' stop-color='%23180c24'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='32' cy='32' r='28' fill='url(%23g)' stroke='%23ebac3d' stroke-width='2'/%3E%3Cellipse cx='32' cy='32' rx='24' ry='10' fill='none' stroke='%23ffe6bd' stroke-opacity='0.65' stroke-width='1.5' transform='rotate(-28 32 32)'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -347,46 +347,127 @@ body.ui-off .hud {
   white-space: nowrap;
 }
 
-/* Clear, Structured 4-Card Studio Control Panel (Docks cleanly above bottom bar, never overlapping the 3D Orb) */
-.tweak-drawer {
-  left: 50%;
-  transform: translateX(-50%) translateY(14px);
-  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--dock-h, 52px) + 20px);
-  width: min(1360px, calc(100vw - 28px));
-  background: var(--ink-drawer);
+/* ───────────────────────── Hidden Right-Edge Slide-Out Settings Tab & Drawer ───────────────────────── */
+.settings-edge-tab {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 14px 8px 14px 10px;
+  background: rgba(10, 13, 22, 0.86);
   border: 1px solid var(--line-bright);
-  border-radius: 16px;
-  padding: 10px 12px;
-  display: grid;
-  grid-template-columns: 1.35fr 1.15fr 1.15fr 0.95fr;
+  border-right: none;
+  border-radius: 14px 0 0 14px;
+  color: var(--wada-rim);
+  font: 600 10px/1 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: -8px 0 28px rgba(0, 0, 0, 0.55);
+  transition: opacity 0.35s ease, transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), background 0.2s ease, border-color 0.2s ease;
+}
+.settings-edge-tab:hover {
+  background: rgba(18, 24, 38, 0.96);
+  border-color: var(--wada-fib);
+  color: #fff;
+  padding-right: 12px;
+}
+.settings-edge-tab span.v-txt {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform: rotate(180deg);
+}
+.settings-edge-tab i.sw-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--wada-rim), var(--wada-fib));
+  box-shadow: 0 0 10px var(--wada-fib);
+}
+body.drawer-open .settings-edge-tab {
+  right: min(415px, 92vw);
+  background: rgba(14, 18, 30, 0.96);
+  border-color: var(--wada-fib);
+}
+
+/* Slide-Out Right Studio Settings Drawer */
+.tweak-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(415px, 92vw);
+  background: rgba(7, 9, 16, 0.94);
+  border-left: 1px solid var(--line-bright);
+  padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  display: flex;
+  flex-direction: column;
   gap: 10px;
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.62);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  backdrop-filter: blur(26px);
+  -webkit-backdrop-filter: blur(26px);
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.72);
+  transform: translateX(104%);
   opacity: 0;
   pointer-events: none;
+  z-index: 4;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
 }
 .tweak-drawer.open {
+  transform: translateX(0);
   opacity: 1;
   pointer-events: auto;
-  transform: translateX(-50%) translateY(0);
+}
+.drawer-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line-bright);
+}
+.drawer-top-title {
+  font: 700 11px/1.2 var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--wada-rim);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.drawer-top-title::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--wada-fib);
+  box-shadow: 0 0 10px var(--wada-fib);
 }
 .ctrl-card {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.025);
+  gap: 7px;
+  padding: 10px 11px;
+  background: rgba(255, 255, 255, 0.028);
   border: 1px solid var(--line);
-  border-radius: 11px;
-  min-width: 0;
+  border-radius: 12px;
+  flex-shrink: 0;
 }
 .ctrl-card-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 6px;
-  padding-bottom: 4px;
+  padding-bottom: 5px;
   border-bottom: 1px solid var(--line);
 }
 .ctrl-card-title {
@@ -428,8 +509,8 @@ body.ui-off .hud {
   display: flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 6px;
-  background: rgba(5, 6, 11, 0.55);
+  padding: 4px 6px;
+  background: rgba(5, 6, 11, 0.62);
   border: 1px solid var(--line);
   border-radius: 7px;
   cursor: pointer;
@@ -442,8 +523,8 @@ body.ui-off .hud {
   appearance: none;
   -webkit-appearance: none;
   border: none;
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
   border-radius: 4px;
   padding: 0;
   background: none;
@@ -458,13 +539,13 @@ body.ui-off .hud {
   min-width: 0;
 }
 .wada-slot-role {
-  font: 600 8.5px/1.1 var(--mono);
-  letter-spacing: 0.06em;
+  font: 600 8px/1.1 var(--mono);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--fg-dim);
 }
 .wada-slot-hex {
-  font: 500 9px/1.1 var(--mono);
+  font: 500 8.5px/1.1 var(--mono);
   color: var(--fg);
   white-space: nowrap;
   overflow: hidden;
@@ -472,15 +553,15 @@ body.ui-off .hud {
 }
 .pal-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 3.5px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
 }
 .swatch-pill {
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
   gap: 4px;
-  min-height: 24px;
+  min-height: 26px;
   padding: 3px 6px;
   border-radius: 6px;
   border: 1px solid var(--line);
@@ -516,24 +597,24 @@ body.ui-off .hud {
 .elem-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 3.5px;
+  gap: 4px;
 }
 .elem-grid .btn, .ctrl-subrow .btn {
-  min-height: 24px;
-  padding: 3px 7px;
+  min-height: 26px;
+  padding: 4px 7px;
   font-size: 10px;
   border-radius: 6px;
 }
 /* 2D XY Symplectic Morph Pad + Sliders Layout */
 .phys-split {
   display: grid;
-  grid-template-columns: 78px 1fr;
-  gap: 8px;
+  grid-template-columns: 84px 1fr;
+  gap: 9px;
   align-items: center;
 }
 .xy-pad {
-  width: 78px;
-  height: 78px;
+  width: 84px;
+  height: 84px;
   border-radius: 9px;
   background:
     linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px) 0 0 / 50% 50%,
@@ -569,14 +650,14 @@ body.ui-off .hud {
 }
 .sl-stack {
   display: grid;
-  gap: 3.5px;
+  gap: 4px;
 }
 .sl-wrap {
   display: grid;
-  grid-template-columns: 64px 1fr 28px;
+  grid-template-columns: 74px 1fr 30px;
   align-items: center;
-  gap: 5px;
-  min-height: 18px;
+  gap: 6px;
+  min-height: 19px;
   font: 400 9.5px/1 var(--mono);
   color: var(--fg-dim);
   font-variant-numeric: tabular-nums;
@@ -600,8 +681,8 @@ body.ui-off .hud {
   border: 1px solid var(--line);
   border-radius: 6px;
   font: 400 10px var(--mono);
-  min-height: 25px;
-  padding: 3px 6px;
+  min-height: 27px;
+  padding: 3px 7px;
   width: 100%;
   cursor: pointer;
 }
@@ -621,20 +702,21 @@ body.ui-off .hud {
   pointer-events: none;
   transition: opacity 0.3s;
   backdrop-filter: blur(14px);
+  z-index: 6;
 }
 .toast.show { opacity: 1; }
 
 .drop {
   position: fixed;
   inset: 14px;
-  z-index: 3;
+  z-index: 6;
   border: 1.5px dashed var(--accent);
   border-radius: 18px;
   display: grid;
   place-items: center;
   font: 500 14px var(--mono);
   color: var(--accent);
-  background: rgba(5, 6, 11, 0.6);
+  background: rgba(5, 6, 11, 0.65);
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.2s;
@@ -651,9 +733,9 @@ body.dragging .drop { opacity: 1; }
   font-size: 10.5px;
   color: var(--fg-dim);
 }
-.media-scrub.show { display: inline-flex; }
+.media-scrub.show { display: flex; }
 .media-scrub input[type="range"] {
-  width: 140px;
+  flex: 1;
   accent-color: var(--accent);
   cursor: pointer;
 }
@@ -665,10 +747,10 @@ body.dragging .drop { opacity: 1; }
 
 /* Non-Overlapping Corner Shortcut & Physics Reference Card (?) */
 .help-modal {
-  right: max(22px, calc(env(safe-area-inset-right, 0px) + 22px));
-  top: calc(env(safe-area-inset-top, 0px) + 225px);
-  transform: translateY(-8px) scale(0.98);
-  width: min(350px, calc(100vw - 32px));
+  left: 22px;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 74px);
+  transform: translateY(8px) scale(0.98);
+  width: min(370px, calc(100vw - 32px));
   background: var(--ink-drawer);
   border: 1px solid var(--line-bright);
   border-radius: 14px;
@@ -679,7 +761,7 @@ body.dragging .drop { opacity: 1; }
   -webkit-backdrop-filter: blur(22px);
   opacity: 0;
   pointer-events: none;
-  z-index: 4;
+  z-index: 5;
 }
 .help-modal.open {
   opacity: 1;
@@ -710,7 +792,7 @@ body.dragging .drop { opacity: 1; }
   font: 500 10px/1.2 var(--mono);
 }
 
-/* Top-Center Visualizer Exploration Tree Switcher Bar */
+/* Top-Center 3D Quantum Topology Bar */
 .tree-bar {
   top: calc(env(safe-area-inset-top, 0px) + 16px);
   left: 50%;
@@ -730,95 +812,32 @@ body.dragging .drop { opacity: 1; }
   scrollbar-width: none;
 }
 .tree-bar::-webkit-scrollbar { display: none; }
-.tree-bar .tree-tag {
-  font: 600 9.5px/1 var(--mono);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--wada-fib);
-  padding: 0 6px 0 4px;
-  border-right: 1px solid var(--line);
-  white-space: nowrap;
-}
 .tree-bar .btn {
   border-radius: 999px;
-  padding: 5px 10px;
+  padding: 5px 11px;
   font-size: 11px;
   min-height: 27px;
 }
 
-/* Interactive Agent Turn Sequencer Timeline Pill (Shows Listening -> Thinking -> Speaking -> Idle) */
-.turn-timeline {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 4px;
-  margin-top: 4px;
-  padding: 6px 9px;
-  background: var(--ink-raise);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  pointer-events: auto;
-  max-width: min(430px, 78vw);
-}
-.turn-steps {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font: 500 10px/1 var(--mono);
-  color: var(--fg-dim);
-}
-.turn-step {
-  padding: 3px 6px;
-  border-radius: 5px;
-  border: 1px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-.turn-step:hover { color: var(--fg); background: rgba(255,255,255,0.06); }
-.turn-step.active {
-  color: var(--ink);
-  background: var(--wada-fib);
-  font-weight: 600;
-}
-.turn-step.done {
-  color: var(--wada-rim);
-  border-color: color-mix(in srgb, var(--wada-rim) 40%, transparent);
-}
-.turn-bar-track {
-  height: 3px;
-  width: 100%;
-  background: var(--line);
-  border-radius: 2px;
-  overflow: hidden;
-}
-.turn-bar-fill {
-  height: 100%;
-  width: 0%;
-  background: linear-gradient(90deg, var(--wada-mid), var(--wada-rim), var(--wada-fib));
-  transition: width 0.08s linear;
-}
-
-/* Noether // Jarvis Live Conversational Intelligence Card */
+/* Compact Live Conversational AI Caption Banner (Only shows when conversing with Noether) */
 .voice-studio-card {
-  display: flex;
+  display: none;
   flex-direction: column;
-  gap: 7px;
+  gap: 6px;
   margin-top: 6px;
-  padding: 10px 12px;
+  padding: 9px 12px;
   background: var(--ink-raise);
   border: 1px solid var(--line-bright);
   border-radius: 13px;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   pointer-events: auto;
-  width: min(410px, 82vw);
+  width: min(390px, 80vw);
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.52);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
-body[data-workspace="music"] .voice-studio-card {
-  display: none;
+.voice-studio-card.active {
+  display: flex;
 }
 .voice-studio-head {
   display: flex;
@@ -835,7 +854,6 @@ body[data-workspace="music"] .voice-studio-card {
   padding: 3px 8px;
   border-radius: 999px;
   white-space: nowrap;
-  transition: background 0.3s ease;
 }
 .voice-scenario-sel {
   appearance: none;
@@ -847,17 +865,13 @@ body[data-workspace="music"] .voice-studio-card {
   padding: 3px 8px;
   font: 500 10px/1.2 var(--mono);
   cursor: pointer;
-  max-width: 175px;
-  text-overflow: ellipsis;
 }
 .voice-caption-box {
-  font: 400 12px/1.48 var(--sans);
+  font: 400 12px/1.46 var(--sans);
   color: var(--fg);
-  min-height: 38px;
-  max-height: 88px;
+  max-height: 84px;
   overflow-y: auto;
   scrollbar-width: none;
-  letter-spacing: 0.01em;
 }
 .voice-caption-box::-webkit-scrollbar { display: none; }
 .voice-caption-box .w-spoken {
@@ -878,40 +892,13 @@ body[data-workspace="music"] .voice-studio-card {
   color: var(--wada-rim);
   border-left: 2px solid var(--wada-fib);
   padding-left: 7px;
-  margin-bottom: 2px;
   display: none;
 }
 .jarvis-user-line.show { display: block; }
-.jarvis-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  padding-top: 2px;
-}
-.jarvis-chip {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid var(--line);
-  color: var(--fg-dim);
-  border-radius: 999px;
-  padding: 3px 8px;
-  font: 400 9.5px/1.1 var(--mono);
-  cursor: pointer;
-  transition: all 0.18s ease;
-}
-.jarvis-chip:hover {
-  color: var(--fg);
-  border-color: var(--wada-rim);
-  background: rgba(255, 255, 255, 0.09);
-}
-.voice-prompt-row {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
 .voice-prompt-input {
   flex: 1;
   min-width: 0;
-  background: rgba(5, 6, 11, 0.72);
+  background: rgba(5, 6, 11, 0.78);
   border: 1px solid var(--line-bright);
   border-radius: 8px;
   color: var(--fg);
@@ -921,13 +908,6 @@ body[data-workspace="music"] .voice-studio-card {
 }
 .voice-prompt-input:focus {
   border-color: var(--wada-fib);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--wada-fib) 22%, transparent);
-}
-.voice-prompt-row .btn {
-  padding: 5px 10px;
-  min-height: 27px;
-  font-size: 10.5px;
-  border-radius: 8px;
 }
 .gemini-key-row {
   display: none;
@@ -936,197 +916,120 @@ body[data-workspace="music"] .voice-studio-card {
   padding-top: 4px;
   border-top: 1px solid var(--line);
 }
-.gemini-key-row.open { display: flex; }
-
-/* Workspace Switcher & Dock Modes */
-.ws-pill {
-  font-weight: 600 !important;
-  letter-spacing: 0.04em;
-}
-.ws-pill[aria-pressed="true"] {
-  background: linear-gradient(135deg, color-mix(in srgb, var(--wada-fib) 32%, transparent), color-mix(in srgb, var(--wada-rim) 24%, transparent)) !important;
-  border-color: var(--wada-rim) !important;
-  color: #fff !important;
-}
-.tree-sep {
-  width: 1px;
-  height: 16px;
-  background: var(--line-bright);
-  margin: 0 3px;
-  flex-shrink: 0;
-}
 .dock-jarvis-input {
-  width: clamp(190px, 26vw, 340px);
+  width: clamp(160px, 20vw, 260px);
   background: rgba(5, 6, 11, 0.75);
   border: 1px solid var(--line-bright);
   border-radius: 999px;
   color: var(--fg);
   font: 400 11.5px/1.2 var(--sans);
-  padding: 6px 13px;
+  padding: 6px 12px;
   outline: none;
 }
 .dock-jarvis-input:focus {
   border-color: var(--wada-fib);
 }
-.btn.talk-live[aria-pressed="true"] {
-  background: linear-gradient(135deg, #ff5e5b, var(--wada-fib)) !important;
+.btn.talk-live[aria-pressed="true"], .btn.sys-live[aria-pressed="true"] {
+  background: linear-gradient(135deg, var(--wada-rim), var(--wada-fib)) !important;
   color: #07060a !important;
   border-color: #fff !important;
   font-weight: 700;
-  box-shadow: 0 0 18px rgba(255, 94, 91, 0.55);
-}
-body[data-workspace="jarvis"] .music-only { display: none !important; }
-body[data-workspace="music"] .jarvis-only { display: none !important; }
-
-/* Plugin & Comprehensive Setup Modal */
-.plugin-modal {
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -48%) scale(0.97);
-  width: min(680px, calc(100vw - 28px));
-  max-height: 80vh;
-  overflow-y: auto;
-  background: var(--ink-drawer);
-  border: 1px solid var(--line-bright);
-  border-radius: 16px;
-  padding: 18px 20px;
-  color: var(--fg);
-  font: 400 11.5px/1.55 var(--sans);
-  backdrop-filter: blur(26px);
-  -webkit-backdrop-filter: blur(26px);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 6;
-  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.72);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-.plugin-modal.open {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translate(-50%, -50%) scale(1);
-}
-.plugin-modal h3 {
-  margin: 0 0 10px;
-  font: 600 12px/1.2 var(--mono);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--wada-rim);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.plugin-sec {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 12px;
-  margin-bottom: 10px;
-}
-.plugin-sec h4 {
-  margin: 0 0 5px;
-  font: 600 10.5px/1.2 var(--mono);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--wada-fib);
-}
-.plugin-code {
-  display: block;
-  background: rgba(3, 4, 8, 0.82);
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  padding: 8px 10px;
-  font: 400 10.5px/1.45 var(--mono);
-  color: var(--wada-rim);
-  overflow-x: auto;
-  white-space: pre;
-  margin-top: 5px;
+  box-shadow: 0 0 18px color-mix(in srgb, var(--wada-fib) 60%, transparent);
 }
 
-@media (max-width: 1120px) {
-  .tweak-drawer {
-    grid-template-columns: repeat(2, 1fr);
-    max-height: 50vh;
-    overflow-y: auto;
+/* ───────────────────────── Fullscreen Monitor & Idle Auto-Hide States ───────────────────────── */
+@media (min-width: 900px) {
+  body.drawer-open .tree-bar,
+  body.drawer-open .toast {
+    left: calc((100vw - 415px) * 0.54);
+  }
+  body.drawer-open .dock {
+    left: calc((100vw - 415px) * 0.5);
+    max-width: calc(100vw - 440px);
+    padding: 5px 8px;
+    gap: 4px;
+  }
+  body.drawer-open .dock .dock-jarvis-input {
+    width: clamp(120px, 14vw, 185px);
   }
 }
+/* When user is idle for >2.8s (and settings drawer is closed), fade out dock, top bar, toast, and cursor for pure monitor immersion */
+body.idle-monitor #stage {
+  cursor: none;
+}
+body.idle-monitor .dock,
+body.idle-monitor .tree-bar {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-50%) translateY(10px);
+}
+body.idle-monitor .toast,
+body.pure-monitor .toast {
+  opacity: 0 !important;
+  pointer-events: none;
+}
+body.idle-monitor .settings-edge-tab {
+  opacity: 0.08;
+}
+body.idle-monitor .settings-edge-tab:hover {
+  opacity: 1;
+}
+/* When "Clean Monitor HUD" is active (or during idle monitor mode with hideHudOnIdle), hide corner telemetry too */
+body.pure-monitor .id,
+body.pure-monitor .tempo,
+body.idle-monitor.hide-hud-idle .id,
+body.idle-monitor.hide-hud-idle .tempo {
+  opacity: 0;
+  pointer-events: none;
+}
+
 @media (max-width: 760px) {
   .meters, .q-telem, .hud-wada-strip { display: none; }
   .tree-bar {
-    top: calc(env(safe-area-inset-top, 0px) + 78px);
+    top: calc(env(safe-area-inset-top, 0px) + 74px);
     padding: 4px 7px;
   }
-  .voice-studio-card { display: none; }
   .dock {
-    width: calc(100vw - 20px);
+    width: calc(100vw - 16px);
     padding: 5px 6px;
     gap: 3px;
   }
   .grp + .grp { padding-left: 0; border-left: 0; }
   .btn { padding: 6px 8px; font-size: 10.5px; min-height: 29px; }
   .tweak-drawer {
-    grid-template-columns: 1fr;
-    width: calc(100vw - 20px);
-    max-height: 44vh;
-    overflow-y: auto;
-    padding: 8px;
-    gap: 6px;
+    width: min(380px, 94vw);
   }
 }
 </style>
 </head>
-<body data-workspace="jarvis">
+<body class="hide-hud-idle">
 
 <canvas id="stage" aria-label="Noether Quantum Field 3D Audio Visualizer"></canvas>
 
-<!-- Top-Left Live Conversational Intelligence HUD ("Noether // Jarvis") -->
+<!-- Top-Left Live Audio & Voice Status HUD -->
 <header class="hud id">
   <div class="mark">Noether Resonance</div>
   <div class="state"><span class="pip" id="pip"></span><span class="glyph" id="stateGlyph" aria-hidden="true">◎</span><span id="stateLabel">Idle</span></div>
-  <div class="src" id="srcLabel">Noether Conversational Core online · Click "Talk to Noether" or ask anything below</div>
+  <div class="src" id="srcLabel">Ready · Click "🔊 System / Tab Audio" to visualize music from any Chrome tab, or talk to Noether</div>
 
   <div class="voice-studio-card" id="voiceStudioCard" aria-label="Noether Live Conversational Intelligence">
     <div class="voice-studio-head">
       <span class="voice-speaker-badge" id="voiceSpeakerBadge">✦ NOETHER · LIVE VOICE</span>
-      <div style="display:flex;align-items:center;gap:4px">
-        <select class="voice-scenario-sel" id="jarvisVoiceSelect" title="Select Noether Neural Voice Persona">
-          <option value="Kore">Voice · Kore (Executive)</option>
-          <option value="Puck">Voice · Puck (Baritone)</option>
-        </select>
-        <button class="btn" id="bGeminiKeyToggle" style="min-height:22px;padding:2px 6px;font-size:9.5px" title="Optional: Configure custom GEMINI_API_KEY">API 🔑</button>
-      </div>
+      <button class="btn" id="bCloseVoiceCard" style="min-height:20px;padding:2px 6px;font-size:9.5px" title="Hide voice transcript card">✕</button>
     </div>
     <div class="jarvis-user-line" id="jarvisUserLine"></div>
-    <div class="voice-caption-box" id="voiceCaptionBox">Noether is online and ready. Click <b>🎙 Talk to Noether</b> (or press <b>Space</b>) to speak naturally, or type any question or visual command below.</div>
-    <div class="jarvis-chips" aria-label="Quick Voice Prompts">
-      <button class="jarvis-chip" data-quickprompt="Good morning Noether, welcome everyone to our Summit presentation today.">Summit Welcome</button>
-      <button class="jarvis-chip" data-quickprompt="How does Emmy Noether's symmetry theorem govern this 3D quantum field?">Noether Physics</button>
-      <button class="jarvis-chip" data-quickprompt="Switch to the Clifford Tokamak plasma chamber and explain how it reacts to sound.">Clifford Tokamak</button>
-      <button class="jarvis-chip" data-quickprompt="Switch to the Cymatic Horizon standing wave plates.">Cymatic Horizon</button>
-    </div>
-    <div class="gemini-key-row" id="geminiKeyRow">
-      <input class="voice-prompt-input" id="geminiKeyInput" type="password" placeholder="Optional: Paste GEMINI_API_KEY for direct Gemini 2.5 Flash TTS...">
-      <button class="btn" id="bSaveGeminiKey">Save</button>
-    </div>
-  </div>
-
-  <div class="media-scrub" id="mediaScrubWrap">
-    <button class="btn" id="bMediaPause">Pause</button>
-    <input id="mediaSeek" type="range" min="0" max="1000" step="1" value="0" title="Seek audio track">
-    <span id="mediaTime">0:00 / 0:00</span>
+    <div class="voice-caption-box" id="voiceCaptionBox">Listening...</div>
   </div>
 </header>
 
-<!-- Top-Center Workspace Mode Switcher (Jarvis AI vs Separate Music Exploration) & 3D Quantum Topologies -->
-<nav class="hud tree-bar" id="treeBar" aria-label="Workspace Mode and 3D Quantum Topologies">
-  <button class="btn ws-pill" id="bWsJarvis" data-workspace="jarvis" aria-pressed="true" title="Primary Live Conversational AI Interface (Talk directly to Noether)">✦ Noether AI</button>
-  <button class="btn ws-pill" id="bWsMusic" data-workspace="music" aria-pressed="false" title="Separate Quantum Music &amp; Acoustic Exploration Studio">♫ Music Lab</button>
-  <button class="btn" id="bWsPlugin" aria-pressed="false" title="Plugin SDK, Antigravity CLI &amp; Stage Audio Setup Guide">⚡ Plugin &amp; Setup</button>
-  <span class="tree-sep" aria-hidden="true"></span>
-  <button class="btn" data-branch="orb" aria-pressed="true" title="Topology I: Genus-0 Spherical Harmonic Eigen-Orb (Key: Q)">I · Eigen-Orb</button>
-  <button class="btn" data-branch="tokamak" aria-pressed="false" title="Topology II: Genus-1 Clifford Tokamak Plasma Torus (Key: W)">II · Tokamak</button>
+<!-- Top-Center 5-Branch 3D Quantum Topologies -->
+<nav class="hud tree-bar" id="treeBar" aria-label="3D Quantum Visualizer Topologies">
+  <button class="btn" data-branch="orb" aria-pressed="true" title="Topology I: Smooth Spherical Harmonic Eigen-Orb (Key: Q)">I · Eigen-Orb</button>
+  <button class="btn" data-branch="tokamak" aria-pressed="false" title="Topology II: Clifford Tokamak Plasma Torus (Key: W)">II · Tokamak</button>
   <button class="btn" data-branch="cymatic" aria-pressed="false" title="Topology III: 3D Bessel/Chladni Standing-Wave Horizon (Key: E)">III · Cymatic</button>
   <button class="btn" data-branch="lattice" aria-pressed="false" title="Topology IV: Nested SU(2) Spinor Geodesic Lattice (Key: R)">IV · Spinor Lattice</button>
-  <button class="btn music-only" id="bTreeCycle" aria-pressed="false" title="Auto-cycle all 4 3D Quantum Topologies">Cycle ⟳</button>
+  <button class="btn" data-branch="calabi" aria-pressed="false" title="Topology V: Calabi-Yau 6D Manifold Projection (Key: Y)">V · Calabi-Yau</button>
+  <button class="btn" id="bTreeCycle" aria-pressed="false" title="Auto-morph across all 5 3D Quantum Topologies on musical phrases">⟳ Auto-Morph</button>
 </nav>
 
 <!-- Top-Right Tempo, Harmonic Telemetry & Live 4-Pigment Sanzo Wada Strip -->
@@ -1146,43 +1049,87 @@ body[data-workspace="music"] .jarvis-only { display: none !important; }
       <i id="hudChip0" style="background:#1b315e" title="Pigment I · Ground / Deep Core"></i>
       <i id="hudChip1" style="background:#2f8f83" title="Pigment II · Harmonic Body"></i>
       <i id="hudChip2" style="background:#e3e9c2" title="Pigment III · Crest &amp; Rim Accent"></i>
-      <i id="hudChip3" style="background:#f26a4b" title="Pigment IV · Fibroid Vein Counter-Accent"></i>
+      <i id="hudChip3" style="background:#f26a4b" title="Pigment IV · Counter-Accent"></i>
     </span>
     <button class="hud-wada-rot" id="bHudRotateWada" title="Rotate the 4 Sanzo Wada Pigment Roles across the 3D field">↻ Role</button>
   </div>
 </section>
 
-<!-- Non-Overlapping 4-Card Studio Control Panel (Docks cleanly above bottom dock) -->
-<aside class="hud tweak-drawer" id="tweakDrawer" aria-label="Studio Control Panel: Sanzo Wada 4-Pigment Matrix, 3D Elements, Quantum Physics & Audio">
-  <!-- CARD I: Sanzo Wada 4-Pigment Palette & Accent Role Matrix -->
-  <section class="ctrl-card" aria-label="Sanzo Wada 4-Pigment Palette and Accent Roles">
+<!-- Right-Edge Hidden Pull-Tab Handle (Click or press Tab/T to slide open Settings, Colors & Styles) -->
+<button class="settings-edge-tab" id="settingsEdgeTab" aria-expanded="false" title="Open / Close Studio Settings, Colors &amp; Styles Tab (Shortcut: Tab or T)">
+  <i class="sw-dot" aria-hidden="true"></i>
+  <span class="v-txt" id="settingsEdgeLabel">⚙ Studio</span>
+</button>
+
+<!-- Hidden Slide-Out Right Studio Settings Tab (Audio Source, Fullscreen Monitor, Colors, Topologies & Styles) -->
+<aside class="tweak-drawer" id="tweakDrawer" aria-label="Studio Settings Tab: Audio Routing, Fullscreen Monitor, Sanzo Wada Colors, Topologies & Styles">
+  <div class="drawer-top-bar">
+    <span class="drawer-top-title">Studio Settings &amp; Styles</span>
+    <div style="display:flex;gap:5px">
+      <button class="btn primary" id="bFullscreenDrawer" style="min-height:24px;padding:3px 9px;font-size:10px" title="Enter Fullscreen Monitor Mode (Shortcut: F)">⛶ Fullscreen</button>
+      <button class="btn" id="bCloseDrawer" style="min-height:24px;padding:3px 8px;font-size:10px" title="Close Settings Tab (Tab / Esc)">Close ›</button>
+    </div>
+  </div>
+
+  <!-- SECTION I: Live System / Tab Audio, Loopback Input & Monitor Display Mode -->
+  <section class="ctrl-card" aria-label="Live Audio Source and Monitor Mode">
     <div class="ctrl-card-head">
-      <span class="ctrl-card-title"><i></i>I · Sanzo Wada 4-Pigment Studio</span>
+      <span class="ctrl-card-title"><i></i>I · Live Audio Source &amp; Monitor</span>
+      <span class="ctrl-lbl" id="activeAudioBadge" style="margin:0;color:var(--wada-fib)">Standby</span>
+    </div>
+    <div class="ctrl-subrow">
+      <button class="btn primary" id="bSysAudioDrawer" style="flex:1" title="Capture live music from another Chrome tab (Spotify, YouTube, Apple Music) or macOS/Windows system audio">🔊 Capture Chrome Tab / System Audio</button>
+    </div>
+    <div class="ctrl-subrow">
+      <button class="btn" id="bMicDrawer" style="flex:1" title="Connect Microphone, Audio Interface, or Virtual Loopback (BlackHole 2ch / Loopback)">🎙 Mic / Loopback</button>
+      <label class="btn" for="file" style="flex:1" title="Open local MP3, WAV, FLAC, OGG, or M4A music file">🎵 Open Audio File</label>
+    </div>
+    <select id="micDeviceSelect" class="sl-select" title="Select Hardware Input or Virtual Loopback Device (e.g., BlackHole 2ch for zero-popup system audio)">
+      <option value="">Default Audio Input (Mic / BlackHole Loopback)</option>
+    </select>
+    <div class="media-scrub" id="mediaScrubWrap">
+      <button class="btn" id="bMediaPause" style="min-height:22px;padding:2px 7px;font-size:10px">Pause</button>
+      <input id="mediaSeek" type="range" min="0" max="1000" step="1" value="0" title="Seek audio file">
+      <span id="mediaTime">0:00 / 0:00</span>
+    </div>
+    <label class="sl-wrap" title="Audio Input Sensitivity / Reactivity Gain">
+      Audio Gain <input id="sens" type="range" min="0.3" max="3.0" step="0.05" value="1.25"><b id="valGain">1.25</b>
+    </label>
+    <div class="ctrl-subrow">
+      <button class="btn" id="bAutoHideIdle" aria-pressed="true" style="flex:1" title="Auto-hide controls &amp; HUD after 2.8s of mouse inactivity for clean monitor viewing">Auto-Hide on Idle</button>
+      <button class="btn" id="bPureMonitor" aria-pressed="false" style="flex:1" title="Hide corner text telemetry immediately (Shortcut: H)">Hide Corner Text</button>
+    </div>
+  </section>
+
+  <!-- SECTION II: Sanzo Wada 4-Pigment Colors & Custom Palette Studio -->
+  <section class="ctrl-card" aria-label="Sanzo Wada 4-Pigment Palette and Custom Colors">
+    <div class="ctrl-card-head">
+      <span class="ctrl-card-title"><i></i>II · Colors &amp; Sanzo Wada Palettes</span>
       <div style="display:flex;gap:3px">
-        <button class="btn" id="bRotateWada" style="min-height:20px;padding:2px 6px;font-size:9px" title="Rotate which pigment drives Ground, Body, Crest Accent, and Vein Accent">Rotate ↻</button>
-        <button class="btn" id="bBeatRotateWada" aria-pressed="false" style="min-height:20px;padding:2px 6px;font-size:9px" title="Auto-rotate Wada accent roles every 4 bars on the beat">Bar-Sync</button>
+        <button class="btn" id="bRotateWada" style="min-height:21px;padding:2px 6px;font-size:9.5px" title="Rotate which pigment drives Ground, Body, Crest, and Accent">↻ Rotate</button>
+        <button class="btn" id="bBeatRotateWada" aria-pressed="true" style="min-height:21px;padding:2px 6px;font-size:9.5px" title="Automatically rotate Wada pigment roles every 4 bars on the beat">Beat-Sync</button>
       </div>
     </div>
     <div class="wada-role-matrix" id="wadaRoleMatrix">
-      <label class="wada-slot" title="Pigment I: Deep Cavity &amp; Ground Absorption (click to customize)">
+      <label class="wada-slot" title="Pigment I: Deep Cavity &amp; Ground Absorption (click to pick custom color)">
         <input type="color" id="colPickerCore" value="#1b315e">
         <span class="wada-slot-meta"><span class="wada-slot-role">1·Ground</span><span class="wada-slot-hex" id="hexCore">#1B315E</span></span>
       </label>
-      <label class="wada-slot" title="Pigment II: Primary Sculptural Body Tone (click to customize)">
+      <label class="wada-slot" title="Pigment II: Primary Sculptural Body Tone (click to pick custom color)">
         <input type="color" id="colPickerMid" value="#2f8f83">
         <span class="wada-slot-meta"><span class="wada-slot-role">2·Body</span><span class="wada-slot-hex" id="hexMid">#2F8F83</span></span>
       </label>
-      <label class="wada-slot" title="Pigment III: Nodal Crest &amp; Grazing Rim Accent (click to customize)">
+      <label class="wada-slot" title="Pigment III: Nodal Crest &amp; Grazing Rim Accent (click to pick custom color)">
         <input type="color" id="colPickerRim" value="#e3e9c2">
         <span class="wada-slot-meta"><span class="wada-slot-role">3·Crest</span><span class="wada-slot-hex" id="hexRim">#E3E9C2</span></span>
       </label>
-      <label class="wada-slot" title="Pigment IV: High-Contrast Fibroid Vein &amp; Coil Counter-Accent (click to customize)">
+      <label class="wada-slot" title="Pigment IV: High-Contrast Counter-Accent (click to pick custom color)">
         <input type="color" id="colPickerFib" value="#f26a4b">
-        <span class="wada-slot-meta"><span class="wada-slot-role">4·Vein</span><span class="wada-slot-hex" id="hexFib">#F26A4B</span></span>
+        <span class="wada-slot-meta"><span class="wada-slot-role">4·Accent</span><span class="wada-slot-hex" id="hexFib">#F26A4B</span></span>
       </label>
     </div>
     <div class="pal-grid" role="group" aria-label="Sanzo Wada and Monotone Combinations">
-      <button class="swatch-pill" data-pal="wada_auto" aria-pressed="true" title="Sanzo Wada Turn-Adaptive 4-Pigment Combinations">
+      <button class="swatch-pill" data-pal="wada_auto" aria-pressed="true" title="Adaptive Sanzo Wada 4-Pigment Combination">
         <span class="swatch-dots"><i style="background:#1b315e"></i><i style="background:#2f8f83"></i><i style="background:#f4c95d"></i><i style="background:#f26a4b"></i></span>Auto
       </button>
       <button class="swatch-pill" data-pal="wada_142" aria-pressed="false" title="Wada #142: Prussian Indigo · Verdigris Jade · Celadon Gold · Cinnabar Coral">
@@ -1203,6 +1150,12 @@ body[data-workspace="music"] .jarvis-only { display: none !important; }
       <button class="swatch-pill" data-pal="wada_173" aria-pressed="false" title="Wada #173: Aubergine Lacquer · Carmine · Raw Amber · Cerulean Silk">
         <span class="swatch-dots"><i style="background:#311832"></i><i style="background:#b52b38"></i><i style="background:#f7a028"></i><i style="background:#62b6cb"></i></span>#173
       </button>
+      <button class="swatch-pill" data-pal="wada_148" aria-pressed="false" title="Wada #148: Royal Iris · Deep Emerald · Apricot Gold · Turquoise">
+        <span class="swatch-dots"><i style="background:#231942"></i><i style="background:#1b7a58"></i><i style="background:#f4a261"></i><i style="background:#48cae4"></i></span>#148
+      </button>
+      <button class="swatch-pill" data-pal="wada_281" aria-pressed="false" title="Wada #281: Ultramarine · Tyrian Magenta · Sun Gold · Coral">
+        <span class="swatch-dots"><i style="background:#14213d"></i><i style="background:#9d2a63"></i><i style="background:#fcbf49"></i><i style="background:#ff6b6b"></i></span>#281
+      </button>
       <button class="swatch-pill" data-pal="mono_silver" aria-pressed="false" title="Monotone I: Obsidian &amp; Liquid Silver">
         <span class="swatch-dots"><i style="background:#10131a"></i><i style="background:#6c7587"></i><i style="background:#d8dee9"></i><i style="background:#ffffff"></i></span>Silver
       </button>
@@ -1213,32 +1166,38 @@ body[data-workspace="music"] .jarvis-only { display: none !important; }
         <span class="swatch-dots"><i style="background:#071324"></i><i style="background:#2e6b9e"></i><i style="background:#8ce0ff"></i><i style="background:#e0f7ff"></i></span>Ice
       </button>
     </div>
+    <label class="sl-wrap" title="Intensity of Pigment III &amp; IV Accents on Crests &amp; Spectrum">
+      Accent Pop <input id="slAccentPop" type="range" min="0.5" max="2.2" step="0.05" value="1.35"><b id="valAccent">1.35</b>
+    </label>
+    <label class="sl-wrap" title="Background Room Glow (0.00 = Pure OLED Black for dark monitors, 0.35 = Deep Wada Room Tone)">
+      Room Glow <input id="slBgGlow" type="range" min="0.0" max="0.40" step="0.02" value="0.18"><b id="valBgGlow">0.18</b>
+    </label>
   </section>
 
-  <!-- CARD II: 3D Scene Elements (Surface Veins & Coils OFF by default for pure liquid-light surface) -->
-  <section class="ctrl-card" aria-label="3D Scene Elements and Camera">
+  <!-- SECTION III: 3D Style, Surface Eigenmodes, Layers & Camera -->
+  <section class="ctrl-card" aria-label="3D Surface Style, Scene Layers and Camera">
     <div class="ctrl-card-head">
-      <span class="ctrl-card-title"><i></i>II · 3D Elements &amp; Camera</span>
-      <span class="ctrl-lbl" style="margin:0">6 Layers</span>
+      <span class="ctrl-card-title"><i></i>III · Surface Style, Layers &amp; Camera</span>
+      <span class="ctrl-lbl" style="margin:0">Visuals</span>
+    </div>
+    <div class="ctrl-subrow" role="group" aria-label="Surface Eigenmode Style">
+      <span class="ctrl-lbl">Style</span>
+      <button class="btn" data-vismode="0" aria-pressed="true" title="Smooth Liquid-Light Spherical Harmonics">Liquid Y<sub>ℓ</sub><sup>m</sup></button>
+      <button class="btn" data-vismode="1" aria-pressed="false" title="Cymatic Chladni Nodal Contours">Chladni</button>
+      <button class="btn" data-vismode="2" aria-pressed="false" title="3D Toroidal Vortex Funnel">Hopf Torus</button>
+      <button class="btn" data-vismode="3" aria-pressed="false" title="Magnetic Dirac Ferrofluid">Ferrofluid</button>
+      <button class="btn" data-vismode="4" aria-pressed="false" title="Quantized Superfluid Vortices">Superfluid</button>
     </div>
     <div class="elem-grid" role="group" aria-label="Toggle 3D Visual Elements">
-      <button class="btn" id="bCoreSurfaceToggle" aria-pressed="true" title="Toggle central 3D quantum surface / torus / horizon">Core Mesh</button>
+      <button class="btn" id="bCoreSurfaceToggle" aria-pressed="true" title="Toggle central 3D quantum surface">Core Surface</button>
+      <button class="btn" id="bRingToggle" aria-pressed="true" title="Toggle 144 4-pigment spectrum bars / monoliths / spires">144 Spectrum</button>
+      <button class="btn" id="bParticlesToggle" aria-pressed="true" title="Toggle 4,800 conserved Noether current particles">4.8k Halo</button>
       <button class="btn" id="bOnBlobFib" aria-pressed="false" title="Optional: Overlay geodesic fibroid veins on the surface (Off by default)">Surface Veins</button>
       <button class="btn" id="bOrbitalFib" aria-pressed="false" title="Optional: Overlay 3D Hopf &amp; Villarceau orbital magnetic coils (Off by default)">3D Coils</button>
-      <button class="btn" id="bRingToggle" aria-pressed="true" title="Toggle 144 4-pigment spectrum bars / monoliths / spires">144 Spectrum</button>
       <button class="btn" id="bWaveToggle" aria-pressed="false" title="Optional: Overlay dual harmonic waveform loops">Wave Loops</button>
-      <button class="btn" id="bParticlesToggle" aria-pressed="true" title="Toggle 4,800 conserved Noether current particles">4.8k Halo</button>
-    </div>
-    <div class="ctrl-subrow" role="group" aria-label="Surface Eigenmode">
-      <span class="ctrl-lbl">Mode</span>
-      <button class="btn" data-vismode="0" aria-pressed="true">Eigen Y<sub>ℓ</sub><sup>m</sup></button>
-      <button class="btn" data-vismode="1" aria-pressed="false">Chladni</button>
-      <button class="btn" data-vismode="2" aria-pressed="false">Hopf Torus</button>
-      <button class="btn" data-vismode="3" aria-pressed="false">Ferrofluid</button>
-      <button class="btn" data-vismode="4" aria-pressed="false">Superfluid</button>
     </div>
     <div class="ctrl-subrow" role="group" aria-label="3D Camera View">
-      <span class="ctrl-lbl">Cam</span>
+      <span class="ctrl-lbl">Camera</span>
       <button class="btn" data-cam="front" aria-pressed="true">Front</button>
       <button class="btn" data-cam="iso" aria-pressed="false">3/4 Iso</button>
       <button class="btn" data-cam="orbit" aria-pressed="false">Orbit 360°</button>
@@ -1246,10 +1205,10 @@ body[data-workspace="music"] .jarvis-only { display: none !important; }
     </div>
   </section>
 
-  <!-- CARD III: Quantum Physics Sliders & 2D XY Symplectic Morph Pad -->
+  <!-- SECTION IV: Quantum Physics Sliders & 2D XY Symplectic Morph Pad -->
   <section class="ctrl-card" aria-label="Quantum Physics and 2D XY Symplectic Pad">
     <div class="ctrl-card-head">
-      <span class="ctrl-card-title"><i></i>III · Physics &amp; 2D XY Morph</span>
+      <span class="ctrl-card-title"><i></i>IV · Physics &amp; 2D XY Symplectic Pad</span>
       <span class="ctrl-lbl" id="xyReadout" style="margin:0">ℓ 3.0 · ε 0.18</span>
     </div>
     <div class="phys-split">
@@ -1258,144 +1217,88 @@ body[data-workspace="music"] .jarvis-only { display: none !important; }
         <span class="xy-pad-lbl">X:ℓ · Y:ε</span>
       </div>
       <div class="sl-stack">
-        <label class="sl-wrap" title="Intensity of Pigment III &amp; IV Accents on Crests, Spectrum &amp; Veins">
-          Accent Pop <input id="slAccentPop" type="range" min="0.5" max="2.0" step="0.05" value="1.30"><b id="valAccent">1.30</b>
-        </label>
-        <label class="sl-wrap" title="Intensity of optional surface veins &amp; coils when enabled">
-          Fibroids <input id="slFibroid" type="range" min="0" max="1.6" step="0.05" value="0.85"><b id="valFib">0.85</b>
-        </label>
         <label class="sl-wrap" title="Spherical Harmonic Multipole Order (l)">
           Harmonic ℓ <input id="slHarmonic" type="range" min="2" max="7" step="0.2" value="3"><b id="valHarm">3.0</b>
         </label>
         <label class="sl-wrap" title="Noether Second Theorem Free-Room Elasticity">
-          Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.0"><b id="valFree">1.00</b>
+          Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.05"><b id="valFree">1.05</b>
         </label>
         <label class="sl-wrap" title="Explicit Symmetry Breaking Perturbation (epsilon)">
           Symmetry ε <input id="slSymBreak" type="range" min="0.0" max="1.0" step="0.05" value="0.18"><b id="valSym">0.18</b>
+        </label>
+        <label class="sl-wrap" title="Intensity of optional surface veins &amp; coils when enabled">
+          Vein Gain <input id="slFibroid" type="range" min="0" max="1.6" step="0.05" value="0.85"><b id="valFib">0.85</b>
         </label>
       </div>
     </div>
   </section>
 
-  <!-- CARD IV: Audio Input / Loopback Routing, AI Duet & Studio Capture -->
-  <section class="ctrl-card" aria-label="Audio Input Routing, AI Duet and Studio Capture">
+  <!-- SECTION V: Noether Voice AI Assistant & Preset Export -->
+  <section class="ctrl-card" aria-label="Noether Conversational AI and Studio Export">
     <div class="ctrl-card-head">
-      <span class="ctrl-card-title"><i></i>IV · Audio I/O &amp; Studio Export</span>
-      <span class="ctrl-lbl" style="margin:0">Routing</span>
-    </div>
-    <select id="micDeviceSelect" class="sl-select" title="Select Microphone or Loopback Audio Input Device (e.g., BlackHole 2ch for zero-popup system audio)">
-      <option value="">Default Audio Input (Mic / Loopback)</option>
-    </select>
-    <label class="sl-wrap" title="Audio Input Sensitivity / Gain">
-      Input Gain <input id="sens" type="range" min="0.4" max="2.5" step="0.05" value="1.15"><b id="valGain">1.15</b>
-    </label>
-    <div class="ctrl-subrow">
-      <button class="btn" id="bDuetMode" style="flex:1" title="Run continuous multi-turn Socratic dialogue between Puck &amp; Kore">✦ Puck × Kore Duet</button>
-      <button class="btn" id="bAutoVad" aria-pressed="true" title="Hands-Free Mic Auto-Turn">Auto-VAD</button>
+      <span class="ctrl-card-title"><i></i>V · Noether Voice AI &amp; Export</span>
+      <select class="voice-scenario-sel" id="jarvisVoiceSelect" title="Select Noether Neural Voice Persona">
+        <option value="Kore">Voice · Kore</option>
+        <option value="Puck">Voice · Puck</option>
+      </select>
     </div>
     <div class="ctrl-subrow">
-      <button class="btn" id="bSharePreset" style="flex:1" title="Save preset &amp; copy shareable URL hash">Save / Link</button>
+      <button class="btn" id="bHandsFreeJarvis" aria-pressed="true" style="flex:1" title="Continuous conversation loop when speaking to Noether">∞ Hands-Free Loop</button>
+      <button class="btn" id="bAutoVad" aria-pressed="true" title="Mic Voice Activity Detection">Auto-VAD</button>
+      <button class="btn" id="bGeminiKeyToggle" title="Optional: Configure custom API key">API 🔑</button>
+    </div>
+    <div class="gemini-key-row" id="geminiKeyRow">
+      <input class="voice-prompt-input" id="geminiKeyInput" type="password" placeholder="Optional: Paste Gemini / xAI API Key...">
+      <button class="btn" id="bSaveGeminiKey">Save</button>
+    </div>
+    <div class="ctrl-subrow">
+      <button class="btn" id="bSharePreset" style="flex:1" title="Save all current settings to browser &amp; copy shareable link">Save Preset</button>
       <button class="btn" id="bSnapPng" title="Download high-resolution PNG snapshot">PNG</button>
-      <button class="btn" id="bRecVideo" title="Record 60fps WebM video + audio clip">Rec</button>
+      <button class="btn" id="bRecVideo" title="Record 60fps WebM video + audio">Rec Video</button>
     </div>
   </section>
 </aside>
 
-<!-- Bottom Control Dock: Adapts cleanly between Workspace I (Noether AI // Jarvis) and Workspace II (Music & Acoustic Lab) -->
+<!-- Clean Bottom Floating Control Bar (Auto-Hides on Idle in Monitor Mode) -->
 <nav class="hud dock" aria-label="Controls">
-  <!-- WORKSPACE I: NOETHER AI (LIVE JARVIS VOICE & COMMAND INTERFACE) -->
-  <div class="grp jarvis-only" role="group" aria-label="Noether Live Conversational Voice">
-    <button class="btn primary talk-live" id="bTalkJarvis" aria-pressed="false" title="Speak directly to Noether via your Microphone (Shortcut: Space)">🎙 Talk to Noether</button>
-    <button class="btn" id="bHandsFreeJarvis" aria-pressed="true" title="Hands-Free Continuous Conversation: automatically listens for your reply after Noether finishes speaking">∞ Hands-Free</button>
-  </div>
-  <div class="grp jarvis-only" role="group" aria-label="Ask or Command Noether">
-    <input class="dock-jarvis-input" id="aiPromptInput" type="text" placeholder="Talk to Noether or type a command (Press Enter)..." aria-label="Ask or command Noether">
-    <button class="btn primary" id="bAskKore" title="Send message to Noether and hear live neural voice response">Send ↵</button>
-    <button class="btn" id="bJarvisStop" title="Interrupt speech or listening and return to calm Idle">Stop</button>
-  </div>
-
-  <!-- WORKSPACE II: SEPARATE MUSIC & ACOUSTIC EXPLORATION LAB -->
-  <div class="grp music-only" role="group" aria-label="Quantum Music Synthesizer and Audio Input">
-    <button class="btn primary" id="bDemo" aria-pressed="false" title="Start / stop built-in 4-movement quantum synthesizer">▶ Play Synth</button>
-    <select id="trackSelect" class="sl-select" style="width:185px;min-height:28px;border-radius:999px;padding:3px 10px" title="Select Quantum Synthesizer Composition">
-      <option value="0">I. Noether Progression (98–134 BPM)</option>
-      <option value="1">II. Göttingen 1918 Cathedral (76 BPM)</option>
-      <option value="2">III. Hopf Fibration IDM Arp (124 BPM)</option>
-      <option value="3">IV. Superfluid Vortex Dub (88 BPM)</option>
-      <option value="4">V. Broken Symmetry Etude (112 BPM)</option>
-    </select>
-    <button class="btn" id="bMic" aria-pressed="false" title="Visualize live room music, instrument, or BlackHole/Loopback virtual audio input (No window-share popup!)">🎙 Audio Input</button>
-    <label class="btn" for="file" id="bFile" title="Load any local MP3, WAV, FLAC, or M4A music track">Audio File</label>
+  <div class="grp" role="group" aria-label="Live Audio and System Capture">
+    <button class="btn primary sys-live" id="bSysAudio" aria-pressed="false" title="Capture live music from another Chrome tab (Spotify, YouTube, SoundCloud) or System Audio">🔊 System / Tab Audio</button>
+    <button class="btn" id="bMic" aria-pressed="false" title="Connect Microphone, Line-In, or Virtual Loopback (BlackHole 2ch)">🎙 Audio Input</button>
+    <label class="btn" for="file" id="bFile" title="Load any local MP3, WAV, FLAC, OGG, or M4A music track">🎵 Audio File</label>
     <input class="vh" id="file" type="file" accept="audio/*">
-    <button class="btn" id="bSysAudio" aria-pressed="false" title="Capture browser tab audio (Note: Browser security requires selecting a tab/window in the popup)">Tab Audio</button>
-    <button class="btn" id="bShowcase" aria-pressed="false" title="Auto-direct across 5 curated Sanzo Wada &amp; Quantum Field musical scenes">Auto-Direct</button>
-    <button class="btn" id="bStop" title="Stop music playback">Stop</button>
   </div>
 
-  <!-- Hidden compatibility hooks for programmatic / CLI API -->
-  <div style="display:none" aria-hidden="true">
-    <button id="bVoice"></button>
-    <button id="bTurn"></button>
-    <button id="bDictatePrompt"></button>
-    <span id="turnTimeline"></span>
-    <span id="turnProgFill"></span>
-    <span id="turnTimer"></span>
+  <div class="grp" role="group" aria-label="Talk to Noether AI">
+    <button class="btn talk-live" id="bTalkJarvis" aria-pressed="false" title="Speak directly to Noether AI via your Microphone">💬 Talk to Noether</button>
+    <input class="dock-jarvis-input" id="aiPromptInput" type="text" placeholder="Ask or command Noether..." aria-label="Ask or command Noether">
+    <button class="btn" id="bAskKore" title="Send prompt to Noether">Send ↵</button>
   </div>
 
-  <div class="grp">
-    <button class="btn" id="bTweaks" aria-pressed="false">Studio Controls ▴</button>
-    <button class="btn" id="bHelp" aria-pressed="false" title="Keyboard shortcuts &amp; Noether physics reference (?)">?</button>
+  <div class="grp" role="group" aria-label="Monitor Fullscreen and Hidden Settings Tab">
+    <button class="btn" id="bStop" title="Disconnect active audio stream and return to calm Idle">Stop</button>
+    <button class="btn" id="bFullscreen" aria-pressed="false" title="Enter Fullscreen Monitor Mode (Shortcut: F)">⛶ Fullscreen</button>
+    <button class="btn" id="bTweaks" aria-pressed="false" title="Open / Close Studio Settings, Colors &amp; Styles Tab (Shortcut: Tab or T)">⚙ Settings</button>
+    <button class="btn" id="bHelp" aria-pressed="false" title="Keyboard shortcuts (?)">?</button>
   </div>
 </nav>
 
-<!-- Plugin SDK, Antigravity CLI & Stage Audio Setup Modal -->
-<aside class="hud plugin-modal" id="pluginModal" role="dialog" aria-label="Plugin SDK, Antigravity CLI and Summit Setup">
-  <h3>
-    <span>⚡ Noether Jarvis Plugin SDK · Summit Setup &amp; Audio Routing</span>
-    <button class="btn" id="bClosePlugin">Close</button>
-  </h3>
-  <div class="plugin-sec">
-    <h4>1 · Why "Tab Audio" Prompts to Share a Window &amp; How to Capture System Audio Cleanly</h4>
-    <div>
-      Web browsers restrict silent desktop audio capture for security: <code>getDisplayMedia()</code> is the only browser API that can tap another browser tab's audio, which forces Chrome/macOS to show a "Share tab/window" picker.<br>
-      <b>For zero-popup system audio at the Summit:</b> Use <b>🎙 Talk to Noether</b> (for voice) or select a virtual loopback driver such as <b>BlackHole 2ch</b> / <b>Loopback</b> inside <b>Studio Controls → Card IV → Audio Input</b>. That uses <code>getUserMedia()</code> directly with <b>zero window-share prompts</b>.
-    </div>
-  </div>
-  <div class="plugin-sec">
-    <h4>2 · Embeddable Web Plugin SDK (<code>/sdk/noether-jarvis-plugin.js</code>)</h4>
-    <div>Drop Noether into any web app or connect external LLM/voice pipelines in 4 lines:</div>
-    <code class="plugin-code">&lt;script src="https://noether-resonance-core.vercel.app/sdk/noether-jarvis-plugin.js"&gt;&lt;/script&gt;
-&lt;script&gt;
-  const jarvis = NoetherJarvisPlugin.mount('#orb-container', { mode: 'jarvis' });
-  const session = NoetherJarvisPlugin.createVoiceSession({ speaker: 'Kore', continuous: true });
-&lt;/script&gt;</code>
-  </div>
-  <div class="plugin-sec">
-    <h4>3 · Antigravity CLI (<code>agy</code>) &amp; Live Stage Podium Remote Control</h4>
-    <div>Control the 3D orb or trigger live neural speech from a second terminal or podium laptop over SSE:</div>
-    <code class="plugin-code">npx noether start                           # Launch local gateway on port 3333
-npx noether turn "Welcome to the Summit"    # Trigger live AI reasoning + neural speech
-npx noether speak "Switching to Tokamak"    # Speak directly through the 3D orb
-npx noether branch tokamak --palette wada_068</code>
-  </div>
-</aside>
-
-<!-- On-Demand Shortcut & Physics Reference Modal -->
-<aside class="hud help-modal" id="helpModal" role="dialog" aria-label="Keyboard Shortcuts and Physics Reference">
-  <h3><span>Noether Resonance · Controls &amp; Symmetries</span><button class="btn" id="bCloseHelp">Close</button></h3>
+<!-- On-Demand Shortcut Reference Modal -->
+<aside class="hud help-modal" id="helpModal" role="dialog" aria-label="Keyboard Shortcuts">
+  <h3><span>Noether Resonance · Shortcuts</span><button class="btn" id="bCloseHelp">Close</button></h3>
   <div class="help-grid">
-    <kbd>Space</kbd><span>Talk to Noether (in AI mode) · Play/Stop Synth (in Music Lab)</span>
-    <kbd>Q / W / E / R</kbd><span>Switch 3D Topology (Orb · Tokamak · Cymatic · Spinor Lattice)</span>
-    <kbd>1 – 4</kbd><span>Manual resonance state (Idle · Listening · Thinking · Speaking)</span>
-    <kbd>5 – 9</kbd><span>Jump to Curated Musical Scenes I – V (in Music Lab)</span>
-    <kbd>A – L</kbd><span>Play polyphonic harmonic chimes &amp; launch 3D vortex shockwaves</span>
-    <kbd>T / U / ?</kbd><span>Toggle Studio Controls (`T`) · Pure 3D canvas (`U`) · Help (`?`)</span>
+    <kbd>F</kbd><span>Toggle Fullscreen Monitor Mode (Auto-hides UI on idle)</span>
+    <kbd>Tab / T</kbd><span>Slide open / close Hidden Settings, Colors &amp; Styles Tab</span>
+    <kbd>H / U</kbd><span>Toggle Clean Monitor Mode (Hide all corner text / UI)</span>
+    <kbd>Q W E R Y</kbd><span>Switch 3D Topology (Orb · Tokamak · Cymatic · Lattice · Calabi-Yau)</span>
+    <kbd>C</kbd><span>Rotate Sanzo Wada 4-Pigment Roles across the 3D field</span>
+    <kbd>Space</kbd><span>Play / Pause loaded Audio File (or toggle Voice Listen)</span>
+    <kbd>A – L</kbd><span>Play polyphonic harmonic chimes &amp; launch 3D vortex rings</span>
     <kbd>Drag / Wheel</kbd><span>Orbit 3D field + pan stereo soundstage (`Drag`) · Zoom (`Wheel`)</span>
   </div>
 </aside>
 
 <div class="hud toast" id="toast" role="status" aria-live="polite"></div>
-<div class="drop">Drop any audio file (.mp3, .wav, .ogg, .flac, .m4a) to visualize in Music Lab</div>
+<div class="drop">Drop any audio file (.mp3, .wav, .ogg, .flac, .m4a) to visualize immediately</div>
 
 <script src="./three.global.js"></script>
 <script src="./sequencer.js"></script>
@@ -1409,12 +1312,12 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 
-/* ───────────────────────── Sanzo Wada & Monotone Palettes ─────────────────────────
+/* ───────────────────────── Sanzo Wada & Monotone 4-Pigment Palettes ─────────────────────────
    Derived from Sanzo Wada's "A Dictionary of Color Combinations" (Haishoku Soukan)
-   plus three pure architectural Monotone studies.
-   Each entry defines: core (deep shadow), mid (body tone), rim (Fresnel highlight),
-   fib (crisp fibroid filament color), accent (UI token), and mono (1 for strict monochrome).
-   ──────────────────────────────────────────────────────────────────────────────── */
+   plus three architectural Monotone studies.
+   Each entry defines: core (deep ground), mid (harmonic body), rim (crest highlight),
+   fib (counter-accent), accent (UI token), and mono (1 for strict monochrome).
+   ────────────────────────────────────────────────────────────────────────────────────────── */
 const WADA_PALETTES = {
   auto_idle: {
     label: 'Wada #138 · Slate · Salvia · Ecru · Coral',
@@ -1432,8 +1335,6 @@ const WADA_PALETTES = {
     label: 'Wada #052 · Umber · Cinnabar · Ochre · Jade',
     core: [0.22, 0.10, 0.14], mid: [0.85, 0.33, 0.22], rim: [0.97, 0.82, 0.44], fib: [0.24, 0.78, 0.72], accent: '#f7d170', mono: 0
   },
-
-  // Manual Locked Sanzo Wada 4-Pigment Combinations (True 4-Chroma Tetrads: Ground · Body · Crest Accent · Vein Counter-Accent):
   wada_142: {
     label: 'Wada #142 · Indigo · Verdigris · Celadon · Cinnabar',
     core: [0.11, 0.19, 0.37], mid: [0.18, 0.56, 0.51], rim: [0.89, 0.91, 0.76], fib: [0.95, 0.42, 0.29], accent: '#e3e9c2', mono: 0
@@ -1458,8 +1359,14 @@ const WADA_PALETTES = {
     label: 'Wada #173 · Aubergine · Carmine · Amber · Cerulean',
     core: [0.19, 0.09, 0.20], mid: [0.71, 0.17, 0.22], rim: [0.97, 0.63, 0.16], fib: [0.38, 0.71, 0.80], accent: '#f7a028', mono: 0
   },
-
-  // Pure Architectural Monotone Palettes:
+  wada_148: {
+    label: 'Wada #148 · Royal Iris · Emerald · Apricot · Turquoise',
+    core: [0.14, 0.10, 0.26], mid: [0.11, 0.48, 0.35], rim: [0.96, 0.64, 0.38], fib: [0.28, 0.79, 0.89], accent: '#f4a261', mono: 0
+  },
+  wada_281: {
+    label: 'Wada #281 · Ultramarine · Tyrian · Sun Gold · Coral',
+    core: [0.08, 0.13, 0.24], mid: [0.62, 0.16, 0.39], rim: [0.99, 0.75, 0.29], fib: [1.00, 0.42, 0.42], accent: '#fcbf49', mono: 0
+  },
   mono_silver: {
     label: 'Mono I · Obsidian & Liquid Silver',
     core: [0.06, 0.08, 0.11], mid: [0.42, 0.46, 0.54], rim: [0.85, 0.89, 0.95], fib: [1.00, 1.00, 1.00], accent: '#d8dee9', mono: 1
@@ -1474,56 +1381,47 @@ const WADA_PALETTES = {
   }
 };
 
-/* ───────────────────────── Curated Showcase Scenes (For Live Demos) ───────────────────────── */
-const SHOWCASE_SCENES = [
-  { name: 'Scene I · DeepMind Eigen-Orb & Wada #142', mode: 0, pal: 'wada_142', state: 'speaking', cam: 'front', trk: 0, l: 3, free: 1.05, eps: 0.18 },
-  { name: 'Scene II · Hopf Toroid Attractor & Wada #068', mode: 2, pal: 'wada_068', state: 'thinking', cam: 'iso', trk: 2, l: 4, free: 1.15, eps: 0.24 },
-  { name: 'Scene III · Cymatic Chladni & Liquid Silver Monotone', mode: 1, pal: 'mono_silver', state: 'speaking', cam: 'front', trk: 1, l: 5, free: 1.10, eps: 0.12 },
-  { name: 'Scene IV · Dirac Ferrofluid & Wada #219 Peacock Rose', mode: 3, pal: 'wada_219', state: 'listening', cam: 'orbit', trk: 3, l: 4, free: 1.25, eps: 0.22 },
-  { name: 'Scene V · Superfluid Vortex & Wada #173 Carmine Amber', mode: 4, pal: 'wada_173', state: 'speaking', cam: 'iso', trk: 4, l: 3, free: 1.15, eps: 0.28 }
-];
-
-/* ───────────────────────── Agent & Resonance States ───────────────────────── */
+/* ───────────────────────── Resonance States ─────────────────────────
+   Note: When live audio (System/Tab Audio, Mic/Loopback, File, or Voice) is active,
+   proc is 0.04 so 96% of all motion comes directly from the real audio signal!
+   ─────────────────────────────────────────────────────────────────── */
 const STATES = {
-  idle:      { label: 'Idle',      glyph: '◎', amp: 0.48, spin: 0.24, inward: 0.0,  proc: 0.58, lTarget: 2.0, mTarget: 1.0 },
-  listening: { label: 'Listening', glyph: '◈', amp: 1.05, spin: 0.38, inward: 1.0,  proc: 0.14, lTarget: 3.0, mTarget: 2.0 },
-  thinking:  { label: 'Thinking',  glyph: '❖', amp: 0.85, spin: 1.65, inward: 0.38, proc: 1.00, lTarget: 5.0, mTarget: 3.0 },
-  speaking:  { label: 'Speaking',  glyph: '✦', amp: 1.18, spin: 0.68, inward: -1.0, proc: 0.10, lTarget: 4.0, mTarget: 2.0 },
+  idle:      { label: 'Idle',      glyph: '◎', amp: 0.48, spin: 0.22, inward: 0.0,  proc: 0.52, lTarget: 2.0, mTarget: 1.0 },
+  listening: { label: 'Listening', glyph: '◈', amp: 1.12, spin: 0.38, inward: 1.0,  proc: 0.04, lTarget: 3.0, mTarget: 2.0 },
+  thinking:  { label: 'Thinking',  glyph: '❖', amp: 0.88, spin: 1.65, inward: 0.38, proc: 0.90, lTarget: 5.0, mTarget: 3.0 },
+  speaking:  { label: 'Active',    glyph: '✦', amp: 1.24, spin: 0.68, inward: -1.0, proc: 0.04, lTarget: 4.0, mTarget: 2.0 },
 };
 
 let stateName = 'idle';
 let paletteMode = 'wada_auto';
-let wadaRolePermutation = 0; // 0..3 rotates the 4 Sanzo Wada pigments across Ground, Body, Crest, and Vein
-let beatRotateWada = false;
+let wadaRolePermutation = 0; // 0..3 rotates the 4 Sanzo Wada pigments across Ground, Body, Crest, and Accent
+let beatRotateWada = true;   // Automatically rotates pigment roles on musical phrase boundaries (every 4 bars)
 let customWadaOverride = null; // { core, mid, rim, fib, label, mono }
-let activeBranch = 'orb'; // 'orb' | 'tokamak' | 'cymatic' | 'lattice'
-let activeWorkspace = 'jarvis'; // 'jarvis' (Live Conversational AI) | 'music' (Separate Music Exploration Lab)
+let activeBranch = 'orb';    // 'orb' | 'tokamak' | 'cymatic' | 'lattice' | 'calabi'
 let jarvisHandsFree = true;
 let jarvisContinuousSession = false;
 let jarvisHistory = [];
 let treeCycleOn = false;
 let treeCycleTimer = 0;
-let visMode = 0; // 0: Eigen-Orb, 1: Cymatic Chladni, 2: Hopf Torus, 3: Dirac Ferrofluid, 4: Superfluid Vortex
+let visMode = 0; // 0: Liquid Eigen-Orb, 1: Cymatic Chladni, 2: Hopf Torus, 3: Dirac Ferrofluid, 4: Superfluid Vortex
 let camMode = 'front'; // 'front' | 'iso' | 'orbit' | 'macro'
 let zoomOffset = 0.0;
 let showCoreSurface = true;
 let showOnBlobFib = false;  // OFF by default: pure, smooth liquid-light quantum surface without internal lines
-let showOrbitalFib = false; // OFF by default: clean silhouette; toggleable anytime in Studio Controls (Card II)
+let showOrbitalFib = false; // OFF by default: clean silhouette; toggleable anytime in Settings Tab
 let showSpectrumRing = true;
-let showWaveLoops = false;  // OFF by default: toggleable in Studio Controls (Card II)
+let showWaveLoops = false;  // OFF by default: toggleable in Settings Tab
 let showParticleHalo = true;
 let autoVadOn = true;
-let showcaseOn = false;
-let showcaseTimer = 0;
-let showcaseIdx = 0;
-let activeTrackIdx = 0;
+let autoHideIdle = true;    // Automatically fades UI when mouse is idle for >2.8s
+let pureMonitorMode = false;
 let turnActive = false;
 let turnStageStart = 0;
 let turnStageDur = 0;
 let jarvisListening = false;
 let jarvisRecognition = null;
 
-const K = { amp: 0.48, spin: 0.24, inward: 0, proc: 0.58, l: 3.0, m: 2.0, vis: 0.0, torusMorph: 0.0 };
+const K = { amp: 0.48, spin: 0.22, inward: 0, proc: 0.52, l: 3.0, m: 2.0, vis: 0.0, torusMorph: 0.0 };
 
 /* ── 2nd-Order Symplectic Hamiltonian Oscillator Bank (Modular Coupler) ── */
 const HAM = {
@@ -1679,10 +1577,10 @@ function setState(name) {
 
 /* ───────────────────────── WebAudio Graph & Spatial Panner Inputs ───────────────────────── */
 const A = {
-  ctx: null, analyser: null, master: null, panner: null,
+  ctx: null, analyser: null, master: null, panner: null, silentPull: null,
   freq: null, prev: null, time: null,
   src: 'none', media: null, mediaNode: null,
-  stream: null, streamNode: null, noise: null
+  stream: null, streamNode: null, streamSink: null, noise: null
 };
 
 function ensureAudio() {
@@ -1691,7 +1589,7 @@ function ensureAudio() {
     A.ctx = new AC();
     A.analyser = A.ctx.createAnalyser();
     A.analyser.fftSize = 2048;
-    A.analyser.smoothingTimeConstant = 0.52;
+    A.analyser.smoothingTimeConstant = 0.50;
     A.master = A.ctx.createGain();
     A.master.gain.value = 0.85;
     if (A.ctx.createStereoPanner) {
@@ -1702,31 +1600,30 @@ function ensureAudio() {
       A.master.connect(A.ctx.destination);
     }
     A.master.connect(A.analyser);
+    // Dedicated zero-gain pull node so live MediaStreamSources (Chrome Tab / System Audio / Mic) are always pulled by destination clock
+    A.silentPull = A.ctx.createGain();
+    A.silentPull.gain.value = 0.0;
+    A.analyser.connect(A.silentPull);
+    A.silentPull.connect(A.ctx.destination);
+
     A.freq = new Uint8Array(A.analyser.frequencyBinCount);
     A.prev = new Float32Array(A.analyser.frequencyBinCount);
     A.time = new Float32Array(A.analyser.fftSize);
   }
-  if (A.ctx.state === 'suspended') A.ctx.resume();
+  if (A.ctx.state === 'suspended') A.ctx.resume().catch(() => {});
   return A.ctx;
 }
 
-function noiseBuffer() {
-  if (A.noise) return A.noise;
-  const ctx = A.ctx, len = ctx.sampleRate * 1.5;
-  const b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
-  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
-  return (A.noise = b);
-}
 const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 
 function setSource(kind, label) {
   A.src = kind;
-  $('#srcLabel').textContent = label;
-  $('#bDemo').setAttribute('aria-pressed', String(kind === 'demo'));
-  $('#bVoice').setAttribute('aria-pressed', String(kind === 'voice'));
-  $('#bMic').setAttribute('aria-pressed', String(kind === 'mic'));
-  $('#bSysAudio').setAttribute('aria-pressed', String(kind === 'sys'));
-  $('#mediaScrubWrap').classList.toggle('show', kind === 'file');
+  if ($('#srcLabel')) $('#srcLabel').textContent = label;
+  if ($('#bMic')) $('#bMic').setAttribute('aria-pressed', String(kind === 'mic'));
+  if ($('#bMicDrawer')) $('#bMicDrawer').setAttribute('aria-pressed', String(kind === 'mic'));
+  if ($('#bSysAudio')) $('#bSysAudio').setAttribute('aria-pressed', String(kind === 'sys'));
+  if ($('#bSysAudioDrawer')) $('#bSysAudioDrawer').setAttribute('aria-pressed', String(kind === 'sys'));
+  if ($('#mediaScrubWrap')) $('#mediaScrubWrap').classList.toggle('show', kind === 'file');
   resetTempo();
 }
 
@@ -1735,198 +1632,38 @@ function stopAll(keepTurn) {
     turnId++;
     turnActive = false;
   }
-  stopDemo();
   stopVoice();
   stopThinkingSynth();
   if (A.media) {
-    A.media.pause();
+    try { A.media.pause(); } catch (e) {}
     try { A.mediaNode.disconnect(); } catch (e) {}
     A.media = null; A.mediaNode = null;
   }
+  if (A.streamSink) {
+    try {
+      A.streamSink.pause();
+      A.streamSink.srcObject = null;
+    } catch (e) {}
+    A.streamSink = null;
+  }
   if (A.stream) {
-    A.stream.getTracks().forEach(t => t.stop());
-    try { A.streamNode.disconnect(); } catch (e) {}
+    try { A.stream.getTracks().forEach(t => t.stop()); } catch (e) {}
+    try { if (A.streamNode) A.streamNode.disconnect(); } catch (e) {}
     A.stream = null; A.streamNode = null;
   }
   if (!keepTurn) {
-    setSource('none', 'Quantum vacuum breathing · Pick an input, press A–K to chime, or run Showcase');
+    setSource('none', 'Ready · Click System / Tab Audio to visualize live music from any Chrome tab');
     updateTurnTimelineUI(stateName, 0, 'Ready');
   }
 }
 
-/* ── 5 Built-In Procedural Quantum Compositions (100% Offline WebAudio Synth) ── */
-const TRACK_LIBRARY = (window.NoetherSoundSequencer && window.NoetherSoundSequencer.TRACK_LIBRARY) || [
-  {
-    name: 'I. Noether Progression · Harmonic & tempo shifts',
-    sections: [{ bpm: 98, bars: 8 }, { bpm: 122, bars: 8 }, { bpm: 134, bars: 8 }, { bpm: 110, bars: 8 }],
-    prog: [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]],
-    roots: [33, 29, 36, 31],
-    style: 'progression'
-  },
-  {
-    name: 'II. Göttingen 1918 · Harmonic cathedral choral fifths',
-    sections: [{ bpm: 76, bars: 16 }],
-    prog: [[50, 57, 62, 69], [48, 55, 60, 67], [45, 52, 57, 64], [46, 53, 58, 65]],
-    roots: [26, 24, 33, 34],
-    style: 'cathedral'
-  },
-  {
-    name: 'III. Hopf Fibration Arp · 124 BPM IDM & crystalline overtones',
-    sections: [{ bpm: 124, bars: 16 }],
-    prog: [[60, 63, 67, 70], [58, 62, 65, 69], [56, 60, 63, 67], [55, 59, 62, 67]],
-    roots: [36, 34, 32, 31],
-    style: 'idm'
-  },
-  {
-    name: 'IV. Superfluid Vortex Dub · 88 BPM deep quantized sub-bass',
-    sections: [{ bpm: 88, bars: 16 }],
-    prog: [[51, 55, 58], [48, 51, 55], [46, 50, 53], [49, 53, 56]],
-    roots: [27, 24, 22, 25],
-    style: 'dub'
-  },
-  {
-    name: 'V. Broken Symmetry Etude · 112 BPM polymetric gauge study',
-    sections: [{ bpm: 112, bars: 16 }],
-    prog: [[54, 58, 61, 65], [52, 56, 59, 64], [49, 54, 57, 61], [51, 55, 60, 63]],
-    roots: [30, 28, 33, 27],
-    style: 'etude'
-  }
-];
-
-const Demo = { on: false, timer: 0, next: 0, step: 0, sec: 0, bar: 0, bus: null };
-
-function startDemo() {
-  ensureAudio(); stopAll();
-  const ctx = A.ctx;
-  const trk = TRACK_LIBRARY[activeTrackIdx] || TRACK_LIBRARY[0];
-  Demo.bus = ctx.createGain(); Demo.bus.gain.value = 0.82; Demo.bus.connect(A.master);
-  Object.assign(Demo, { on: true, next: ctx.currentTime + 0.06, step: 0, sec: 0, bar: 0 });
-  setSource('demo', trk.name);
-  setState('speaking');
-  schedDemo();
-  Demo.timer = setInterval(schedDemo, 25);
-}
-function stopDemo() {
-  if (!Demo.on) return;
-  Demo.on = false; clearInterval(Demo.timer);
-  const bus = Demo.bus;
-  if (bus && A.ctx) {
-    bus.gain.setTargetAtTime(0, A.ctx.currentTime, 0.05);
-    setTimeout(() => { try { bus.disconnect(); } catch (e) {} }, 380);
-  }
-}
-function schedDemo() {
-  const ctx = A.ctx;
-  const trk = TRACK_LIBRARY[activeTrackIdx] || TRACK_LIBRARY[0];
-  while (Demo.next < ctx.currentTime + 0.15) {
-    const curSec = trk.sections[Demo.sec % trk.sections.length];
-    playStep(Demo.step, Demo.next, trk, curSec.bpm);
-    Demo.next += 60 / curSec.bpm / 4;
-    Demo.step++;
-    if (Demo.step % 16 === 0) {
-      Demo.bar++;
-      if (Demo.bar >= curSec.bars) {
-        Demo.bar = 0;
-        Demo.sec = (Demo.sec + 1) % trk.sections.length;
-      }
-    }
-  }
-}
 function env(g, t, peak, a, d) {
   g.gain.setValueAtTime(0.0001, t);
   g.gain.exponentialRampToValueAtTime(peak, t + a);
   g.gain.exponentialRampToValueAtTime(0.0001, t + a + d);
 }
-function playStep(s, t, trk, bpm) {
-  const s16 = s % 16, ch = Math.floor(s / 16) % trk.prog.length;
-  const spb = 60 / bpm, st = spb / 4;
-  const style = trk.style;
 
-  // Deterministic Clock Sync: lock BPM & bar phase immediately on every quarter-note beat!
-  if (s16 % 4 === 0) {
-    const delayMs = Math.max(0, (t - A.ctx.currentTime) * 1000);
-    setTimeout(() => {
-      if (Demo.on) lockDeterministicClock(bpm, A.ctx.currentTime, s16 === 0);
-    }, delayMs);
-  }
-
-  if (style === 'cathedral') {
-    if (s16 === 0) {
-      kick(t, 0.65);
-      pad(t, trk.prog[ch], spb * 4.2);
-      bass(t, trk.roots[ch] + 12, spb * 3.6);
-    }
-    if (s16 % 4 === 0) arp(t, trk.prog[ch][(s16 / 4) % trk.prog[ch].length] + 12, spb * 1.4);
-  } else if (style === 'idm') {
-    if (s16 === 0 || s16 === 6 || s16 === 10) kick(t, 0.95);
-    if (s16 === 4 || s16 === 12) clap(t);
-    if (s16 % 2 === 1) hat(t, s16 === 7 || s16 === 15);
-    if (s16 % 3 === 0) bass(t, trk.roots[ch] + 12, st * 2.2);
-    if (s16 === 0) pad(t, trk.prog[ch], spb * 4);
-    arp(t, trk.prog[ch][s16 % trk.prog[ch].length] + (s16 % 5 === 0 ? 24 : 12), st * 1.3);
-  } else if (style === 'dub') {
-    if (s16 === 0 || s16 === 8) kick(t, 1.05);
-    if (s16 === 4 || s16 === 12) clap(t);
-    if (s16 % 4 === 2) hat(t, true);
-    if (s16 === 0 || s16 === 6 || s16 === 10) bass(t, trk.roots[ch] + 12, st * 3.2);
-    if (s16 === 0 || s16 === 8) pad(t, trk.prog[ch], spb * 2.2);
-  } else if (style === 'etude') {
-    if (s16 % 5 === 0) kick(t, 0.9);
-    if (s16 === 4 || s16 === 11) clap(t);
-    if (s16 % 2 === 0) hat(t, s16 % 6 === 0);
-    if (s16 % 4 === 0) bass(t, trk.roots[ch] + 12, st * 2.4);
-    if (s16 === 0) pad(t, trk.prog[ch], spb * 4);
-    if (s16 % 3 !== 2) arp(t, trk.prog[ch][s16 % trk.prog[ch].length] + 12, st * 1.5);
-  } else {
-    const sec = Demo.sec;
-    if (s16 % 4 === 0) kick(t, 1);
-    if (sec === 2 && s16 === 14) kick(t, 0.55);
-    if (s16 === 4 || s16 === 12) clap(t);
-    if (s16 % 4 === 2) hat(t, true);
-    else if (sec >= 1 && s16 % 2 === 1) hat(t, false);
-    if (s16 % 4 === 2 || (sec === 2 && s16 % 4 === 3)) bass(t, trk.roots[ch] + 12, st * 1.7);
-    if (s16 === 0) pad(t, trk.prog[ch], spb * 4);
-    if ((sec === 1 || sec === 2) && s16 % 2 === 0) arp(t, trk.prog[ch][(s16 / 2) % 3] + 12 + (s16 >= 8 ? 12 : 0), st * 1.6);
-  }
-}
-function kick(t, v) {
-  const c = A.ctx, o = c.createOscillator(), g = c.createGain();
-  o.type = 'sine'; o.frequency.setValueAtTime(155, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.13);
-  env(g, t, 0.95 * v, 0.004, 0.36); o.connect(g); g.connect(Demo.bus); o.start(t); o.stop(t + 0.42);
-}
-function clap(t) {
-  const c = A.ctx, n = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-  n.buffer = noiseBuffer(); f.type = 'bandpass'; f.frequency.value = 1600; f.Q.value = 0.9;
-  env(g, t, 0.52, 0.003, 0.2); n.connect(f); f.connect(g); g.connect(Demo.bus); n.start(t, Math.random()); n.stop(t + 0.25);
-}
-function hat(t, open) {
-  const c = A.ctx, n = c.createBufferSource(), f = c.createBiquadFilter(), g = c.createGain();
-  n.buffer = noiseBuffer(); f.type = 'highpass'; f.frequency.value = 7200;
-  env(g, t, open ? 0.19 : 0.08, 0.002, open ? 0.15 : 0.04); n.connect(f); f.connect(g); g.connect(Demo.bus); n.start(t, Math.random()); n.stop(t + 0.2);
-}
-function bass(t, m, dur) {
-  const c = A.ctx, o = c.createOscillator(), f = c.createBiquadFilter(), g = c.createGain();
-  o.type = 'sawtooth'; o.frequency.value = mtof(m);
-  f.type = 'lowpass'; f.Q.value = 5.5; f.frequency.setValueAtTime(880, t); f.frequency.exponentialRampToValueAtTime(135, t + dur);
-  env(g, t, 0.32, 0.006, dur); o.connect(f); f.connect(g); g.connect(Demo.bus); o.start(t); o.stop(t + dur + 0.05);
-}
-function pad(t, notes, dur) {
-  const c = A.ctx, f = c.createBiquadFilter(), g = c.createGain();
-  f.type = 'lowpass'; f.frequency.value = 1400; f.Q.value = 0.7;
-  g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(0.11, t + dur * 0.25); g.gain.linearRampToValueAtTime(0.0001, t + dur);
-  f.connect(g); g.connect(Demo.bus);
-  notes.forEach(m => [-7, 7].forEach(cents => {
-    const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(m); o.detune.value = cents;
-    const og = c.createGain(); og.gain.value = 0.12; o.connect(og); og.connect(f); o.start(t); o.stop(t + dur + 0.05);
-  }));
-}
-function arp(t, m, dur) {
-  const c = A.ctx, o = c.createOscillator(), g = c.createGain();
-  o.type = 'triangle'; o.frequency.value = mtof(m);
-  env(g, t, 0.09, 0.004, dur); o.connect(g); g.connect(Demo.bus); o.start(t); o.stop(t + dur + 0.05);
-}
-
-/* ── Interactive Noether Harmonic Chime Synth (Playable via Keys A–K or Double-Click on Orb) ── */
+/* ── Interactive Noether Harmonic Chime Synth (Playable via Keys A–L or Double-Click on Orb) ── */
 function playHarmonicChime(midiNote, lOrder, mOrder) {
   const c = ensureAudio();
   const now = c.currentTime;
@@ -1947,24 +1684,24 @@ function playHarmonicChime(midiNote, lOrder, mOrder) {
 
   if (A.src === 'none') {
     A.src = 'chime';
-    $('#srcLabel').textContent = `Interactive Quantum Chime · f₀=${Math.round(f0)}Hz · Y(ℓ=${Math.round(lOrder)}, m=${Math.round(mOrder)})`;
+    if ($('#srcLabel')) $('#srcLabel').textContent = `Quantum Chime · f₀=${Math.round(f0)}Hz · Y(ℓ=${Math.round(lOrder)}, m=${Math.round(mOrder)})`;
     setTimeout(() => { if (A.src === 'chime') A.src = 'none'; }, 1500);
   }
   fireBeat(0.75, false, true);
 }
 
-/* ── Active Quantum Thinking Pulse Synth (132 BPM Neural Symmetry Search for Stage 2 of Agent Turn) ── */
+/* ── Active Quantum Thinking Pulse Synth (132 BPM Neural Symmetry Search while AI Synthesizes) ── */
 let ThinkSynth = null;
 function startThinkingSynth(dur = 2.7) {
   ensureAudio(); stopThinkingSynth();
   const c = A.ctx;
-  const bus = c.createGain(); bus.gain.value = 0.48; bus.connect(A.master);
+  const bus = c.createGain(); bus.gain.value = 0.42; bus.connect(A.master);
   const notes = [64, 69, 71, 76, 78, 81, 76, 71];
   let stepIdx = 0;
   let nextT = c.currentTime + 0.04;
   const endAt = c.currentTime + dur;
   const bpm = 132;
-  const stepDur = 60 / bpm / 2; // 8th-note crystalline neural pulses
+  const stepDur = 60 / bpm / 2;
 
   const timer = setInterval(() => {
     if (!ThinkSynth) return;
@@ -1976,17 +1713,16 @@ function startThinkingSynth(dur = 2.7) {
       const g = c.createGain();
       o.type = stepIdx % 2 === 0 ? 'sine' : 'triangle';
       o.frequency.setValueAtTime(mtof(note), t);
-      env(g, t, 0.22, 0.004, stepDur * 1.15);
+      env(g, t, 0.20, 0.004, stepDur * 1.15);
       o.connect(g); g.connect(bus);
       o.start(t); o.stop(t + stepDur * 1.25);
 
-      // Subtle low quantum sonar throb on each beat
       if (stepIdx % 2 === 0) {
         const sub = c.createOscillator(), sg = c.createGain();
         sub.type = 'sine';
         sub.frequency.setValueAtTime(110, t);
         sub.frequency.exponentialRampToValueAtTime(55, t + 0.12);
-        env(sg, t, 0.34, 0.004, 0.18);
+        env(sg, t, 0.30, 0.004, 0.18);
         sub.connect(sg); sg.connect(bus);
         sub.start(t); sub.stop(t + 0.22);
         const sNow = stepIdx;
@@ -2011,87 +1747,8 @@ function stopThinkingSynth() {
   }
 }
 
-/* ── Real Neural & Gemini 2.5 Flash Conversational Voice Engine (Kore & Puck) ── */
-const NEURAL_TURN_BANK = [
-  {
-    id: 'turn_01',
-    title: 'I · Executive Pitch: Why Noether Quantum Resonance?',
-    branch: 'orb',
-    palette: 'wada_auto',
-    user_speaker: 'Puck · Executive Client',
-    user_text: 'Kore, we are demoing Noether Resonance Core to a client right now. What makes this fundamentally different from a traditional audio visualizer?',
-    user_audio: './audio/turns/turn_01_user.mp3',
-    user_duration: 8.26,
-    thinking_summary: "Mapping Emmy Noether's 1918 continuous symmetry theorem to real-time spherical harmonic Y(ℓ,m) acoustic fields...",
-    ai_speaker: 'Kore · Gemini 2.5 Voice',
-    ai_text: "Traditional visualizers just map raw volume bars to arbitrary shapes. Here, every 3D undulation is governed by Emmy Noether's theorem: continuous rotational and time symmetries conserve angular momentum and Hamiltonian energy, giving the AI a physical, living presence that breathes naturally with your voice and music.",
-    ai_audio: './audio/turns/turn_01_ai.mp3',
-    ai_duration: 20.90
-  },
-  {
-    id: 'turn_02',
-    title: 'II · Conversational Formants & Reasoning States',
-    branch: 'orb',
-    palette: 'wada_142',
-    user_speaker: 'Puck · Systems Lead',
-    user_text: 'How does the 3D geometry adapt as we move from listening to my voice, into AI reasoning, and then into your spoken response?',
-    user_audio: './audio/turns/turn_02_user.mp3',
-    user_duration: 8.62,
-    thinking_summary: 'Aligning vocal formant frequencies F1 and F2 with Hopf fibration torsion and 132 BPM neural search...',
-    ai_speaker: 'Kore · Gemini 2.5 Voice',
-    ai_text: 'While you speak during the Listening phase, our formant tracker locks onto your vocal resonances F1 and F2, drawing the Hopf fibration filaments inward in verdigris teal. During Thinking, a 132 BPM symmetry search excites higher-order harmonics, and when I answer, the field radiates outward in warm Sanzo Wada pigments.',
-    ai_audio: './audio/turns/turn_02_ai.mp3',
-    ai_duration: 21.17
-  },
-  {
-    id: 'turn_03',
-    title: 'III · The 4 Quantum Visualizer Topologies',
-    branch: 'tokamak',
-    palette: 'wada_068',
-    user_speaker: 'Puck · Creative Director',
-    user_text: 'Can you walk us through the four 3D visualizers in the Exploration Tree at the top of the screen?',
-    user_audio: './audio/turns/turn_03_user.mp3',
-    user_duration: 5.98,
-    thinking_summary: 'Traversing the 4-branch Exploration Tree: Eigen-Orb, Clifford Tokamak, Cymatic Horizon, and Spinor Lattice...',
-    ai_speaker: 'Kore · Gemini 2.5 Voice',
-    ai_text: 'Branch One is the Eigen-Orb, a spherical harmonic droplet wrapped in geodesic veins. Branch Two, active now, is the Clifford Tokamak, a toroidal magnetic plasma chamber with Villarceau coils. Branch Three is the Cymatic Horizon with seventy-two crystal monoliths, and Branch Four is the nested SU-2 Spinor Lattice.',
-    ai_audio: './audio/turns/turn_03_ai.mp3',
-    ai_duration: 21.53
-  },
-  {
-    id: 'turn_04',
-    title: 'IV · Live Music & Symplectic PLL Tempo Lock',
-    branch: 'cymatic',
-    palette: 'wada_219',
-    user_speaker: 'Puck · Audio Architect',
-    user_text: 'What happens when we switch from conversational AI voice to live music, microphone input, or system audio?',
-    user_audio: './audio/turns/turn_04_user.mp3',
-    user_duration: 6.70,
-    thinking_summary: 'Synchronizing spectral-flux onset detector, IOI autocorrelation histogram, and Velocity-Verlet Hamiltonian oscillators...',
-    ai_speaker: 'Kore · Gemini 2.5 Voice',
-    ai_text: 'Our modular sound sequencer runs a phase-locked loop onset detector across eighty to one hundred sixty beats per minute. It locks onto the beat and four-bar downbeat, driving second-order symplectic Velocity-Verlet oscillators that keep the 3D standing waves silky-smooth without frame jitter.',
-    ai_audio: './audio/turns/turn_04_ai.mp3',
-    ai_duration: 17.38
-  },
-  {
-    id: 'turn_05',
-    title: 'V · Antigravity CLI & Monorepo Microservices',
-    branch: 'lattice',
-    palette: 'wada_173',
-    user_speaker: 'Puck · Principal Engineer',
-    user_text: 'How does an engineering team integrate these AI services or control the visualizer directly from the Antigravity CLI?',
-    user_audio: './audio/turns/turn_05_user.mp3',
-    user_duration: 8.47,
-    thinking_summary: 'Connecting MCP JSON-RPC 2.0 stdio server, SSE live control bus, and Gemini 2.5 Flash voice microservices...',
-    ai_speaker: 'Kore · Gemini 2.5 Voice',
-    ai_text: 'The monorepo is modularized into dedicated microservices for Gemini 2.5 reasoning, neural voice synthesis, and clock synchronization. Using our Antigravity CLI bridge and MCP server, you can launch the studio, switch 3D topologies, or make any agent speak through the orb from a single command.',
-    ai_audio: './audio/turns/turn_05_ai.mp3',
-    ai_duration: 19.61
-  }
-];
-
-let activeScenarioIdx = 0;
-let V = null; // Active neural voice state: { audioEl, mediaNode, gainNode, rafId, text, words }
+/* ── Real Neural & Gemini 2.5 Flash Conversational Voice Engine ── */
+let V = null; // Active neural voice state: { audioEl, mediaNode, gainNode, rafId, text }
 
 function setVoiceHudCaption(speakerBadge, text, progressRatio = -1) {
   const badgeEl = $('#voiceSpeakerBadge');
@@ -2109,30 +1766,6 @@ function setVoiceHudCaption(speakerBadge, text, progressRatio = -1) {
     const cls = i < activeIdx ? 'w-spoken' : (i === activeIdx ? 'w-active' : 'w-upcoming');
     return `<span class="${cls}">${w}</span>`;
   }).join(' ');
-}
-
-function pcm16Base64ToWavBlobUrl(b64, sampleRate = 24000) {
-  const raw = atob(b64);
-  const numBytes = raw.length;
-  const buffer = new ArrayBuffer(44 + numBytes);
-  const view = new DataView(buffer);
-  const writeStr = (off, s) => { for (let i = 0; i < s.length; i++) view.setUint8(off + i, s.charCodeAt(i)); };
-  writeStr(0, 'RIFF');
-  view.setUint32(4, 36 + numBytes, true);
-  writeStr(8, 'WAVE');
-  writeStr(12, 'fmt ');
-  view.setUint32(16, 16, true);
-  view.setUint16(20, 1, true);
-  view.setUint16(22, 1, true);
-  view.setUint32(24, sampleRate, true);
-  view.setUint32(28, sampleRate * 2, true);
-  view.setUint16(32, 2, true);
-  view.setUint16(34, 16, true);
-  writeStr(36, 'data');
-  view.setUint32(40, numBytes, true);
-  const bytes = new Uint8Array(buffer, 44);
-  for (let i = 0; i < numBytes; i++) bytes[i] = raw.charCodeAt(i);
-  return URL.createObjectURL(new Blob([buffer], { type: 'audio/wav' }));
 }
 
 function playNeuralVoiceClip({ srcUrl, text, speakerBadge, fallbackDuration = 8.0 }) {
@@ -2175,9 +1808,8 @@ function playNeuralVoiceClip({ srcUrl, text, speakerBadge, fallbackDuration = 8.
       const prog = clamp(cur / dur, 0, 0.999);
       setVoiceHudCaption(speakerBadge, text, prog);
 
-      // Fire organic syllabic vortex shockwaves when vocal energy peaks
       const nowS = performance.now() / 1000;
-      if (AN.level > 0.22 && nowS - lastPulse > 0.34) {
+      if (AN.level > 0.20 && nowS - lastPulse > 0.32) {
         lastPulse = nowS;
         fireBeat(clamp(AN.level * 0.85, 0.35, 0.82), false, false);
       }
@@ -2205,25 +1837,6 @@ function playNeuralVoiceClip({ srcUrl, text, speakerBadge, fallbackDuration = 8.
   });
 }
 
-function startVoice(kind = 'agent') {
-  const turn = NEURAL_TURN_BANK[activeScenarioIdx % NEURAL_TURN_BANK.length];
-  if (kind === 'user') {
-    playNeuralVoiceClip({
-      srcUrl: turn.user_audio,
-      text: turn.user_text,
-      speakerBadge: `◆ ${turn.user_speaker.toUpperCase()}`,
-      fallbackDuration: turn.user_duration
-    });
-  } else {
-    playNeuralVoiceClip({
-      srcUrl: turn.ai_audio,
-      text: turn.ai_text,
-      speakerBadge: `✦ ${turn.ai_speaker.toUpperCase()}`,
-      fallbackDuration: turn.ai_duration
-    });
-  }
-}
-
 function stopVoice() {
   if (!V) return;
   const v = V;
@@ -2239,22 +1852,57 @@ function stopVoice() {
   } catch (_) {}
 }
 
-/* ── Live File, Microphone (with Device Picker) & System/Tab Audio Capture ── */
+/* ── Live File, Microphone / Loopback & System / Chrome Tab Audio Capture ── */
 function playFile(file) {
   if (!file) return;
   ensureAudio(); stopAll();
-  const el = new Audio(); el.src = URL.createObjectURL(file); el.loop = true;
-  A.media = el; A.mediaNode = A.ctx.createMediaElementSource(el); A.mediaNode.connect(A.master);
-  el.play().catch(() => toast('Browser paused autoplay. Click Audio file or press Space.'));
-  setSource('file', 'File · ' + file.name);
-  if (stateName === 'idle') setState('speaking');
+  const el = new Audio();
+  el.src = URL.createObjectURL(file);
+  el.loop = true;
+  A.media = el;
+  A.mediaNode = A.ctx.createMediaElementSource(el);
+  A.mediaNode.connect(A.master);
+  el.play().catch(() => toast('Browser paused autoplay. Click Play or press Space.'));
+  setSource('file', 'Audio File · ' + file.name);
+  setState('speaking');
 }
 
 function attachStream(stream, kind, label) {
-  ensureAudio(); stopAll();
+  ensureAudio();
+  stopAll();
+  if (A.ctx.state === 'suspended') A.ctx.resume().catch(() => {});
+
   A.stream = stream;
+
+  // CRITICAL CHROMIUM FIX (Bug #933677):
+  // In Chrome/Edge/Brave/Arc, a MediaStream from getDisplayMedia() (Tab/System Audio) will NOT pump
+  // decoded audio samples into WebAudio's createMediaStreamSource() unless it is also attached to
+  // a playing, muted HTMLAudioElement.
+  try {
+    const sink = new Audio();
+    sink.muted = true;
+    sink.autoplay = true;
+    sink.playsInline = true;
+    sink.srcObject = stream;
+    sink.play().catch(() => {});
+    A.streamSink = sink;
+  } catch (_) {}
+
   A.streamNode = A.ctx.createMediaStreamSource(stream);
   A.streamNode.connect(A.analyser);
+
+  const audioTracks = stream.getAudioTracks();
+  if (audioTracks.length > 0) {
+    audioTracks[0].enabled = true;
+    audioTracks[0].onended = () => {
+      if (A.stream === stream) {
+        stopAll();
+        setState('idle');
+        toast('Live audio stream ended.');
+      }
+    };
+  }
+
   setSource(kind, label);
   setState(kind === 'sys' ? 'speaking' : 'listening');
 }
@@ -2265,12 +1913,15 @@ async function refreshAudioDevices() {
     const devs = await navigator.mediaDevices.enumerateDevices();
     const inputs = devs.filter(d => d.kind === 'audioinput');
     const sel = $('#micDeviceSelect');
-    if (inputs.length > 1) {
-      sel.innerHTML = inputs.map((d, i) => `<option value="${d.deviceId}">${d.label || ('Audio Input ' + (i + 1))}</option>`).join('');
-      sel.style.display = 'inline-block';
+    if (sel && inputs.length > 0) {
+      const prevVal = sel.value;
+      sel.innerHTML = `<option value="">Default Audio Input (Mic / BlackHole / Loopback)</option>` +
+        inputs.map((d, i) => `<option value="${d.deviceId}">${d.label || ('Audio Input ' + (i + 1))}</option>`).join('');
+      if (prevVal && inputs.some(d => d.deviceId === prevVal)) sel.value = prevVal;
     }
   } catch (e) {}
 }
+refreshAudioDevices();
 
 async function startMic(preferredDeviceId) {
   ensureAudio();
@@ -2279,15 +1930,17 @@ async function startMic(preferredDeviceId) {
     const audioConstraint = {
       echoCancellation: false,
       noiseSuppression: false,
-      autoGainControl: false
+      autoGainControl: false,
+      channelCount: { ideal: 2 }
     };
     if (preferredDeviceId) audioConstraint.deviceId = { exact: preferredDeviceId };
-    const s = await navigator.mediaDevices.getUserMedia({ audio: audioConstraint });
-    const trackLabel = (s.getAudioTracks()[0] && s.getAudioTracks()[0].label) || 'Live Input';
-    attachStream(s, 'mic', 'Mic · ' + trackLabel);
+    const s = await navigator.mediaDevices.getUserMedia({ audio: audioConstraint, video: false });
+    const trackLabel = (s.getAudioTracks()[0] && s.getAudioTracks()[0].label) || 'Live Audio Input';
+    attachStream(s, 'mic', 'Live Input · ' + trackLabel);
     refreshAudioDevices();
+    toast(`Connected live audio input: ${trackLabel}`);
   } catch (e) {
-    toast('Microphone access requires http://localhost or HTTPS. Open http://localhost:3333 or https://noether-resonance-core.vercel.app.');
+    toast('Microphone / Loopback access requires permission on http://localhost or HTTPS.');
   }
 }
 
@@ -2295,103 +1948,83 @@ async function startSystemAudio() {
   ensureAudio();
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) throw new Error('unsupported');
+    // Request Tab or System Audio.
+    // IMPORTANT: Keep a lightweight video constraint AND DO NOT stop the video track while capturing!
+    // In Chromium, stopping the video track returned by getDisplayMedia immediately kills the audio capture session.
+    // Also set suppressLocalAudioPlayback: false so music in the other Chrome tab keeps playing out of your speakers.
     const s = await navigator.mediaDevices.getDisplayMedia({
-      video: true,
-      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false }
+      video: {
+        width: { ideal: 320, max: 640 },
+        height: { ideal: 180, max: 360 },
+        frameRate: { ideal: 5, max: 15 }
+      },
+      audio: {
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        suppressLocalAudioPlayback: false,
+        channelCount: { ideal: 2 },
+        sampleRate: { ideal: 48000 }
+      },
+      systemAudio: 'include',
+      preferCurrentTab: false,
+      selfBrowserSurface: 'exclude'
     });
+
     const audioTracks = s.getAudioTracks();
-    s.getVideoTracks().forEach(vt => vt.stop());
     if (!audioTracks.length) {
-      toast('No audio track shared. Make sure to check "Share tab/system audio" in the browser picker.');
+      // User forgot to toggle "Also share tab audio" / "Share system audio" in the picker
+      s.getTracks().forEach(t => t.stop());
+      toast('No audio track detected! Please click "System / Tab Audio" again, pick your music tab or screen, and make sure "Also share tab audio" is switched ON.');
       return;
     }
-    const audioOnlyStream = new MediaStream(audioTracks);
-    attachStream(audioOnlyStream, 'sys', 'System / Tab Audio · ' + (audioTracks[0].label || 'Live Stream'));
+
+    const rawLabel = audioTracks[0].label || (s.getVideoTracks()[0] && s.getVideoTracks()[0].label) || 'Live Music Stream';
+    attachStream(s, 'sys', 'System / Tab Audio · ' + rawLabel);
+    toast(`Listening to live System / Tab Audio (${rawLabel}). Put in Fullscreen to enjoy!`);
   } catch (e) {
-    toast('To capture System/Tab audio, select a browser tab or screen and toggle "Share audio" on.');
+    if (e && e.name === 'NotAllowedError') {
+      toast('Tab / System Audio selection cancelled. Click "🔊 System / Tab Audio", select the Chrome tab playing your music, and keep "Also share tab audio" ON.');
+    } else {
+      toast('To capture Chrome Tab or System Audio, select a tab or screen and ensure "Share audio" is enabled.');
+    }
   }
 }
 
-/* ── Modular Conversational Agent Turn Sequencer (Real Neural Voice: Puck -> Gemini 2.5 Thinking -> Kore) ── */
+/* ── Live Conversational Agent Turn Sequencer (Gemini 2.5 Flash + Neural Voice) ── */
 let turnId = 0;
-let activeCustomTurn = null;
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
-async function agentTurn(startStage = 'listening', customTurnObj = undefined) {
+async function playDirectAiTurn(turnObj) {
+  if (!turnObj) return;
   ensureAudio();
   stopAll(true);
   const id = ++turnId;
   turnActive = true;
   const nowSec = () => performance.now() / 1000;
 
-  if (customTurnObj !== undefined) {
-    activeCustomTurn = customTurnObj;
+  if (turnObj.branch && ['orb', 'tokamak', 'cymatic', 'lattice', 'calabi'].includes(turnObj.branch)) {
+    setActiveBranch(turnObj.branch);
   }
-  const turn = activeCustomTurn || NEURAL_TURN_BANK[activeScenarioIdx % NEURAL_TURN_BANK.length];
-  if ($('#turnScenarioSelect') && !activeCustomTurn) {
-    $('#turnScenarioSelect').value = String(activeScenarioIdx % NEURAL_TURN_BANK.length);
-  }
-
-  if (turn.branch && ['orb', 'tokamak', 'cymatic', 'lattice'].includes(turn.branch)) {
-    setActiveBranch(turn.branch);
-  }
-
-  if (startStage === 'listening') {
-    const uDur = turn.user_duration || 7.5;
-    turnStageStart = nowSec(); turnStageDur = uDur;
-    setState('listening');
-    setSource('voice', `Agent turn (1/3) · ${turn.user_speaker || 'Puck'} speaking`);
-    if (turn.user_audio) {
-      await playNeuralVoiceClip({
-        srcUrl: turn.user_audio,
-        text: turn.user_text,
-        speakerBadge: `◆ ${(turn.user_speaker || 'PUCK · USER').toUpperCase()}`,
-        fallbackDuration: uDur
-      });
-    } else {
-      setVoiceHudCaption(`◆ ${(turn.user_speaker || 'PUCK · USER').toUpperCase()}`, turn.user_text, 0.5);
-      await wait(2400);
-    }
-    if (id !== turnId) return;
-  }
-
-  if (startStage === 'listening' || startStage === 'thinking') {
-    stopVoice();
-    const thinkDur = turn.thinking_duration || 2.4;
-    turnStageStart = nowSec(); turnStageDur = thinkDur;
-    setState('thinking');
-    setSource('thinking', 'Agent turn (2/3) · Gemini 2.5 Flash quantum symmetry search (132 BPM)');
-    setVoiceHudCaption('❖ GEMINI 2.5 FLASH · REASONING', turn.thinking_summary || 'Synthesizing harmonic response across Noether symmetry invariants...', -1);
-    startThinkingSynth(thinkDur - 0.1);
-    await wait(thinkDur * 1000);
-    if (id !== turnId) return;
-  }
-
-  if (startStage === 'listening' || startStage === 'thinking' || startStage === 'speaking') {
-    stopThinkingSynth();
-    const aDur = turn.ai_duration || 18.0;
-    turnStageStart = nowSec(); turnStageDur = aDur;
-    setState('speaking');
-    setSource('voice', `Agent turn (3/3) · ${turn.ai_speaker || 'Kore · Gemini 2.5 Voice'}`);
-    await playNeuralVoiceClip({
-      srcUrl: turn.ai_audio,
-      text: turn.ai_text,
-      speakerBadge: `✦ ${(turn.ai_speaker || 'KORE · GEMINI 2.5 VOICE').toUpperCase()}`,
-      fallbackDuration: aDur
-    });
-    if (id !== turnId) return;
-  }
-
+  const aDur = turnObj.ai_duration || 12.0;
+  turnStageStart = nowSec(); turnStageDur = aDur;
+  setState('speaking');
+  setSource('voice', `${turnObj.ai_speaker || 'Noether · Live AI'}`);
+  await playNeuralVoiceClip({
+    srcUrl: turnObj.ai_audio,
+    text: turnObj.ai_text,
+    speakerBadge: `✦ ${(turnObj.ai_speaker || 'NOETHER · LIVE AI').toUpperCase()}`,
+    fallbackDuration: aDur
+  });
+  if (id !== turnId) return;
   stopVoice();
-  stopThinkingSynth();
   turnActive = false;
-  setSource('none', 'Agent turn complete · Click Run agent turn for next scenario, or Ask Kore');
   setState('idle');
+  setSource('none', 'Ready · Click System / Tab Audio or Talk to Noether');
   updateTurnTimelineUI('idle', 0, 'Complete');
-  setVoiceHudCaption('✦ KORE & PUCK · READY', `Completed "${turn.title || 'Conversational Turn'}". Select another scenario, click Run agent turn, or ask a custom question below.`, -1);
 }
 
-async function runCustomAiTurn(userPrompt, fromVoiceMic = false) {
+async function runCustomAiTurn(userPrompt) {
   const cleanPrompt = String(userPrompt || '').trim();
   if (!cleanPrompt) return;
 
@@ -2400,6 +2033,11 @@ async function runCustomAiTurn(userPrompt, fromVoiceMic = false) {
   const id = ++turnId;
   turnActive = true;
 
+  // Show Voice HUD when user interacts with Noether AI
+  const voiceHud = $('#jarvisVoiceHud');
+  if (voiceHud) voiceHud.classList.add('visible');
+  if ($('#bVoiceHudToggle')) $('#bVoiceHudToggle').setAttribute('aria-pressed', 'true');
+
   const speaker = ($('#jarvisVoiceSelect') && $('#jarvisVoiceSelect').value) || 'Kore';
   const userLineEl = $('#jarvisUserLine');
   if (userLineEl) {
@@ -2407,10 +2045,9 @@ async function runCustomAiTurn(userPrompt, fromVoiceMic = false) {
     userLineEl.classList.add('show');
   }
 
-  // Enter Thinking state immediately (no delay repeating user's question back)
   setState('thinking');
   setSource('thinking', `Noether Thinking · Synthesizing response (${speaker})`);
-  setVoiceHudCaption('❖ NOETHER · THINKING', `Reasoning across quantum symmetries for: "${cleanPrompt}"...`, -1);
+  setVoiceHudCaption('❖ NOETHER · THINKING', `Synthesizing response for: "${cleanPrompt}"...`, -1);
   startThinkingSynth(12.0);
 
   const savedKey = (localStorage.getItem('NOETHER_GEMINI_API_KEY') || '').trim();
@@ -2435,8 +2072,7 @@ async function runCustomAiTurn(userPrompt, fromVoiceMic = false) {
     jarvisHistory.push({ role: 'assistant', content: data.aiResponse });
     if (jarvisHistory.length > 16) jarvisHistory = jarvisHistory.slice(-16);
 
-    // Apply AI-recommended 3D topology, Sanzo Wada palette, and eigenmode if specified
-    if (data.recommendedBranch && ['orb', 'tokamak', 'cymatic', 'lattice'].includes(data.recommendedBranch) && data.recommendedBranch !== activeBranch) {
+    if (data.recommendedBranch && ['orb', 'tokamak', 'cymatic', 'lattice', 'calabi'].includes(data.recommendedBranch) && data.recommendedBranch !== activeBranch) {
       setActiveBranch(data.recommendedBranch);
     }
     if (data.recommendedPalette && (WADA_PALETTES[data.recommendedPalette] || data.recommendedPalette === 'wada_auto')) {
@@ -2466,25 +2102,20 @@ async function runCustomAiTurn(userPrompt, fromVoiceMic = false) {
     stopVoice();
     turnActive = false;
 
-    // If Hands-Free Continuous Voice Session is active, automatically listen for user's next turn
-    if (jarvisContinuousSession && jarvisHandsFree && activeWorkspace === 'jarvis') {
+    if (jarvisContinuousSession && jarvisHandsFree) {
       startJarvisVoiceListen();
       return;
     }
 
     setState('idle');
-    setSource('none', 'Noether Ready · Speak or type your next question');
+    setSource('none', 'Noether Ready · Speak, type a question, or connect System / Tab Audio');
   } catch (err) {
     stopThinkingSynth();
     if (id !== turnId) return;
-    // Fallback to pre-rendered neural response if completely offline
-    const q = cleanPrompt.toLowerCase();
-    if (q.includes('tokamak') || q.includes('tree') || q.includes('topolog')) activeScenarioIdx = 2;
-    else if (q.includes('music') || q.includes('clock') || q.includes('bpm')) activeScenarioIdx = 3;
-    else if (q.includes('cli') || q.includes('antigravity') || q.includes('microservice')) activeScenarioIdx = 4;
-    else if (q.includes('formant') || q.includes('think')) activeScenarioIdx = 1;
-    else activeScenarioIdx = 0;
-    await agentTurn('speaking');
+    turnActive = false;
+    setState('idle');
+    setVoiceHudCaption('✦ NOETHER · OFFLINE NOTICE', 'Could not reach /api/turn voice service. Ensure server is running or configure your Gemini API key in Settings.', -1);
+    toast('Voice API unreachable. Check server connection or API key in Settings.');
   }
 }
 
@@ -3165,11 +2796,12 @@ const barGeo = new THREE.BoxGeometry(1, 1, 1);
 barGeo.translate(0, 0.5, 0);
 const bars = new THREE.InstancedMesh(
   barGeo,
-  new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.94, blending: THREE.AdditiveBlending, depthWrite: false }),
+  new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.94, blending: THREE.NormalBlending, depthWrite: false }),
   NB
 );
 const tmpC = new THREE.Color(), dummy = new THREE.Object3D();
 for (let i = 0; i < NB; i++) bars.setColorAt(i, tmpC.setRGB(0.5, 0.6, 0.9));
+bars.instanceColor.needsUpdate = true;
 world.add(bars);
 const barVal = new Float32Array(HALF);
 const edges = Array.from({ length: HALF + 1 }, (_, k) => 32 * Math.pow(14000 / 32, k / HALF));
@@ -3470,10 +3102,11 @@ branchTokamakGroup.add(tokamakCoils);
 
 // 72 Instanced 3D Toroidal Confinement Spectrum Ribs
 const tokRibGeo = new THREE.BoxGeometry(0.028, 0.12, 0.028);
-const tokRibMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false });
+const tokRibMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.94, blending: THREE.NormalBlending, depthWrite: false });
 const tokamakRibs = new THREE.InstancedMesh(tokRibGeo, tokRibMat, NB);
 tokamakRibs.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 for (let i = 0; i < NB; i++) tokamakRibs.setColorAt(i, new THREE.Color(1, 1, 1));
+tokamakRibs.instanceColor.needsUpdate = true;
 branchTokamakGroup.add(tokamakRibs);
 
 /* ── Branch III: CYMATIC HORIZON (Dual 3D Bessel-Chladni Standing-Wave Horizon Membranes + 72 Crystal Monoliths) ── */
@@ -3547,10 +3180,11 @@ branchCymaticGroup.add(cymaticCeiling);
 
 // 72 Instanced 3D Harmonic Crystal Monoliths rising between the Cymatic Horizons
 const cymPillarGeo = new THREE.CylinderGeometry(0.018, 0.026, 1.0, 6);
-const cymPillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false });
+const cymPillarMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.94, blending: THREE.NormalBlending, depthWrite: false });
 const cymaticPillars = new THREE.InstancedMesh(cymPillarGeo, cymPillarMat, NB);
 cymaticPillars.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 for (let i = 0; i < NB; i++) cymaticPillars.setColorAt(i, new THREE.Color(1, 1, 1));
+cymaticPillars.instanceColor.needsUpdate = true;
 branchCymaticGroup.add(cymaticPillars);
 
 // Central Suspended Quantum Singularity + 3 Gyroscopic Nodal Rings
@@ -3609,7 +3243,7 @@ branchLatticeGroup.add(latticeRibbons);
 
 // 72 Radial 3D Fibonacci-Sphere Spectrum Spires
 const spireGeo = new THREE.ConeGeometry(0.024, 1.0, 5);
-const spireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.92, blending: THREE.AdditiveBlending, depthWrite: false });
+const spireMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.94, blending: THREE.NormalBlending, depthWrite: false });
 const latticeSpires = new THREE.InstancedMesh(spireGeo, spireMat, NB);
 latticeSpires.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
 const spireDirs = [];
@@ -3622,19 +3256,76 @@ for (let i = 0; i < NB; i++) {
   spireDirs.push(new THREE.Vector3(Math.cos(th) * r, y, Math.sin(th) * r).normalize());
   latticeSpires.setColorAt(i, new THREE.Color(1, 1, 1));
 }
+latticeSpires.instanceColor.needsUpdate = true;
 branchLatticeGroup.add(latticeSpires);
 
+/* ── Branch V: CALABI-YAU 6D MANIFOLD (Intersecting Higher-Dimensional Kahler Sheets + Harmonic Core + 144 Spectrum Prisms) ── */
+const branchCalabiGroup = new THREE.Group();
+branchCalabiGroup.visible = false;
+world.add(branchCalabiGroup);
+
+const calabiMat = new THREE.ShaderMaterial({
+  uniforms: tokamakU,
+  vertexShader: tokamakVert,
+  fragmentShader: tokamakFrag,
+  transparent: true
+});
+
+const calabiSheetA = new THREE.Mesh(new THREE.TorusKnotGeometry(0.86, 0.21, 180, 36, 3, 5), calabiMat);
+const calabiSheetB = new THREE.Mesh(new THREE.TorusKnotGeometry(0.68, 0.16, 150, 32, 2, 3), calabiMat);
+calabiSheetB.rotation.set(Math.PI / 3, Math.PI / 4, 0);
+const calabiCore = new THREE.Mesh(new THREE.IcosahedronGeometry(0.38, 4), orb.material);
+branchCalabiGroup.add(calabiSheetA);
+branchCalabiGroup.add(calabiSheetB);
+branchCalabiGroup.add(calabiCore);
+
+const calabiFibers = new THREE.Group();
+for (let i = 0; i < 20; i++) {
+  const geo = new THREE.BufferGeometry();
+  const pts = 128;
+  const pos = new Float32Array(pts * 3);
+  const arc = new Float32Array(pts);
+  const fid = new Float32Array(pts);
+  const etaArr = new Float32Array(pts);
+  for (let j = 0; j < pts; j++) {
+    const t = (j / pts) * Math.PI * 2;
+    const p = 3, q = 5;
+    const r = 0.92 + 0.28 * Math.cos(q * t + i * 0.31);
+    pos[j * 3]     = r * Math.cos(p * t + i * 0.2);
+    pos[j * 3 + 1] = r * Math.sin(p * t + i * 0.2);
+    pos[j * 3 + 2] = 0.42 * Math.sin(q * t + i * 0.31);
+    arc[j] = j / pts;
+    fid[j] = i;
+    etaArr[j] = 0.52 + (i % 4) * 0.16;
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('aArc', new THREE.BufferAttribute(arc, 1));
+  geo.setAttribute('aFibId', new THREE.BufferAttribute(fid, 1));
+  geo.setAttribute('aEta', new THREE.BufferAttribute(etaArr, 1));
+  calabiFibers.add(new THREE.LineLoop(geo, orbitalFibMat));
+}
+branchCalabiGroup.add(calabiFibers);
+
+const calabiPrismGeo = new THREE.BoxGeometry(0.024, 0.14, 0.024);
+const calabiPrismMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.94, blending: THREE.NormalBlending, depthWrite: false });
+const calabiPrisms = new THREE.InstancedMesh(calabiPrismGeo, calabiPrismMat, NB);
+calabiPrisms.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+for (let i = 0; i < NB; i++) calabiPrisms.setColorAt(i, new THREE.Color(1, 1, 1));
+calabiPrisms.instanceColor.needsUpdate = true;
+branchCalabiGroup.add(calabiPrisms);
+
 function setActiveBranch(branchId) {
-  if (!['orb', 'tokamak', 'cymatic', 'lattice'].includes(branchId)) return;
+  if (!['orb', 'tokamak', 'cymatic', 'lattice', 'calabi'].includes(branchId)) return;
   activeBranch = branchId;
   $$('[data-branch]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.branch === branchId)));
   const names = {
     orb: 'I · Eigen-Orb (Spherical Harmonics Yℓm + Hopf Fibroids)',
     tokamak: 'II · Clifford Tokamak (Toroidal Magnetic Confinement + Villarceau Coils)',
     cymatic: 'III · Cymatic Horizon (Dual Standing-Wave Membranes + 72 Crystal Monoliths)',
-    lattice: 'IV · Spinor Lattice (Nested SU(2) Geodesic Shells + Fibonacci Spires)'
+    lattice: 'IV · Spinor Lattice (Nested SU(2) Geodesic Shells + Fibonacci Spires)',
+    calabi: 'V · Calabi-Yau 6D (Higher-Dimensional Kähler Manifold + Harmonic Singularity)'
   };
-  toast(`Exploration Tree → ${names[branchId]}`);
+  toast(`3D Topology → ${names[branchId]}`);
 }
 
 function toggleTreeCycle(force) {
@@ -3643,13 +3334,12 @@ function toggleTreeCycle(force) {
   if (btn) btn.setAttribute('aria-pressed', String(treeCycleOn));
   clearInterval(treeCycleTimer);
   if (treeCycleOn) {
-    const order = ['orb', 'tokamak', 'cymatic', 'lattice'];
-    if (!Demo.on && !turnActive && A.src === 'none') startDemo();
+    const order = ['orb', 'tokamak', 'cymatic', 'lattice', 'calabi'];
     treeCycleTimer = setInterval(() => {
       const nextIdx = (order.indexOf(activeBranch) + 1) % order.length;
       setActiveBranch(order[nextIdx]);
-    }, 5200);
-    toast('Exploration Tree Auto-Cycle ON · Cycling all 4 3D visualizers every 5.2s');
+    }, 6400);
+    toast('3D Topology Auto-Cycle ON · Cycling all 5 visualizers every 6.4s');
   }
 }
 
@@ -3675,6 +3365,7 @@ resize();
 let last = performance.now() / 1000, tAcc = 0, spinAcc = 0, procPulse = 0, hudTick = 0;
 const gainEl = $('#sens');
 const accentEl = $('#slAccentPop');
+const bgGlowEl = $('#slBgGlow');
 const fibEl = $('#slFibroid');
 const harmEl = $('#slHarmonic');
 const freeEl = $('#slFreeRoom');
@@ -3702,7 +3393,6 @@ function tick() {
   orbU.uMono.value = pTgt.mono || 0;
   tokamakU.uMono.value = pTgt.mono || 0;
 
-  // Live Agent Turn Timeline Progress Bar & Countdown
   if (turnActive && turnStageDur > 0) {
     const elapsed = Math.max(0, now - turnStageStart);
     const prog = clamp(elapsed / turnStageDur, 0, 1);
@@ -3711,12 +3401,13 @@ function tick() {
   }
 
   const live = A.ctx && A.src !== 'none';
-  const gain = parseFloat(gainEl.value);
+  const gain = gainEl ? parseFloat(gainEl.value) : 1.15;
   const accentBoost = accentEl ? parseFloat(accentEl.value) : 1.30;
-  const fibInt = parseFloat(fibEl.value);
-  const userL = parseFloat(harmEl.value);
-  const freeRoom = parseFloat(freeEl.value);
-  const symBreak = parseFloat(symEl.value);
+  const bgGlowVal = bgGlowEl ? parseFloat(bgGlowEl.value) : 0.16;
+  const fibInt = fibEl ? parseFloat(fibEl.value) : 0.85;
+  const userL = harmEl ? parseFloat(harmEl.value) : 3.0;
+  const freeRoom = freeEl ? parseFloat(freeEl.value) : 0.90;
+  const symBreak = symEl ? parseFloat(symEl.value) : 0.18;
 
   const audioTime = live ? A.ctx.currentTime : now;
   if (live) {
@@ -3796,7 +3487,7 @@ function tick() {
   const rotY = spinAcc * 0.14 + orbit.yaw;
   const rotX = Math.sin(now * 0.21) * 0.22 + orbit.pitch;
 
-  // Compute 36-band log-spaced FFT spectrum bins (shared across all 4 Exploration Tree visualizers)
+  // Compute 36-band log-spaced FFT spectrum bins (shared across all 5 visualizers)
   for (let b = 0; b < HALF; b++) {
     let v;
     if (live) {
@@ -3809,11 +3500,12 @@ function tick() {
     barVal[b] += (v - barVal[b]) * (v > barVal[b] ? 0.6 : 0.14);
   }
 
-  // Toggle Exploration Tree Branch & 6-Layer Element Visibility
+  // Toggle 5-Branch Topology & 6-Layer Element Visibility
   const isOrb = activeBranch === 'orb';
   const isTokamak = activeBranch === 'tokamak';
   const isCymatic = activeBranch === 'cymatic';
   const isLattice = activeBranch === 'lattice';
+  const isCalabi = activeBranch === 'calabi';
 
   orb.visible = isOrb && showCoreSurface;
   surfFibGroup.visible = isOrb && showOnBlobFib && fibInt > 0.02;
@@ -3826,6 +3518,7 @@ function tick() {
   branchTokamakGroup.visible = isTokamak;
   branchCymaticGroup.visible = isCymatic;
   branchLatticeGroup.visible = isLattice;
+  branchCalabiGroup.visible = isCalabi;
 
   halo.visible = showCoreSurface;
   halo.scale.setScalar(0.88 * (1.52 + level * 0.32 + beatEnv * 0.14));
@@ -3854,7 +3547,6 @@ function tick() {
       bars.instanceColor.needsUpdate = true;
     }
 
-    // Waveform (Pigment IV Counter-Accent) & Echo (Pigment III Crest Accent) Loops
     if (showWaveLoops) {
       const step = live ? Math.floor(A.time.length / WN) : 0;
       for (let i = 0; i < WN; i++) {
@@ -4002,6 +3694,48 @@ function tick() {
       latticeSpires.instanceMatrix.needsUpdate = true;
       latticeSpires.instanceColor.needsUpdate = true;
     }
+  } else if (isCalabi) {
+    tokamakU.uT.value = tAcc;
+    tokamakU.uBass.value = bass;
+    tokamakU.uMid.value = mid;
+    tokamakU.uTreb.value = treb;
+    tokamakU.uBeat.value = beatEnv * K.amp;
+    tokamakU.uHarmL.value = K.l;
+    tokamakU.uHarmM.value = K.m;
+    tokamakU.uSymBreak.value = symBreak;
+    tokamakU.uFibIntensity.value = fibInt;
+    tokamakU.uAccentBoost.value = accentBoost;
+    tokamakU.uShowSurfFib.value = showOnBlobFib ? 1.0 : 0.0;
+
+    calabiSheetA.visible = showCoreSurface;
+    calabiSheetB.visible = showCoreSurface;
+    calabiCore.visible = showCoreSurface;
+    branchCalabiGroup.rotation.set(0.32 + rotX * 0.8, rotY * 0.95, Math.sin(now * 0.2) * 0.15);
+    calabiSheetA.rotation.set(tAcc * 0.16, -tAcc * 0.22, 0);
+    calabiSheetB.rotation.set(Math.PI / 3 - tAcc * 0.24, Math.PI / 4 + tAcc * 0.19, 0);
+    calabiCore.scale.setScalar(0.88 + bass * 0.26 + beatEnv * 0.16);
+    calabiFibers.visible = showOrbitalFib && fibInt > 0.02;
+    calabiFibers.rotation.set(-tAcc * 0.22, tAcc * 0.31, 0);
+    calabiPrisms.visible = showSpectrumRing;
+
+    if (showSpectrumRing) {
+      const ringR = 1.62 + beatEnv * 0.06;
+      for (let i = 0; i < NB; i++) {
+        const b = i < HALF ? i : NB - 1 - i;
+        const a = (i / NB) * Math.PI * 2 + spinAcc * 0.08;
+        const h = 0.04 + clamp(barVal[b], 0, 1.35) * 0.72;
+        const zOff = 0.24 * Math.sin(a * 3.0 + tAcc * 1.4);
+        dummy.position.set(Math.cos(a) * ringR, Math.sin(a) * ringR, zOff);
+        dummy.rotation.set(0.25 * Math.cos(a * 2.0), 0, a - Math.PI / 2);
+        dummy.scale.set(1.0, 1.0 + h * 4.5, 1.0 + bass * 1.4);
+        dummy.updateMatrix();
+        calabiPrisms.setMatrixAt(i, dummy.matrix);
+        setWada4BarColor(tmpC, b, barVal[b], accentBoost);
+        calabiPrisms.setColorAt(i, tmpC);
+      }
+      calabiPrisms.instanceMatrix.needsUpdate = true;
+      calabiPrisms.instanceColor.needsUpdate = true;
+    }
   }
 
   // Particles
@@ -4023,20 +3757,18 @@ function tick() {
     m.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
   });
 
-  // Non-overlapping vertical shift & scale when Tweak Drawer is open so the entire 3D visual & ring stay 100% unobstructed on both desktop and mobile
-  const drawerOpen = $('#tweakDrawer').classList.contains('open');
+  // Center 3D visual cleanly when Right Settings Drawer is open or closed
+  const drawerOpen = $('#tweakDrawer') && $('#tweakDrawer').classList.contains('open');
   const isMobile = window.innerWidth < 760;
-  const targetY = drawerOpen
-    ? (isMobile ? 1.05 : (camMode === 'macro' ? 0.34 : (camMode === 'iso' ? 0.44 : (camMode === 'orbit' ? 0.40 : 0.38))))
-    : (isMobile ? 0.28 : 0.05);
-  const targetScale = drawerOpen
-    ? (isMobile ? 0.66 : (camMode === 'macro' ? 0.78 : (camMode === 'iso' ? 0.78 : (camMode === 'orbit' ? 0.80 : 0.82))))
-    : (isMobile ? 0.88 : 1.0);
+  const targetX = (drawerOpen && !isMobile) ? -0.44 : 0.0;
+  const targetY = isMobile ? 0.16 : 0.04;
+  const targetScale = drawerOpen ? (isMobile ? 0.78 : 0.90) : (isMobile ? 0.88 : 1.0);
+  world.position.x = lerp(world.position.x, targetX, 0.14);
   world.position.y = lerp(world.position.y, targetY, 0.14);
   world.scale.setScalar(lerp(world.scale.x, targetScale, 0.14));
 
-  // Dynamic Sanzo Wada / Monotone deep atmospheric room tone
-  bgClearColor.setRGB(pal.core.x * 0.22, pal.core.y * 0.22, pal.core.z * 0.26);
+  // Customizable Sanzo Wada / OLED Black background room glow (#slBgGlow: 0.00 = Pure Black -> 0.40 = Deep Wada Room Glow)
+  bgClearColor.setRGB(pal.core.x * bgGlowVal, pal.core.y * bgGlowVal, pal.core.z * (bgGlowVal * 1.16));
   renderer.setClearColor(bgClearColor, 1);
 
   // 4-Mode 3D Camera Choreography + Mouse-Wheel Zoom
@@ -4051,18 +3783,16 @@ function tick() {
     camX += 1.85;
     camY += 1.15;
     camZ = baseZ * 0.96;
-    lookY = drawerOpen ? -0.24 : 0.0;
   } else if (camMode === 'orbit') {
     const orbAng = now * 0.34;
     camX = Math.sin(orbAng) * baseZ * 0.56;
     camY = 0.62 * Math.sin(orbAng * 0.65);
     camZ = Math.max(baseZ * 0.88, Math.cos(orbAng) * baseZ * 0.98);
-    lookY = drawerOpen ? -0.22 : 0.0;
   } else if (camMode === 'macro') {
     camX = Math.sin(now * 0.18) * 0.45 * sway;
     camY = 0.24 + Math.cos(now * 0.15) * 0.18 * sway;
     camZ = Math.max(3.65, baseZ * 0.72 - punch * 0.10);
-    lookY = drawerOpen ? 0.06 : 0.05;
+    lookY = 0.05;
   }
   camera.position.set(camX, camY, camZ);
   camera.lookAt(0, lookY, 0);
@@ -4082,24 +3812,24 @@ function tick() {
   }
 
   // Update HUD Readouts, Slider Value Badges, Audio Scrubber & Conserved Quantum Telemetry
-  $('#pip').style.transform = `scale(${1 + beatEnv * 0.7})`;
+  if ($('#pip')) $('#pip').style.transform = `scale(${1 + beatEnv * 0.7})`;
   if (++hudTick % 4 === 0) {
-    $('#bpm').textContent = AN.locked ? Math.round(AN.bpm) : '—';
+    if ($('#bpm')) $('#bpm').textContent = AN.locked ? Math.round(AN.bpm) : '—';
     const lock = $('#lock');
     const isVoice = (A.src === 'voice' || A.src === 'mic');
-    const lt = !live ? 'Harmonic' : AN.locked ? 'Locked' : (isVoice ? `Voice · F1 ${Math.round(AN.formantF1)}Hz` : 'Searching');
-    if (lock.textContent !== lt) { lock.textContent = lt; lock.dataset.on = AN.locked ? '1' : '0'; }
-    meterEls.forEach((el, i) => el.style.width = (clamp([bass, mid, treb][i], 0, 1) * 100).toFixed(1) + '%');
+    const lt = !live ? 'Harmonic' : AN.locked ? 'Locked' : (isVoice ? `Voice · F1 ${Math.round(AN.formantF1)}Hz` : 'Live');
+    if (lock && lock.textContent !== lt) { lock.textContent = lt; lock.dataset.on = AN.locked ? '1' : '0'; }
+    meterEls.forEach((el, i) => { if (el) el.style.width = (clamp([bass, mid, treb][i], 0, 1) * 100).toFixed(1) + '%'; });
     if (!AN.locked) $$('#bar i').forEach(el => el.classList.remove('on'));
-    qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
+    if (qTelemEl) qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
 
-    // Live Tabular-Numeral Slider Readout Badges & 2D XY Pad Sync
     if ($('#valAccent')) $('#valAccent').textContent = accentBoost.toFixed(2);
-    $('#valFib').textContent = fibInt.toFixed(2);
-    $('#valHarm').textContent = userL.toFixed(1);
-    $('#valFree').textContent = freeRoom.toFixed(2);
-    $('#valSym').textContent = symBreak.toFixed(2);
-    $('#valGain').textContent = gain.toFixed(2);
+    if ($('#valBgGlow')) $('#valBgGlow').textContent = bgGlowVal.toFixed(2);
+    if ($('#valFib')) $('#valFib').textContent = fibInt.toFixed(2);
+    if ($('#valHarm')) $('#valHarm').textContent = userL.toFixed(1);
+    if ($('#valFree')) $('#valFree').textContent = freeRoom.toFixed(2);
+    if ($('#valSym')) $('#valSym').textContent = symBreak.toFixed(2);
+    if ($('#valGain')) $('#valGain').textContent = gain.toFixed(2);
     if ($('#xyReadout')) $('#xyReadout').textContent = `l=${userL.toFixed(1)} · ε=${symBreak.toFixed(2)}`;
     if ($('#xyPuck') && !xyDragging) {
       const xPct = clamp(((userL - 2.0) / 5.0) * 100, 6, 94);
@@ -4110,9 +3840,9 @@ function tick() {
 
     if (A.src === 'file' && A.media && A.media.duration) {
       const cur = A.media.currentTime || 0, dur = A.media.duration || 1;
-      $('#mediaSeek').value = String(Math.round((cur / dur) * 1000));
+      if ($('#mediaSeek')) $('#mediaSeek').value = String(Math.round((cur / dur) * 1000));
       const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
-      $('#mediaTime').textContent = `${fmt(cur)} / ${fmt(dur)}`;
+      if ($('#mediaTime')) $('#mediaTime').textContent = `${fmt(cur)} / ${fmt(dur)}`;
     }
   }
 }
@@ -4130,12 +3860,6 @@ function stepMicVad(dt, lvl) {
       if (VAD.silenceTime > 1.25) {
         VAD.speakingTime = 0;
         VAD.silenceTime = 0;
-        // If in Jarvis workspace and SpeechRecognition hasn't already triggered a turn, run a conversational turn
-        if (activeWorkspace === 'jarvis' && !turnActive && !jarvisRecognition) {
-          const typed = ($('#aiPromptInput') && $('#aiPromptInput').value.trim()) || '';
-          runCustomAiTurn(typed || 'Respond to my live voice check at the Summit and shift the quantum topology.');
-          return;
-        }
         VAD.phase = 'think';
         VAD.phaseTimer = 1.4;
         setState('thinking');
@@ -4158,45 +3882,7 @@ function stepMicVad(dt, lvl) {
   }
 }
 
-[orb, halo, bars, wave, waveEcho, points, tokamakTorus, zPinchMesh, tokamakRibs, cymaticFloor, cymaticCeiling, cymaticPillars, cymCoreSphere, latticeInnerCore, latticeMidShell, latticeOuterShell, latticeSpires].forEach(o => o.frustumCulled = false);
-
-/* ───────────────────────── Curated Showcase Auto-Director & Scene Presets ───────────────────────── */
-function applyShowcaseScene(idx) {
-  const sc = SHOWCASE_SCENES[idx % SHOWCASE_SCENES.length];
-  const branches = ['orb', 'tokamak', 'cymatic', 'lattice', 'orb'];
-  setActiveBranch(branches[idx % branches.length]);
-  visMode = sc.mode;
-  $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode)));
-  paletteMode = sc.pal;
-  customWadaOverride = null;
-  $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pal === paletteMode)));
-  applyAccentColor();
-  camMode = sc.cam;
-  $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === camMode)));
-  harmEl.value = String(sc.l);
-  freeEl.value = String(sc.free);
-  symEl.value = String(sc.eps);
-  setState(sc.state);
-  if (activeTrackIdx !== sc.trk || !Demo.on) {
-    activeTrackIdx = sc.trk;
-    if ($('#trackSelect')) $('#trackSelect').value = String(activeTrackIdx);
-    startDemo();
-  }
-  $('#srcLabel').textContent = sc.name;
-}
-
-function toggleShowcase(forceState) {
-  showcaseOn = typeof forceState === 'boolean' ? forceState : !showcaseOn;
-  if ($('#bShowcase')) $('#bShowcase').setAttribute('aria-pressed', String(showcaseOn));
-  clearInterval(showcaseTimer);
-  if (showcaseOn) {
-    applyShowcaseScene(showcaseIdx);
-    showcaseTimer = setInterval(() => {
-      showcaseIdx = (showcaseIdx + 1) % SHOWCASE_SCENES.length;
-      applyShowcaseScene(showcaseIdx);
-    }, 7500);
-  }
-}
+[orb, halo, bars, wave, waveEcho, points, tokamakTorus, zPinchMesh, tokamakRibs, cymaticFloor, cymaticCeiling, cymaticPillars, cymCoreSphere, latticeInnerCore, latticeMidShell, latticeOuterShell, latticeSpires, calabiSheetA, calabiSheetB, calabiCore, calabiPrisms].forEach(o => o.frustumCulled = false);
 
 /* ───────────────────────── High-Res PNG Snapshot & 60fps WebM Video/Audio Recorder ───────────────────────── */
 function downloadPngSnapshot() {
@@ -4214,8 +3900,10 @@ function toggleVideoRecord() {
   const btn = $('#bRecVideo');
   if (mediaRec && mediaRec.state === 'recording') {
     mediaRec.stop();
-    btn.classList.remove('rec-on');
-    btn.textContent = 'Rec';
+    if (btn) {
+      btn.classList.remove('rec-on');
+      btn.textContent = '⏺ Rec 60fps Video';
+    }
     return;
   }
   try {
@@ -4223,6 +3911,9 @@ function toggleVideoRecord() {
     const canvasStream = canvas.captureStream(60);
     const audioDest = A.ctx.createMediaStreamDestination();
     A.master.connect(audioDest);
+    if (A.streamNode) {
+      try { A.streamNode.connect(audioDest); } catch (_) {}
+    }
     const tracks = [...canvasStream.getVideoTracks(), ...audioDest.stream.getAudioTracks()];
     const combined = new MediaStream(tracks);
     const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')
@@ -4241,38 +3932,30 @@ function toggleVideoRecord() {
       toast('Saved 60fps WebM video + audio recording');
     };
     mediaRec.start();
-    btn.classList.add('rec-on');
-    btn.textContent = 'Stop Rec';
-    toast('Recording 60fps WebM video + audio... Click Stop Rec when finished.');
+    if (btn) {
+      btn.classList.add('rec-on');
+      btn.textContent = '⏹ Stop Recording';
+    }
+    toast('Recording 60fps WebM video + audio... Click Stop Recording when finished.');
   } catch (e) {
     toast('Video recording requires Chrome, Edge, Arc, or Firefox.');
   }
 }
 
-/* ───────────────────────── Workspace Switcher (Jarvis AI vs Music Lab) ───────────────────────── */
-function setWorkspace(ws) {
-  activeWorkspace = ws === 'music' ? 'music' : 'jarvis';
-  document.body.dataset.workspace = activeWorkspace;
-  if ($('#bWsJarvis')) $('#bWsJarvis').setAttribute('aria-pressed', String(activeWorkspace === 'jarvis'));
-  if ($('#bWsMusic')) $('#bWsMusic').setAttribute('aria-pressed', String(activeWorkspace === 'music'));
-  syncDockHeight();
-}
-
-/* ───────────────────────── Preset Persistence (URL Hash + LocalStorage v9) ───────────────────────── */
+/* ───────────────────────── Preset Persistence (URL Hash + LocalStorage v10) ───────────────────────── */
 function saveAndSharePreset() {
   const params = new URLSearchParams();
-  params.set('ws', activeWorkspace);
   params.set('branch', activeBranch);
   params.set('mode', String(visMode));
   params.set('pal', paletteMode);
   params.set('rot', String(wadaRolePermutation));
   params.set('cam', camMode);
-  params.set('trk', String(activeTrackIdx));
   if (accentPopEl) params.set('acc', accentPopEl.value);
-  params.set('fib', fibEl.value);
-  params.set('l', harmEl.value);
-  params.set('free', freeEl.value);
-  params.set('eps', symEl.value);
+  if (bgGlowEl) params.set('bg', bgGlowEl.value);
+  if (fibEl) params.set('fib', fibEl.value);
+  if (harmEl) params.set('l', harmEl.value);
+  if (freeEl) params.set('free', freeEl.value);
+  if (symEl) params.set('eps', symEl.value);
   params.set('core', showCoreSurface ? '1' : '0');
   params.set('onblob', showOnBlobFib ? '1' : '0');
   params.set('orbital', showOrbitalFib ? '1' : '0');
@@ -4282,27 +3965,25 @@ function saveAndSharePreset() {
   const hash = '#' + params.toString();
   try {
     history.replaceState(null, '', hash);
-    localStorage.setItem('noether_resonance_preset_v9', params.toString());
+    localStorage.setItem('noether_resonance_preset_v10', params.toString());
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(location.href).catch(() => {});
     }
   } catch (e) {}
-  toast('Saved preset to browser & copied shareable URL hash (' + hash + ')');
+  toast('Saved preset & copied shareable URL (' + hash + ')');
 }
 
 function loadPresetFromHashOrStorage() {
   try {
     const urlParams = new URLSearchParams(location.search);
-    if (urlParams.has('workspace')) setWorkspace(urlParams.get('workspace'));
     if (urlParams.has('branch')) setActiveBranch(urlParams.get('branch'));
     if (urlParams.has('palette') && (WADA_PALETTES[urlParams.get('palette')] || urlParams.get('palette') === 'wada_auto')) {
       paletteMode = urlParams.get('palette');
       $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pal === paletteMode)));
     }
-    const raw = location.hash.length > 1 ? location.hash.slice(1) : localStorage.getItem('noether_resonance_preset_v9');
+    const raw = location.hash.length > 1 ? location.hash.slice(1) : localStorage.getItem('noether_resonance_preset_v10');
     if (!raw) return;
     const p = new URLSearchParams(raw);
-    if (p.has('ws')) setWorkspace(p.get('ws'));
     if (p.has('branch')) setActiveBranch(p.get('branch'));
     if (p.has('mode')) {
       visMode = clamp(parseInt(p.get('mode'), 10) || 0, 0, 4);
@@ -4320,28 +4001,25 @@ function loadPresetFromHashOrStorage() {
       camMode = p.get('cam');
       $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === camMode)));
     }
-    if (p.has('trk')) {
-      activeTrackIdx = clamp(parseInt(p.get('trk'), 10) || 0, 0, TRACK_LIBRARY.length - 1);
-      if ($('#trackSelect')) $('#trackSelect').value = String(activeTrackIdx);
-    }
     if (p.has('acc') && accentPopEl) accentPopEl.value = p.get('acc');
-    if (p.has('fib')) fibEl.value = p.get('fib');
-    if (p.has('l')) harmEl.value = p.get('l');
-    if (p.has('free')) freeEl.value = p.get('free');
-    if (p.has('eps')) symEl.value = p.get('eps');
+    if (p.has('bg') && bgGlowEl) bgGlowEl.value = p.get('bg');
+    if (p.has('fib') && fibEl) fibEl.value = p.get('fib');
+    if (p.has('l') && harmEl) harmEl.value = p.get('l');
+    if (p.has('free') && freeEl) freeEl.value = p.get('free');
+    if (p.has('eps') && symEl) symEl.value = p.get('eps');
     if (p.has('core') && $('#bCoreSurfaceToggle')) {
       showCoreSurface = p.get('core') !== '0';
       $('#bCoreSurfaceToggle').setAttribute('aria-pressed', String(showCoreSurface));
     }
-    if (p.has('onblob')) {
+    if (p.has('onblob') && $('#bOnBlobFib')) {
       showOnBlobFib = p.get('onblob') !== '0';
       $('#bOnBlobFib').setAttribute('aria-pressed', String(showOnBlobFib));
     }
-    if (p.has('orbital')) {
+    if (p.has('orbital') && $('#bOrbitalFib')) {
       showOrbitalFib = p.get('orbital') !== '0';
       $('#bOrbitalFib').setAttribute('aria-pressed', String(showOrbitalFib));
     }
-    if (p.has('ring')) {
+    if (p.has('ring') && $('#bRingToggle')) {
       showSpectrumRing = p.get('ring') !== '0';
       $('#bRingToggle').setAttribute('aria-pressed', String(showSpectrumRing));
     }
@@ -4359,16 +4037,112 @@ loadPresetFromHashOrStorage();
 applyAccentColor();
 requestAnimationFrame(tick);
 
-/* ───────────────────────── Jarvis Live Conversational Voice Engine & UI Controls ───────────────────────── */
+/* ───────────────────────── Fullscreen Monitor Mode, Hidden Settings Tab & UI Wiring ───────────────────────── */
 let toastT = 0;
 function toast(msg) {
-  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 4200);
+  const t = $('#toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => t.classList.remove('show'), 4200);
 }
 
-// Workspace Switcher Buttons
-if ($('#bWsJarvis')) $('#bWsJarvis').onclick = () => setWorkspace('jarvis');
-if ($('#bWsMusic')) $('#bWsMusic').onclick = () => setWorkspace('music');
+// Hidden Right-Edge Settings Pull-Tab & Slide-Out Studio Settings Drawer
+const tweakDrawer = $('#tweakDrawer');
+const settingsEdgeTab = $('#settingsEdgeTab');
+const bTweaks = $('#bTweaks');
+const bCloseDrawer = $('#bCloseDrawer');
+
+function toggleSettingsDrawer(force) {
+  if (!tweakDrawer) return;
+  const open = typeof force === 'boolean' ? force : !tweakDrawer.classList.contains('open');
+  tweakDrawer.classList.toggle('open', open);
+  document.body.classList.toggle('drawer-open', open);
+  if (settingsEdgeTab) settingsEdgeTab.setAttribute('aria-expanded', String(open));
+  if (bTweaks) bTweaks.setAttribute('aria-pressed', String(open));
+  if (open) {
+    document.body.classList.remove('idle-monitor');
+    refreshAudioDevices();
+  }
+}
+if (settingsEdgeTab) settingsEdgeTab.onclick = () => toggleSettingsDrawer();
+if (bTweaks) bTweaks.onclick = () => toggleSettingsDrawer();
+if (bCloseDrawer) bCloseDrawer.onclick = () => toggleSettingsDrawer(false);
+
+// Fullscreen Monitor Mode & Auto-Hide UI on Idle (2.8s mouse inactivity)
+function toggleFullscreenMonitor() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().then(() => {
+      toast('Fullscreen Monitor Mode active · Move mouse to reveal controls or right-edge ⚙ Studio tab');
+    }).catch(() => {
+      document.body.classList.toggle('pure-monitor');
+      if ($('#bPureMonitor')) $('#bPureMonitor').setAttribute('aria-pressed', String(document.body.classList.contains('pure-monitor')));
+    });
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  const isFs = !!document.fullscreenElement;
+  if ($('#bFullscreen')) $('#bFullscreen').setAttribute('aria-pressed', String(isFs));
+  if ($('#bFullscreenDrawer')) $('#bFullscreenDrawer').setAttribute('aria-pressed', String(isFs));
+});
+if ($('#bFullscreen')) $('#bFullscreen').onclick = toggleFullscreenMonitor;
+if ($('#bFullscreenDrawer')) $('#bFullscreenDrawer').onclick = toggleFullscreenMonitor;
+
+if ($('#bAutoHideIdle')) {
+  $('#bAutoHideIdle').onclick = function () {
+    autoHideIdle = !autoHideIdle;
+    this.setAttribute('aria-pressed', String(autoHideIdle));
+    if (!autoHideIdle) document.body.classList.remove('idle-monitor');
+    toast(autoHideIdle
+      ? 'Auto-Hide on Idle ON: All UI chrome fades out after 2.8s of mouse inactivity.'
+      : 'Auto-Hide on Idle OFF: Controls remain visible.');
+  };
+}
+
+function togglePureMonitor(force) {
+  const on = typeof force === 'boolean' ? force : !document.body.classList.contains('pure-monitor');
+  document.body.classList.toggle('pure-monitor', on);
+  if ($('#bPureMonitor')) $('#bPureMonitor').setAttribute('aria-pressed', String(on));
+  toast(on ? 'Pure 3D Monitor ON (Press H or hover right edge for ⚙ Studio tab)' : 'Pure 3D Monitor OFF');
+}
+if ($('#bPureMonitor')) $('#bPureMonitor').onclick = () => togglePureMonitor();
+
+let idleMonitorTimer = 0;
+function wakeIdleMonitor(ev) {
+  document.body.classList.remove('idle-monitor');
+  clearTimeout(idleMonitorTimer);
+  if (!autoHideIdle) return;
+  // Do not auto-hide while the Settings Drawer, Help modal, Plugin modal, or text input is active
+  if (tweakDrawer && tweakDrawer.classList.contains('open')) return;
+  if ($('#helpModal') && $('#helpModal').classList.contains('open')) return;
+  if ($('#pluginModal') && $('#pluginModal').classList.contains('open')) return;
+  if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'SELECT')) return;
+  idleMonitorTimer = setTimeout(() => {
+    if (autoHideIdle && (!tweakDrawer || !tweakDrawer.classList.contains('open'))) {
+      document.body.classList.add('idle-monitor');
+    }
+  }, 2800);
+}
+window.addEventListener('pointermove', wakeIdleMonitor, { passive: true });
+window.addEventListener('pointerdown', wakeIdleMonitor, { passive: true });
+window.addEventListener('keydown', wakeIdleMonitor, { passive: true });
+wakeIdleMonitor();
+
+// Voice HUD Visibility Toggle
+function toggleVoiceHud(force) {
+  const hud = $('#jarvisVoiceHud');
+  if (!hud) return;
+  const show = typeof force === 'boolean' ? force : !hud.classList.contains('visible');
+  hud.classList.toggle('visible', show);
+  if ($('#bVoiceHudToggle')) $('#bVoiceHudToggle').setAttribute('aria-pressed', String(show));
+  if ($('#bVoiceHudDrawer')) $('#bVoiceHudDrawer').setAttribute('aria-pressed', String(show));
+}
+if ($('#bVoiceHudToggle')) $('#bVoiceHudToggle').onclick = () => toggleVoiceHud();
+if ($('#bVoiceHudDrawer')) $('#bVoiceHudDrawer').onclick = () => toggleVoiceHud();
+if ($('#bCloseVoiceHud')) $('#bCloseVoiceHud').onclick = () => toggleVoiceHud(false);
 
 // Plugin & Setup Modal
 const pluginModal = $('#pluginModal');
@@ -4381,13 +4155,13 @@ function togglePluginModal(force) {
 if ($('#bWsPlugin')) $('#bWsPlugin').onclick = () => togglePluginModal();
 if ($('#bClosePlugin')) $('#bClosePlugin').onclick = () => togglePluginModal(false);
 
-// Jarvis Live Voice Listening (getUserMedia + SpeechRecognition -> runCustomAiTurn)
+// Noether Live Voice Listening (getUserMedia + SpeechRecognition -> runCustomAiTurn)
 async function startJarvisVoiceListen() {
+  toggleVoiceHud(true);
   if (jarvisListening) {
     stopJarvisVoiceListen(true);
     return;
   }
-  toggleShowcase(false);
   jarvisContinuousSession = true;
   jarvisListening = true;
   if ($('#bTalkJarvis')) {
@@ -4397,21 +4171,18 @@ async function startJarvisVoiceListen() {
   setState('listening');
   setVoiceHudCaption('🎙 NOETHER AI · LISTENING TO YOUR VOICE', 'Speak naturally now — or type below and press Enter...', -1);
 
-  // Connect live microphone stream via getUserMedia so the 3D orb immediately reacts to your voice
   try {
     ensureAudio();
-    if (A.src !== 'mic' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    if (A.src !== 'mic' && A.src !== 'sys' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       const devId = ($('#micDeviceSelect') && $('#micDeviceSelect').value) || '';
       const constraints = devId
         ? { audio: { deviceId: { exact: devId }, echoCancellation: true, noiseSuppression: true } }
         : { audio: { echoCancellation: true, noiseSuppression: true } };
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       attachStream(stream, 'mic', 'Noether Live Voice Mic');
-      populateMicDevices();
+      refreshAudioDevices();
     }
-  } catch (_) {
-    // Even if mic stream permission is unavailable in a headless test environment, continue with SpeechRecognition / text input
-  }
+  } catch (_) {}
 
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (SR) {
@@ -4442,19 +4213,18 @@ async function startJarvisVoiceListen() {
         jarvisListening = false;
         if ($('#bTalkJarvis')) {
           $('#bTalkJarvis').setAttribute('aria-pressed', 'false');
-          $('#bTalkJarvis').textContent = '🎙 Talk to Noether';
+          $('#bTalkJarvis').textContent = '🎙 Speak';
         }
         const spoken = (finalTranscript || ($('#aiPromptInput') && $('#aiPromptInput').value) || '').trim();
         if (spoken) {
           if ($('#aiPromptInput')) $('#aiPromptInput').value = '';
           runCustomAiTurn(spoken);
         } else if (jarvisHandsFree && jarvisContinuousSession && !turnActive) {
-          // Keep listening in hands-free mode
           setTimeout(() => {
             if (jarvisHandsFree && jarvisContinuousSession && !turnActive) startJarvisVoiceListen();
           }, 350);
         } else {
-          setVoiceHudCaption('✦ NOETHER AI · READY', 'Tap "Talk to Noether" and speak, or type a message below.', -1);
+          setVoiceHudCaption('✦ NOETHER AI · READY', 'Tap "Speak" or type a message below.', -1);
           setState('idle');
         }
       };
@@ -4466,7 +4236,7 @@ async function startJarvisVoiceListen() {
       jarvisRecognition = null;
     }
   } else {
-    toast('Live microphone connected to 3D orb! Speak or type your question below and press Ask.');
+    toast('Live microphone connected! Speak or type your question below and press Ask.');
   }
 }
 
@@ -4474,7 +4244,7 @@ function stopJarvisVoiceListen(submitIfText) {
   jarvisListening = false;
   if ($('#bTalkJarvis')) {
     $('#bTalkJarvis').setAttribute('aria-pressed', 'false');
-    $('#bTalkJarvis').textContent = '🎙 Talk to Noether';
+    $('#bTalkJarvis').textContent = '🎙 Speak';
   }
   if (jarvisRecognition) {
     const r = jarvisRecognition;
@@ -4491,9 +4261,7 @@ function stopJarvisVoiceListen(submitIfText) {
   }
 }
 
-if ($('#bTalkJarvis')) {
-  $('#bTalkJarvis').onclick = () => startJarvisVoiceListen();
-}
+if ($('#bTalkJarvis')) $('#bTalkJarvis').onclick = () => startJarvisVoiceListen();
 if ($('#bHandsFreeJarvis')) {
   $('#bHandsFreeJarvis').onclick = function () {
     jarvisHandsFree = !jarvisHandsFree;
@@ -4503,60 +4271,34 @@ if ($('#bHandsFreeJarvis')) {
       : '∞ Hands-Free Continuous Conversation OFF.');
   };
 }
-if ($('#bJarvisStop')) {
-  $('#bJarvisStop').onclick = () => {
-    jarvisContinuousSession = false;
-    stopJarvisVoiceListen(false);
-    toggleShowcase(false);
-    toggleTreeCycle(false);
-    toggleDuetMode(false);
-    stopAll();
-    setState('idle');
-    setVoiceHudCaption('✦ NOETHER AI · STANDBY', 'Ready whenever you are — click Talk to Noether or type below.', -1);
-  };
-}
 
-// Quick-Prompt Conversation Starter Chips
-$$('[data-quickprompt]').forEach(btn => {
-  btn.onclick = () => {
-    const q = btn.dataset.quickprompt;
-    if ($('#aiPromptInput')) $('#aiPromptInput').value = q;
-    runCustomAiTurn(q);
-  };
-});
+// Primary Live Audio Source Buttons (Bottom Dock + Settings Drawer)
+const toggleSysAudio = () => A.src === 'sys' ? (stopAll(), setState('idle')) : startSystemAudio();
+const toggleMicAudio = () => A.src === 'mic' ? (stopAll(), setState('idle')) : startMic($('#micDeviceSelect') ? $('#micDeviceSelect').value : '');
 
-// Music Lab Controls (Separate Workspace)
-if ($('#bDemo')) $('#bDemo').onclick = () => Demo.on ? stopAll() : startDemo();
-if ($('#trackSelect')) {
-  $('#trackSelect').onchange = e => {
-    activeTrackIdx = parseInt(e.target.value, 10) || 0;
-    startDemo();
-  };
-}
-if ($('#bMic')) $('#bMic').onclick = () => A.src === 'mic' ? (stopAll(), setState('idle')) : startMic($('#micDeviceSelect').value);
-if ($('#bSysAudio')) $('#bSysAudio').onclick = () => A.src === 'sys' ? (stopAll(), setState('idle')) : startSystemAudio();
+if ($('#bSysAudio')) $('#bSysAudio').onclick = toggleSysAudio;
+if ($('#bSysAudioDrawer')) $('#bSysAudioDrawer').onclick = toggleSysAudio;
+if ($('#bMic')) $('#bMic').onclick = toggleMicAudio;
+if ($('#bMicDrawer')) $('#bMicDrawer').onclick = toggleMicAudio;
+
 if ($('#bStop')) {
   $('#bStop').onclick = () => {
     jarvisContinuousSession = false;
     stopJarvisVoiceListen(false);
-    toggleShowcase(false);
     toggleTreeCycle(false);
-    toggleDuetMode(false);
     stopAll();
     setState('idle');
   };
 }
-if ($('#bShowcase')) $('#bShowcase').onclick = () => toggleShowcase();
 if ($('#bSharePreset')) $('#bSharePreset').onclick = saveAndSharePreset;
 if ($('#bSnapPng')) $('#bSnapPng').onclick = downloadPngSnapshot;
 if ($('#bRecVideo')) $('#bRecVideo').onclick = toggleVideoRecord;
-if ($('#file')) $('#file').onchange = e => { const f = e.target.files[0]; if (f) { toggleShowcase(false); playFile(f); } e.target.value = ''; };
+if ($('#file')) $('#file').onchange = e => { const f = e.target.files[0]; if (f) playFile(f); e.target.value = ''; };
 
 // Ask Noether Text Input & Send Button
 if ($('#bAskKore') && $('#aiPromptInput')) {
   const triggerCustomTurn = () => {
     const val = $('#aiPromptInput').value.trim();
-    toggleShowcase(false);
     stopJarvisVoiceListen(false);
     $('#aiPromptInput').value = '';
     runCustomAiTurn(val);
@@ -4604,9 +4346,8 @@ function initSseControlBridge() {
           const p = msg.payload;
           const aiBlobUrl = p.aiAudio ? `data:${p.aiAudio.mimeType};base64,${p.aiAudio.audioBase64}` : null;
           if (aiBlobUrl) {
-            toggleShowcase(false);
-            agentTurn('speaking', {
-              title: 'Noether Live Response',
+            toggleVoiceHud(true);
+            playDirectAiTurn({
               branch: p.recommendedBranch || activeBranch,
               palette: p.recommendedPalette || paletteMode,
               ai_speaker: `${p.speaker || 'Kore'} · ${(p.aiAudio && p.aiAudio.engine) || 'Neural Voice'}`,
@@ -4618,9 +4359,8 @@ function initSseControlBridge() {
         } else if (msg.type === 'cli_speak' && msg.payload && msg.payload.audioBase64) {
           const p = msg.payload;
           const blobUrl = `data:${p.mimeType || 'audio/mpeg'};base64,${p.audioBase64}`;
-          toggleShowcase(false);
-          agentTurn('speaking', {
-            title: 'Noether Direct Speech',
+          toggleVoiceHud(true);
+          playDirectAiTurn({
             branch: activeBranch,
             ai_speaker: `${p.speaker || 'Kore'} · ${p.engine || 'Neural TTS'}`,
             ai_text: p.text,
@@ -4629,7 +4369,6 @@ function initSseControlBridge() {
           });
         } else if (msg.type === 'cli_control' && msg.payload) {
           const c = msg.payload;
-          if (c.workspace) setWorkspace(c.workspace);
           if (c.branch) setActiveBranch(c.branch);
           if (c.palette && (WADA_PALETTES[c.palette] || c.palette === 'wada_auto')) {
             paletteMode = c.palette;
@@ -4644,14 +4383,13 @@ function initSseControlBridge() {
 }
 initSseControlBridge();
 
-// Plugin SDK postMessage Listener (allows NoetherJarvisPlugin.mount() parent pages to command the orb)
+// Plugin SDK postMessage Listener
 window.addEventListener('message', ev => {
   const d = ev.data;
   if (!d || d.type !== 'noether:command') return;
   const p = d.payload || {};
   if (d.action === 'ask' && p.prompt) runCustomAiTurn(p.prompt);
   else if (d.action === 'listen') startJarvisVoiceListen();
-  else if (d.action === 'workspace' && p.workspace) setWorkspace(p.workspace);
   else if (d.action === 'control') {
     if (p.branch) setActiveBranch(p.branch);
     if (p.palette) { paletteMode = p.palette; customWadaOverride = null; applyAccentColor(); }
@@ -4664,7 +4402,7 @@ window.addEventListener('message', ev => {
   }
 });
 
-// Exploration Tree Branch Switcher & Auto-Cycle
+// 5-Branch Topology Switcher & Auto-Cycle
 $$('[data-branch]').forEach(b => {
   b.onclick = () => {
     toggleTreeCycle(false);
@@ -4675,7 +4413,7 @@ if ($('#bTreeCycle')) {
   $('#bTreeCycle').onclick = () => toggleTreeCycle();
 }
 
-// Interactive Turn Timeline Step Buttons (click any step to jump directly to Listening, Thinking, Speaking, or Idle)
+// Interactive Turn Timeline Step Buttons
 $$('[data-turnstep]').forEach(b => {
   b.onclick = () => {
     const stg = b.dataset.turnstep;
@@ -4686,51 +4424,46 @@ $$('[data-turnstep]').forEach(b => {
     } else if (stg === 'listening') {
       startJarvisVoiceListen();
     } else {
-      toggleShowcase(false);
       setState(stg);
     }
   };
 });
 
-$('#bMediaPause').onclick = () => {
-  if (!A.media) return;
-  if (A.media.paused) { A.media.play(); $('#bMediaPause').textContent = 'Pause'; }
-  else { A.media.pause(); $('#bMediaPause').textContent = 'Play'; }
-};
-$('#mediaSeek').oninput = e => {
-  if (A.media && A.media.duration) {
-    A.media.currentTime = (parseFloat(e.target.value) / 1000) * A.media.duration;
-  }
-};
-
-$('#micDeviceSelect').onchange = e => {
-  if (A.src === 'mic') startMic(e.target.value);
-};
+if ($('#bMediaPause')) {
+  $('#bMediaPause').onclick = () => {
+    if (!A.media) return;
+    if (A.media.paused) { A.media.play(); $('#bMediaPause').textContent = 'Pause'; }
+    else { A.media.pause(); $('#bMediaPause').textContent = 'Play'; }
+  };
+}
+if ($('#mediaSeek')) {
+  $('#mediaSeek').oninput = e => {
+    if (A.media && A.media.duration) {
+      A.media.currentTime = (parseFloat(e.target.value) / 1000) * A.media.duration;
+    }
+  };
+}
+if ($('#micDeviceSelect')) {
+  $('#micDeviceSelect').onchange = e => {
+    if (A.src === 'mic') startMic(e.target.value);
+  };
+}
 
 $$('[data-state]').forEach(b => b.onclick = () => { turnId++; turnActive = false; setState(b.dataset.state); });
-
-// Studio Control Panel (Tweak Drawer) toggle
-const tweakDrawer = $('#tweakDrawer');
-const bTweaks = $('#bTweaks');
-bTweaks.onclick = () => {
-  syncDockHeight();
-  const open = tweakDrawer.classList.toggle('open');
-  bTweaks.setAttribute('aria-pressed', String(open));
-  bTweaks.textContent = open ? 'Controls ▾' : 'Controls ▴';
-};
 
 // Help Modal toggle
 const helpModal = $('#helpModal');
 const bHelp = $('#bHelp');
 function toggleHelp(force) {
+  if (!helpModal) return;
   const open = typeof force === 'boolean' ? force : !helpModal.classList.contains('open');
   helpModal.classList.toggle('open', open);
-  bHelp.setAttribute('aria-pressed', String(open));
+  if (bHelp) bHelp.setAttribute('aria-pressed', String(open));
 }
-bHelp.onclick = () => toggleHelp();
-$('#bCloseHelp').onclick = () => toggleHelp(false);
+if (bHelp) bHelp.onclick = () => toggleHelp();
+if ($('#bCloseHelp')) $('#bCloseHelp').onclick = () => toggleHelp(false);
 
-// Visualizer Field Mode buttons
+// Visualizer Surface Style (Field Mode) buttons
 $$('[data-vismode]').forEach(b => b.onclick = () => {
   visMode = parseInt(b.dataset.vismode, 10);
   $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
@@ -4751,12 +4484,8 @@ $$('[data-pal]').forEach(b => b.onclick = () => {
   $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
   applyAccentColor();
 });
-if ($('#bRotateWada')) {
-  $('#bRotateWada').onclick = () => rotateWadaRoles(1, true);
-}
-if ($('#bHudRotateWada')) {
-  $('#bHudRotateWada').onclick = () => rotateWadaRoles(1, true);
-}
+if ($('#bRotateWada')) $('#bRotateWada').onclick = () => rotateWadaRoles(1, true);
+if ($('#bHudRotateWada')) $('#bHudRotateWada').onclick = () => rotateWadaRoles(1, true);
 if ($('#bBeatRotateWada')) {
   $('#bBeatRotateWada').onclick = function () {
     beatRotateWada = !beatRotateWada;
@@ -4793,18 +4522,24 @@ if ($('#bCoreSurfaceToggle')) {
     this.setAttribute('aria-pressed', String(showCoreSurface));
   };
 }
-$('#bOnBlobFib').onclick = function () {
-  showOnBlobFib = !showOnBlobFib;
-  this.setAttribute('aria-pressed', String(showOnBlobFib));
-};
-$('#bOrbitalFib').onclick = function () {
-  showOrbitalFib = !showOrbitalFib;
-  this.setAttribute('aria-pressed', String(showOrbitalFib));
-};
-$('#bRingToggle').onclick = function () {
-  showSpectrumRing = !showSpectrumRing;
-  this.setAttribute('aria-pressed', String(showSpectrumRing));
-};
+if ($('#bOnBlobFib')) {
+  $('#bOnBlobFib').onclick = function () {
+    showOnBlobFib = !showOnBlobFib;
+    this.setAttribute('aria-pressed', String(showOnBlobFib));
+  };
+}
+if ($('#bOrbitalFib')) {
+  $('#bOrbitalFib').onclick = function () {
+    showOrbitalFib = !showOrbitalFib;
+    this.setAttribute('aria-pressed', String(showOrbitalFib));
+  };
+}
+if ($('#bRingToggle')) {
+  $('#bRingToggle').onclick = function () {
+    showSpectrumRing = !showSpectrumRing;
+    this.setAttribute('aria-pressed', String(showSpectrumRing));
+  };
+}
 if ($('#bWaveToggle')) {
   $('#bWaveToggle').onclick = function () {
     showWaveLoops = !showWaveLoops;
@@ -4817,12 +4552,14 @@ if ($('#bParticlesToggle')) {
     this.setAttribute('aria-pressed', String(showParticleHalo));
   };
 }
-$('#bAutoVad').onclick = function () {
-  autoVadOn = !autoVadOn;
-  this.setAttribute('aria-pressed', String(autoVadOn));
-};
+if ($('#bAutoVad')) {
+  $('#bAutoVad').onclick = function () {
+    autoVadOn = !autoVadOn;
+    this.setAttribute('aria-pressed', String(autoVadOn));
+  };
+}
 
-// Interactive 2D XY Symplectic Morph Pad (Drag to sweep Harmonic Degree l vs Symmetry Breaking ε + Free Room)
+// Interactive 2D XY Symplectic Morph Pad
 let xyDragging = false;
 const xyMorphPad = $('#xyMorphPad');
 if (xyMorphPad) {
@@ -4833,9 +4570,9 @@ if (xyMorphPad) {
     const newL = 2.0 + nx * 5.0;
     const newEps = (1.0 - ny) * 1.0;
     const newFree = 0.45 + (nx * 0.45 + (1.0 - ny) * 0.65);
-    harmEl.value = newL.toFixed(1);
-    symEl.value = newEps.toFixed(2);
-    freeEl.value = clamp(newFree, 0.3, 1.8).toFixed(2);
+    if (harmEl) harmEl.value = newL.toFixed(1);
+    if (symEl) symEl.value = newEps.toFixed(2);
+    if (freeEl) freeEl.value = clamp(newFree, 0.3, 1.8).toFixed(2);
     if ($('#xyPuck')) {
       $('#xyPuck').style.left = `${(nx * 90 + 5).toFixed(1)}%`;
       $('#xyPuck').style.top = `${(ny * 86 + 7).toFixed(1)}%`;
@@ -4858,55 +4595,40 @@ if (xyMorphPad) {
   xyMorphPad.addEventListener('pointercancel', endXY);
 }
 
-// Multi-Turn Socratic Duet Mode (Puck × Kore Continuous Dialogue across all 4 Quantum Topologies)
-let duetModeOn = false, duetTimer = 0;
-function toggleDuetMode(forceState) {
-  duetModeOn = typeof forceState === 'boolean' ? forceState : !duetModeOn;
-  if ($('#bDuetMode')) $('#bDuetMode').setAttribute('aria-pressed', String(duetModeOn));
-  clearTimeout(duetTimer);
-  if (!duetModeOn) return;
-  toggleShowcase(false);
-  toast('✦ Puck × Kore Socratic Duet Mode active: continuous multi-turn neural dialogue across quantum topologies.');
-  const stepDuet = () => {
-    if (!duetModeOn) return;
-    if (!turnActive) {
-      agentTurn('listening', null);
-      activeScenarioIdx = (activeScenarioIdx + 1) % NEURAL_TURN_BANK.length;
-    }
-    duetTimer = setTimeout(stepDuet, 2500);
-  };
-  stepDuet();
-}
-if ($('#bDuetMode')) {
-  $('#bDuetMode').onclick = () => toggleDuetMode();
-}
-
-// Musical Keyboard Chime Mapping (A S D F G H J K L) + Exploration Tree (Q W E R) + Scene Shortcuts (5-9) + State Shortcuts (1-4, Space, T, U, ?)
+// Keyboard Shortcuts:
+// Q/W/E/R/Y = 5 Topologies, F = Fullscreen Monitor, T = Settings Drawer, H/U = Pure Monitor, 1-4 = States, A-L = Harmonic Chimes
 const KEY_NOTES = { a: 57, s: 60, d: 62, f: 64, g: 67, h: 69, j: 72, k: 74, l: 76 };
-const KEY_BRANCHES = { q: 'orb', w: 'tokamak', e: 'cymatic', r: 'lattice' };
+const KEY_BRANCHES = { q: 'orb', w: 'tokamak', e: 'cymatic', r: 'lattice', y: 'calabi' };
 addEventListener('keydown', e => {
-  if (e.target.closest && e.target.closest('input, select')) return;
+  if (e.target.closest && e.target.closest('input, select, textarea')) return;
   const map = { '1': 'idle', '2': 'listening', '3': 'thinking', '4': 'speaking' };
-  const sceneMap = { '5': 0, '6': 1, '7': 2, '8': 3, '9': 4 };
   const kl = e.key.toLowerCase();
-  if (e.key === 'Escape') { toggleHelp(false); togglePluginModal(false); }
+  if (e.key === 'Escape') {
+    toggleHelp(false);
+    togglePluginModal(false);
+    toggleSettingsDrawer(false);
+    if (document.body.classList.contains('pure-monitor')) togglePureMonitor(false);
+  }
   else if (e.key === '?' || e.key === '/') { toggleHelp(); }
   else if (map[e.key]) { turnId++; turnActive = false; setState(map[e.key]); }
   else if (KEY_BRANCHES[kl]) { toggleTreeCycle(false); setActiveBranch(KEY_BRANCHES[kl]); }
-  else if (sceneMap[e.key] !== undefined) { applyShowcaseScene(sceneMap[e.key]); }
+  else if (kl === 'f' && !e.metaKey && !e.ctrlKey) { e.preventDefault(); toggleFullscreenMonitor(); }
+  else if (kl === 't') { e.preventDefault(); toggleSettingsDrawer(); }
+  else if (kl === 'u' || (kl === 'h' && e.shiftKey)) { e.preventDefault(); togglePureMonitor(); }
   else if (e.key === ' ') {
     e.preventDefault();
-    if (activeWorkspace === 'jarvis') startJarvisVoiceListen();
-    else (Demo.on ? stopAll() : startDemo());
+    if (A.src === 'file' && A.media) {
+      if (A.media.paused) A.media.play(); else A.media.pause();
+    } else {
+      startJarvisVoiceListen();
+    }
   }
-  else if (kl === 't') bTweaks.click();
-  else if (kl === 'u') document.body.classList.toggle('ui-off');
   else if (KEY_NOTES[kl]) {
     playHarmonicChime(KEY_NOTES[kl], K.l, K.m);
   }
 });
 
-// Plug-and-Play WebMIDI Synthesizer & Controller Integration (MIDI Note-On -> Harmonic Chime; CC 1/74/71/73 -> Quantum Sliders)
+// Plug-and-Play WebMIDI Synthesizer & Controller Integration
 function initWebMIDI() {
   if (!navigator.requestMIDIAccess) return;
   navigator.requestMIDIAccess().then(midi => {
@@ -4919,10 +4641,10 @@ function initWebMIDI() {
             playHarmonicChime(d1, K.l, K.m);
           } else if (cmd === 0xb0) {
             const norm = d2 / 127;
-            if (d1 === 1 || d1 === 74) harmEl.value = (2 + norm * 6).toFixed(1);
-            else if (d1 === 71) freeEl.value = (0.3 + norm * 1.5).toFixed(2);
-            else if (d1 === 73) symEl.value = (norm * 1.0).toFixed(2);
-            else if (d1 === 72) fibEl.value = (norm * 1.4).toFixed(2);
+            if ((d1 === 1 || d1 === 74) && harmEl) harmEl.value = (2 + norm * 6).toFixed(1);
+            else if (d1 === 71 && freeEl) freeEl.value = (0.3 + norm * 1.5).toFixed(2);
+            else if (d1 === 73 && symEl) symEl.value = (norm * 1.0).toFixed(2);
+            else if (d1 === 72 && fibEl) fibEl.value = (norm * 1.4).toFixed(2);
           }
         };
       }
@@ -4939,43 +4661,36 @@ addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; doc
 addEventListener('dragover', e => e.preventDefault());
 addEventListener('drop', e => {
   e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging');
-  const f = e.dataTransfer.files[0]; if (f) { setWorkspace('music'); toggleShowcase(false); playFile(f); }
+  const f = e.dataTransfer.files[0]; if (f) playFile(f);
 });
 
-/* External Integration API for Real AI Voice / Audio Agents, Plugin SDK & Repeatable Modular Sequencer */
+/* External Integration API for Real AI Voice / Audio Agents, System Audio & Plugin SDK */
 window.noetherResonance = {
-  setWorkspace,
   setState,
   setBranch: setActiveBranch,
   toggleTreeCycle,
+  toggleSettingsDrawer,
+  toggleFullscreenMonitor,
+  togglePureMonitor,
+  startSystemAudio,
+  startMic,
   listen: startJarvisVoiceListen,
   stopListening: () => stopJarvisVoiceListen(false),
   askNoether: (promptText) => runCustomAiTurn(promptText),
   askKore: (promptText) => runCustomAiTurn(promptText),
-  runAgentTurn: (stage) => agentTurn(stage || 'listening'),
-  toggleDuetMode,
   rotateWadaRoles,
-  setScenario: (idx) => {
-    activeScenarioIdx = clamp(idx, 0, NEURAL_TURN_BANK.length - 1);
-    agentTurn('listening');
-  },
-  turnBank: NEURAL_TURN_BANK,
-  startDemo: () => startDemo(),
   setPalette: (p) => { if (WADA_PALETTES[p] || p === 'wada_auto') { paletteMode = p; customWadaOverride = null; applyAccentColor(); } },
-  setFieldMode: (m) => { visMode = clamp(m, 0, 4); },
+  setFieldMode: (m) => { visMode = clamp(m, 0, 4); $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(parseInt(x.dataset.vismode, 10) === visMode))); },
   setCamera: (c) => { if (['front', 'iso', 'orbit', 'macro'].includes(c)) { camMode = c; $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === c))); } },
-  setTrack: (idx) => { activeTrackIdx = clamp(idx, 0, TRACK_LIBRARY.length - 1); if ($('#trackSelect')) $('#trackSelect').value = String(activeTrackIdx); if (Demo.on) startDemo(); },
-  applyScene: (idx) => applyShowcaseScene(idx),
-  toggleShowcase,
   snapshotPng: downloadPngSnapshot,
   playChime: (midi, l, m) => playHarmonicChime(midi || 64, l || K.l, m || K.m),
-  connectStream: (stream, label) => attachStream(stream, 'mic', label || 'External stream'),
+  connectStream: (stream, kind, label) => attachStream(stream, kind || 'sys', label || 'Live Audio Stream'),
   connectNode: node => { ensureAudio(); node.connect(A.analyser); setSource('node', 'External audio node'); },
   sequencer: window.NoetherSoundSequencer || null,
   get history() { return jarvisHistory; },
-  get telemetry() { return { workspace: activeWorkspace, branch: activeBranch, scenarioIdx: activeScenarioIdx, turnActive, jarvisListening, jarvisHandsFree, state: stateName, visMode, paletteMode, wadaRolePermutation, camMode, showcaseOn, showOnBlobFib, showOrbitalFib, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, f1: AN.formantF1, f2: AN.formantF2 }; },
+  get telemetry() { return { src: A.src, branch: activeBranch, turnActive, jarvisListening, jarvisHandsFree, state: stateName, visMode, paletteMode, wadaRolePermutation, camMode, showOnBlobFib, showOrbitalFib, showSpectrumRing, showWaveLoops, showParticleHalo, l: K.l, m: K.m, energyH: HAM.energy, bpm: AN.bpm, locked: AN.locked, level: AN.level, bands: [...AN.bands], f1: AN.formantF1, f2: AN.formantF2 }; },
   get audioContext() { return ensureAudio(); },
-  stop: () => { jarvisContinuousSession = false; stopJarvisVoiceListen(false); toggleShowcase(false); toggleTreeCycle(false); toggleDuetMode(false); stopAll(); setState('idle'); }
+  stop: () => { jarvisContinuousSession = false; stopJarvisVoiceListen(false); toggleTreeCycle(false); stopAll(); setState('idle'); }
 };
 })();
 </script>
