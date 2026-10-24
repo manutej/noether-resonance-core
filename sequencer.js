@@ -47,8 +47,18 @@
     const histBins = new Float32Array(81); // 80..160 BPM histogram
     const state = {
       bands: [0, 0, 0],
-      peaks: [0.25, 0.25, 0.25],
+      rawBands: [0, 0, 0],
+      floors: [0.02, 0.02, 0.015],
+      peaks: [0.35, 0.30, 0.25],
+      subBass: 0,
+      kickPunch: 0,
+      depth: 0.35,
+      crest: 1.0,
+      style: 'harmonic',
+      styleLabel: 'Harmonic',
+      styleTargetVis: 0.0,
       level: 0,
+      rmsAvg: 0.04,
       fullFlux: 0,
       fluxHist: [],
       f1: 0,
@@ -97,14 +107,20 @@
         lastOnset: -1,
         f1: 0,
         f2: 0,
-        t1: 0
+        t1: 0,
+        subBass: 0,
+        kickPunch: 0,
+        depth: 0.35,
+        style: 'harmonic',
+        styleLabel: 'Harmonic',
+        styleTargetVis: 0.0
       });
     }
 
     function triggerPulse(strength, isLockedBeat, isDownbeat) {
       state.beatEnv = Math.max(state.beatEnv, strength);
       state.burst = Math.max(state.burst, strength);
-      state.punch = Math.max(state.punch, strength * (isDownbeat ? 1.35 : 1.0));
+      state.punch = Math.max(state.punch, strength * (isDownbeat ? 1.45 : 1.05));
       if (isDownbeat) state.downbeatEnv = 1.0;
       if (callbacks.onBeat) {
         callbacks.onBeat({
@@ -161,9 +177,9 @@
           total += w;
         }
       }
-      if (total <= 0 || o.length < 5) {
+      if (total <= 0 || o.length < 4) {
         state.conf *= 0.9;
-        state.locked = state.bpm > 0 && state.conf > 0.14;
+        state.locked = state.bpm > 0 && state.conf > 0.13;
         return;
       }
       let best = 0, bi = 0;
@@ -179,7 +195,7 @@
       state.conf = state.conf * 0.6 + (win / total) * 0.4;
 
       if (!state.bpm) {
-        if (state.conf > 0.16) {
+        if (state.conf > 0.14) {
           state.bpm = est;
           state.nextBeat = now + 60 / est;
         }
@@ -190,14 +206,14 @@
         if (!state.cand || Math.abs(est - state.cand) > 3) {
           state.cand = est;
           state.candSince = now;
-        } else if (now - state.candSince > 1.4) {
+        } else if (now - state.candSince > 1.2) {
           state.bpm = est;
           state.cand = 0;
           state.nextBeat = now + 60 / est;
         }
       }
-      const recent = o.filter(x => now - x.t < 3.0).length;
-      state.locked = state.bpm > 0 && state.conf > 0.14 && recent >= 3;
+      const recent = o.filter(x => now - x.t < 3.2).length;
+      state.locked = state.bpm > 0 && state.conf > 0.13 && recent >= 3;
     }
 
     function onOnset(t, strength) {
@@ -211,26 +227,29 @@
         const p = state.period, prev = state.nextBeat - p;
         const near = Math.abs(t - prev) < Math.abs(t - state.nextBeat) ? prev : state.nextBeat;
         const e = t - near;
-        if (Math.abs(e) < 0.3 * p) state.nextBeat += e * 0.32;
+        if (Math.abs(e) < 0.32 * p) state.nextBeat += e * 0.34;
+        // Also fire an immediate transient micro-pulse on strong off-grid kicks/snares so heavy rhythms feel tight!
+        if (strength > 0.55) triggerPulse(strength * 0.72, false, false);
       } else {
-        triggerPulse(strength * 0.85, false, false);
+        triggerPulse(strength * 0.95, false, false);
       }
     }
 
     function beatClock(now) {
       if (state.deterministicLock) return;
-      if (state.locked && now - state.lastOnset > 2.5) state.locked = false;
+      if (state.locked && now - state.lastOnset > 2.8) state.locked = false;
       if (!state.locked || !state.bpm) return;
       state.period = 60 / state.bpm;
       if (now - state.nextBeat > state.period * 2) state.nextBeat = state.lastOnset + state.period;
       while (now >= state.nextBeat) {
         const slot = state.beatCount % 4;
-        state.accent[slot] = state.accent[slot] * 0.8 + (state.fullFlux + state.bands[0] * 0.5) * 0.2;
+        state.accent[slot] = state.accent[slot] * 0.8 + (state.fullFlux + state.bands[0] * 0.65) * 0.2;
         state.downOff = state.accent.indexOf(Math.max(...state.accent));
         state.beatInBar = ((state.beatCount - state.downOff) % 4 + 4) % 4;
         const down = state.beatInBar === 0;
         if (down) state.barCount++;
-        triggerPulse(down ? 1.0 : 0.75, true, down);
+        const dynStrength = clamp((down ? 0.85 : 0.62) + state.bands[0] * 0.38, 0.45, 1.35);
+        triggerPulse(dynStrength, true, down);
         state.beatCount++;
         state.nextBeat += state.period;
       }
@@ -248,25 +267,76 @@
       const fftSize = analyser.fftSize;
       const binLen = freqBuf.length;
       const binOf = hz => clamp(Math.round(hz / (sampleRate / fftSize)), 1, binLen - 1);
-      const bandAvg = (lo, hi) => {
-        const a = binOf(lo), b = binOf(hi);
-        let s = 0;
-        for (let i = a; i <= b; i++) s += freqBuf[i];
-        return s / ((b - a + 1) * 255);
+
+      // Power-law acoustic energy integral (expands logarithmic dB bytes into true dynamic range!)
+      const bandPower = (lo, hi, exp = 2.15) => {
+        const a = binOf(lo), b = Math.max(a, binOf(hi));
+        let sum = 0, peak = 0;
+        for (let i = a; i <= b; i++) {
+          const norm = freqBuf[i] / 255;
+          const p = Math.pow(norm, exp);
+          sum += p;
+          if (p > peak) peak = p;
+        }
+        const avg = sum / (b - a + 1);
+        return avg * 0.65 + peak * 0.35;
       };
 
-      const raw = [bandAvg(25, 180), bandAvg(180, 2200), bandAvg(2200, 12000)];
-      const decay = Math.pow(0.5, dt / 4);
+      const subRaw  = bandPower(20, 75, 2.25);
+      const kickRaw = bandPower(65, 155, 2.15);
+      const raw = [
+        bandPower(24, 185, 2.10),   // Low: Sub-bass + Kick + Bassline
+        bandPower(185, 2400, 1.95), // Mid: Vocals, Snare body, Synths, Guitars
+        bandPower(2400, 13000, 1.80) // High: Hi-hats, Cymbals, Transients, Air
+      ];
+
+      // Hybrid Dynamic Envelope: preserves true loudness difference between quiet & heavy music
+      // while subtracting ambient room floor and boosting transient attacks!
+      const floorDecay = Math.pow(0.5, dt / 6.0);
+      const peakDecay  = Math.pow(0.5, dt / 2.2);
       for (let i = 0; i < 3; i++) {
-        state.peaks[i] = Math.max(raw[i], state.peaks[i] * decay, 0.11);
-        const v = clamp((raw[i] / state.peaks[i]) * gain, 0, 1.45);
-        state.bands[i] += (v - state.bands[i]) * (v > state.bands[i] ? 0.55 : 0.13);
+        state.rawBands[i] = raw[i];
+        state.floors[i] = Math.min(raw[i], lerp(state.floors[i], raw[i], 0.02)) * floorDecay + 0.008;
+        state.peaks[i]  = Math.max(raw[i], state.peaks[i] * peakDecay, 0.16);
+
+        const aboveFloor = Math.max(0, raw[i] - state.floors[i] * 0.85);
+        const span = Math.max(0.12, state.peaks[i] - state.floors[i] * 0.85);
+        const normContrast = aboveFloor / span; // 0..1 transient contrast within current passage
+        const absPower = raw[i] * (i === 0 ? 1.55 : (i === 1 ? 1.75 : 2.10)); // true absolute weight
+
+        // Combine 58% absolute power + 42% dynamic contrast so heavy loud music hits MUCH harder
+        // AND rhythmic drops/transients always pop with deep relief!
+        const targetV = clamp((absPower * 0.58 + normContrast * 0.52) * gain, 0, 1.75);
+        const attackRate = targetV > state.bands[i] ? 0.72 : 0.18;
+        state.bands[i] += (targetV - state.bands[i]) * attackRate;
       }
 
-      let rms = 0;
-      for (let i = 0; i < timeBuf.length; i += 4) rms += timeBuf[i] * timeBuf[i];
-      rms = Math.sqrt(rms / (timeBuf.length / 4));
-      state.level += (clamp(rms * 4.2 * gain, 0, 1.25) - state.level) * 0.32;
+      const targetSub = clamp(subRaw * 1.75 * gain, 0, 1.8);
+      state.subBass += (targetSub - state.subBass) * (targetSub > state.subBass ? 0.75 : 0.16);
+      const prevKick = state.kickPunch;
+      const targetKick = clamp(kickRaw * 1.65 * gain, 0, 1.8);
+      state.kickPunch += (targetKick - state.kickPunch) * (targetKick > state.kickPunch ? 0.80 : 0.22);
+
+      // Immediate sub-bass / kick impulse detector (even before PLL tempo lock!)
+      if (targetKick - prevKick > 0.22 && now - state.lastOnset > 0.13) {
+        onOnset(now, clamp((targetKick - prevKick) * 1.8 + state.subBass * 0.4, 0.35, 1.25));
+      }
+
+      let rms = 0, peakSample = 0;
+      for (let i = 0; i < timeBuf.length; i += 2) {
+        const s = Math.abs(timeBuf[i]);
+        rms += s * s;
+        if (s > peakSample) peakSample = s;
+      }
+      rms = Math.sqrt(rms / (timeBuf.length / 2));
+      state.rmsAvg = lerp(state.rmsAvg, rms, 0.05);
+      state.crest = clamp(peakSample / Math.max(0.015, rms), 1.0, 6.0);
+
+      // Combine time-domain RMS and spectral energy so even cross-origin / compressed streams drive level accurately
+      const spectralLvl = (state.bands[0] * 0.48 + state.bands[1] * 0.34 + state.bands[2] * 0.18);
+      const timeLvl = clamp(rms * 4.8 * gain, 0, 1.6);
+      const combinedLvl = Math.max(timeLvl, spectralLvl * 0.92);
+      state.level += (combinedLvl - state.level) * (combinedLvl > state.level ? 0.62 : 0.20);
 
       // Extract Live Speech Formants F1 (250–900 Hz) & F2 (900–2800 Hz) + Spectral Centroid
       const hzPerBin = sampleRate / fftSize;
@@ -280,26 +350,31 @@
       for (let i = f2Lo; i <= f2Hi; i++) {
         if (freqBuf[i] > maxF2) { maxF2 = freqBuf[i]; binF2 = i; }
       }
-      if (maxF1 > 18) state.formantF1 = lerp(state.formantF1, binF1 * hzPerBin, 0.22);
-      if (maxF2 > 14) state.formantF2 = lerp(state.formantF2, binF2 * hzPerBin, 0.22);
+      if (maxF1 > 18) state.formantF1 = lerp(state.formantF1, binF1 * hzPerBin, 0.25);
+      if (maxF2 > 14) state.formantF2 = lerp(state.formantF2, binF2 * hzPerBin, 0.25);
 
-      const bLo = binOf(200), bHi = binOf(3400);
+      const bLo = binOf(120), bHi = binOf(6400);
       let num = 0, den = 0.001;
       for (let i = bLo; i <= bHi; i++) {
-        const w = freqBuf[i] / 255;
+        const w = Math.pow(freqBuf[i] / 255, 1.6);
         num += ((i - bLo) / (bHi - bLo)) * w;
         den += w;
       }
-      state.centroid = lerp(state.centroid, clamp(num / den, 0, 1), 0.16);
+      state.centroid = lerp(state.centroid, clamp(num / den, 0, 1), 0.22);
 
-      const loEnd = binOf(220), midEnd = binOf(2400);
+      // Spectral Flux Onset Detector across Sub-Bass, Kick, Snare & Hi-Hat bands
+      const loEnd = binOf(220), midEnd = binOf(3200);
       let flux = 0, full = 0;
       for (let i = 1; i < midEnd; i++) {
         const d = freqBuf[i] - prevBuf[i];
-        if (d > 0) { flux += d * (i < loEnd ? 1 : 0.32); full += d; }
+        if (d > 0) {
+          const weight = i < loEnd ? 1.35 : 0.42;
+          flux += d * weight;
+          full += d;
+        }
         prevBuf[i] = freqBuf[i];
       }
-      flux /= (loEnd + (midEnd - loEnd) * 0.32) * 255;
+      flux /= (loEnd * 1.35 + (midEnd - loEnd) * 0.42) * 255;
       state.fullFlux = full / (midEnd * 255);
 
       state.fluxHist.push({ t: now, v: flux });
@@ -313,13 +388,39 @@
         sd += diff * diff;
       }
       sd = Math.sqrt(sd / Math.max(1, state.fluxHist.length));
-      const thr = m + 1.35 * sd + 0.012;
-      if (state.f1 > thr && state.f1 >= flux && state.f1 > state.f2 && state.t1 - state.lastOnset > 0.17) {
-        onOnset(state.t1, clamp((state.f1 - m) / (sd * 4 + 1e-4), 0.25, 1));
+      const thr = m + 1.15 * sd + 0.008;
+      if (state.f1 > thr && state.f1 >= flux && state.f1 > state.f2 && state.t1 - state.lastOnset > 0.14) {
+        onOnset(state.t1, clamp((state.f1 - m) / (sd * 3.2 + 1e-4), 0.30, 1.25));
       }
       state.f2 = state.f1;
       state.f1 = flux;
       state.t1 = now;
+
+      // Real-Time Musical Depth & Style Classifier
+      const targetDepth = clamp(
+        state.subBass * 0.48 + state.bands[0] * 0.35 + state.bands[1] * 0.25 + state.fullFlux * 2.2,
+        0.15,
+        1.65
+      );
+      state.depth = lerp(state.depth, targetDepth, 0.18);
+
+      if (state.subBass > 0.52 || (state.bands[0] > 0.62 && state.bands[0] > state.bands[1] * 1.12)) {
+        state.style = 'heavy';
+        state.styleLabel = 'Heavy Bass';
+        state.styleTargetVis = 3.0; // Dirac Ferrofluid Crown
+      } else if (state.fullFlux > 0.032 || (state.bands[2] > 0.48 && state.bands[1] > 0.45)) {
+        state.style = 'rhythmic';
+        state.styleLabel = 'High Energy';
+        state.styleTargetVis = 1.0; // Cymatic Chladni Standing Wave
+      } else if (state.bands[1] > 0.38 && state.bands[1] > state.bands[0] * 1.15) {
+        state.style = 'harmonic';
+        state.styleLabel = 'Melodic / Vocal';
+        state.styleTargetVis = 2.0; // Hopf Torus / Villarceau Spiral
+      } else if (state.level > 0.08) {
+        state.style = 'ambient';
+        state.styleLabel = 'Deep Resonance';
+        state.styleTargetVis = 4.0; // Superfluid Vortex
+      }
 
       beatClock(now);
     }

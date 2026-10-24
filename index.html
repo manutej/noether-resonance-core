@@ -1134,26 +1134,29 @@ body.idle-monitor.hide-hud-idle .tempo {
   <!-- SECTION I: Live System / Tab Audio, Loopback Input & Monitor Display Mode -->
   <section class="ctrl-card" aria-label="Live Audio Source and Monitor Mode">
     <div class="ctrl-card-head">
-      <span class="ctrl-card-title"><i></i>I · Live Audio Source &amp; Monitor</span>
+      <span class="ctrl-card-title"><i></i>I · Live Music &amp; Audio Source</span>
       <span class="ctrl-lbl" id="activeAudioBadge" style="margin:0;color:var(--wada-fib)">Standby</span>
     </div>
     <div class="ctrl-subrow">
-      <button class="btn primary" id="bSysAudioDrawer" style="flex:1" title="Capture live music from another Chrome/Edge tab (Spotify, YouTube, Apple Music) or Windows/macOS System Audio">🔊 Capture Chrome Tab / System Audio</button>
+      <button class="btn primary" id="bMicDrawer" style="flex:1" title="Zero Screen-Share Music Mode: Listens directly via your Hardware Mic (bypasses Krisp noise filter) or Loopback (BlackHole / Stereo Mix)">🎧 Listen to Music (No Screen Share)</button>
     </div>
     <div class="ctrl-subrow">
-      <button class="btn" id="bMicDrawer" style="flex:1" title="Connect Microphone, Audio Interface, or Virtual Loopback (macOS BlackHole / Windows Stereo Mix &amp; VB-Cable)">🎙 Mic / Loopback</button>
+      <button class="btn" id="bSysAudioDrawer" style="flex:1" title="Capture internal digital audio directly from another Chrome/Edge tab (YouTube, Spotify) or OS System Audio">🔊 Direct Chrome Tab Audio</button>
       <label class="btn" for="file" style="flex:1" title="Open local MP3, WAV, FLAC, OGG, or M4A music file">🎵 Open Audio File</label>
     </div>
-    <select id="micDeviceSelect" class="sl-select" title="Select Hardware Input or Virtual Loopback Device (macOS BlackHole / Windows Stereo Mix / VB-Cable)">
-      <option value="">Default Audio Input (Mic / Mac BlackHole / Win Stereo Mix)</option>
+    <select id="micDeviceSelect" class="sl-select" title="Select Hardware Input or Virtual Loopback Device (Automatically skips Krisp / Noise Filters)">
+      <option value="">Auto-Select Best Music Input (Skips Krisp / Noise Filters)</option>
     </select>
     <div class="media-scrub" id="mediaScrubWrap">
       <button class="btn" id="bMediaPause" style="padding:4px 8px;font-size:10px">Pause</button>
       <input id="mediaSeek" type="range" min="0" max="1000" step="1" value="0" title="Seek audio file">
       <span id="mediaTime">0:00 / 0:00</span>
     </div>
-    <label class="sl-wrap" title="Audio Input Sensitivity / Reactivity Gain">
-      Audio Gain <input id="sens" type="range" min="0.3" max="3.0" step="0.05" value="1.25"><b id="valGain">1.25</b>
+    <label class="sl-wrap" title="Audio Input Sensitivity / Pre-Amp Gain">
+      Audio Gain <input id="sens" type="range" min="0.4" max="3.5" step="0.05" value="1.45"><b id="valGain">1.45</b>
+    </label>
+    <label class="sl-wrap" title="Dynamic 3D Bass Weight, Style Morphing &amp; Sculptural Excursion Depth">
+      Music Depth <input id="slMusicDepth" type="range" min="0.5" max="2.5" step="0.05" value="1.45"><b id="valDepth">1.45</b>
     </label>
     <div class="ctrl-subrow">
       <button class="btn" id="bAutoHideIdle" aria-pressed="true" style="flex:1" title="Auto-hide controls &amp; HUD after 2.8s of mouse inactivity for clean monitor viewing">Auto-Hide on Idle</button>
@@ -1242,7 +1245,8 @@ body.idle-monitor.hide-hud-idle .tempo {
     </div>
     <div class="ctrl-subrow" role="group" aria-label="Surface Eigenmode Style">
       <span class="ctrl-lbl">Style</span>
-      <button class="btn" data-vismode="0" aria-pressed="true" title="Smooth Liquid-Light Spherical Harmonics">Liquid Y<sub>ℓ</sub><sup>m</sup></button>
+      <button class="btn" data-vismode="auto" aria-pressed="true" title="Automatically morphs 3D surface physics to match live music style (Heavy Bass → Ferrofluid, High Energy → Chladni, Melodic → Hopf Torus, Ambient → Superfluid)">Auto-Style</button>
+      <button class="btn" data-vismode="0" aria-pressed="false" title="Smooth Liquid-Light Spherical Harmonics">Liquid Y<sub>ℓ</sub><sup>m</sup></button>
       <button class="btn" data-vismode="1" aria-pressed="false" title="Cymatic Chladni Nodal Contours">Chladni</button>
       <button class="btn" data-vismode="2" aria-pressed="false" title="3D Toroidal Vortex Funnel">Hopf Torus</button>
       <button class="btn" data-vismode="3" aria-pressed="false" title="Magnetic Dirac Ferrofluid">Ferrofluid</button>
@@ -1349,8 +1353,8 @@ body.idle-monitor.hide-hud-idle .tempo {
 <!-- Clean Bottom Floating Control Bar (Auto-Hides on Idle in Monitor Mode) -->
 <nav class="hud dock" aria-label="Controls">
   <div class="grp" role="group" aria-label="Live Audio and System Capture">
-    <button class="btn primary sys-live" id="bSysAudio" aria-pressed="false" title="Capture live music from another Chrome tab (Spotify, YouTube, SoundCloud) or System Audio">🔊 System / Tab Audio</button>
-    <button class="btn" id="bMic" aria-pressed="false" title="Connect Microphone, Line-In, or Virtual Loopback (BlackHole 2ch)">🎙 Audio Input</button>
+    <button class="btn primary sys-live" id="bMic" aria-pressed="false" title="1-Click Music Mode (Zero Screen Share!): Listens to YouTube / music playing on your speakers or loopback via your real hardware mic (automatically bypasses Krisp noise cancellation!)">🎧 Listen to Music</button>
+    <button class="btn" id="bSysAudio" aria-pressed="false" title="Direct Chrome Tab Audio: Pick your YouTube / Spotify Chrome tab to capture internal digital audio">🔊 Tab Audio</button>
     <label class="btn" for="file" id="bFile" title="Load any local MP3, WAV, FLAC, OGG, or M4A music track">🎵 Audio File</label>
     <input class="vh" id="file" type="file" accept="audio/*">
   </div>
@@ -1491,6 +1495,7 @@ let jarvisHistory = [];
 let treeCycleOn = false;
 let treeCycleTimer = 0;
 let visMode = 0; // 0: Liquid Eigen-Orb, 1: Cymatic Chladni, 2: Hopf Torus, 3: Dirac Ferrofluid, 4: Superfluid Vortex
+let autoStyleVis = true; // Automatically morphs 3D surface style & physics to match live music style & depth
 let camMode = 'front'; // 'front' | 'iso' | 'orbit' | 'macro'
 let zoomOffset = 0.0;
 let showCoreSurface = true;
@@ -1673,7 +1678,7 @@ function setState(name) {
 
 /* ───────────────────────── WebAudio Graph & Spatial Panner Inputs ───────────────────────── */
 const A = {
-  ctx: null, analyser: null, master: null, panner: null, silentPull: null,
+  ctx: null, analyser: null, master: null, inputBoost: null, panner: null, silentPull: null,
   freq: null, prev: null, time: null,
   src: 'none', media: null, mediaNode: null,
   stream: null, streamNode: null, streamSink: null, noise: null
@@ -1685,7 +1690,15 @@ function ensureAudio() {
     A.ctx = new AC();
     A.analyser = A.ctx.createAnalyser();
     A.analyser.fftSize = 2048;
-    A.analyser.smoothingTimeConstant = 0.50;
+    // Wide dynamic range (-88 dB to -10 dB) + fast 0.34 smoothing so loud/heavy music & sub-bass drops never clip or flatten!
+    A.analyser.minDecibels = -88;
+    A.analyser.maxDecibels = -10;
+    A.analyser.smoothingTimeConstant = 0.34;
+
+    A.inputBoost = A.ctx.createGain();
+    A.inputBoost.gain.value = 1.65;
+    A.inputBoost.connect(A.analyser);
+
     A.master = A.ctx.createGain();
     A.master.gain.value = 0.85;
     if (A.ctx.createStereoPanner) {
@@ -1715,8 +1728,9 @@ const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 function setSource(kind, label) {
   A.src = kind;
   if ($('#srcLabel')) $('#srcLabel').textContent = label;
-  if ($('#bMic')) $('#bMic').setAttribute('aria-pressed', String(kind === 'mic'));
-  if ($('#bMicDrawer')) $('#bMicDrawer').setAttribute('aria-pressed', String(kind === 'mic'));
+  const isMicMusic = (kind === 'mic' || kind === 'music_mic');
+  if ($('#bMic')) $('#bMic').setAttribute('aria-pressed', String(isMicMusic));
+  if ($('#bMicDrawer')) $('#bMicDrawer').setAttribute('aria-pressed', String(isMicMusic));
   if ($('#bSysAudio')) $('#bSysAudio').setAttribute('aria-pressed', String(kind === 'sys'));
   if ($('#bSysAudioDrawer')) $('#bSysAudioDrawer').setAttribute('aria-pressed', String(kind === 'sys'));
   if ($('#mediaScrubWrap')) $('#mediaScrubWrap').classList.toggle('show', kind === 'file');
@@ -1748,7 +1762,7 @@ function stopAll(keepTurn) {
     A.stream = null; A.streamNode = null;
   }
   if (!keepTurn) {
-    setSource('none', 'Ready · Click System / Tab Audio to visualize live music from any Chrome tab');
+    setSource('none', 'Ready · Click "🎧 Listen to Music" (No Screen Share) or "🔊 Tab Audio"');
     updateTurnTimelineUI(stateName, 0, 'Ready');
   }
 }
@@ -1963,15 +1977,19 @@ function playFile(file) {
   setState('speaking');
 }
 
-function attachStream(stream, kind, label) {
+function attachStream(stream, kind, label, preampBoost = 1.45) {
   ensureAudio();
   stopAll();
   if (A.ctx.state === 'suspended') A.ctx.resume().catch(() => {});
 
   A.stream = stream;
+  const audioTracks = stream.getAudioTracks();
+  // Isolate ONLY the audio track(s) for WebAudio & HTMLAudioElement sink so any video track from getDisplayMedia
+  // never stalls or throttles the WebAudio FFT analyser pipeline!
+  const audioOnlyStream = audioTracks.length > 0 ? new MediaStream(audioTracks) : stream;
 
   // CRITICAL CHROMIUM FIX (Bug #933677):
-  // In Chrome/Edge/Brave/Arc, a MediaStream from getDisplayMedia() (Tab/System Audio) will NOT pump
+  // In Chrome/Edge/Brave/Arc, a MediaStream from getDisplayMedia() or getUserMedia() will NOT pump
   // decoded audio samples into WebAudio's createMediaStreamSource() unless it is also attached to
   // a playing, muted HTMLAudioElement.
   try {
@@ -1979,15 +1997,17 @@ function attachStream(stream, kind, label) {
     sink.muted = true;
     sink.autoplay = true;
     sink.playsInline = true;
-    sink.srcObject = stream;
+    sink.srcObject = audioOnlyStream;
     sink.play().catch(() => {});
     A.streamSink = sink;
   } catch (_) {}
 
-  A.streamNode = A.ctx.createMediaStreamSource(stream);
-  A.streamNode.connect(A.analyser);
+  if (A.inputBoost) {
+    A.inputBoost.gain.value = preampBoost;
+  }
+  A.streamNode = A.ctx.createMediaStreamSource(audioOnlyStream);
+  A.streamNode.connect(A.inputBoost || A.analyser);
 
-  const audioTracks = stream.getAudioTracks();
   if (audioTracks.length > 0) {
     audioTracks[0].enabled = true;
     audioTracks[0].onended = () => {
@@ -2000,22 +2020,50 @@ function attachStream(stream, kind, label) {
   }
 
   setSource(kind, label);
-  setState(kind === 'sys' ? 'speaking' : 'listening');
+  setState('speaking');
+}
+
+// Smart Hardware & Loopback Device Selector:
+// Automatically skips AI voice-isolation filters (like Krisp, Zoom, Teams, Camo) that delete music & bass,
+// and locks onto Loopback (BlackHole / Stereo Mix / VB-Cable) or the real Hardware Microphone (e.g. MacBook Air Microphone)!
+function pickBestMusicDevice(inputs) {
+  if (!inputs || !inputs.length) return null;
+  const isNoiseFilter = lbl => /krisp|voice isolation|teams|zoom|webex|camo|nvidia broadcast/i.test(lbl || '');
+  const isLoopback = lbl => /blackhole|stereo mix|loopback|vb-audio|cable output|soundflower|what u hear|wave out/i.test(lbl || '');
+  const isRealHardwareMic = lbl => /macbook|built-in|internal|imac|mac mini|mac studio|mac pro|realtek|usb|scarlett|shure|yeti|rode|audio-technica|external mic/i.test(lbl || '');
+
+  const loopDev = inputs.find(d => isLoopback(d.label) && d.deviceId !== 'default');
+  if (loopDev) return { device: loopDev, isLoopback: true, bypassedKrisp: inputs.some(d => isNoiseFilter(d.label)) };
+
+  const hwDev = inputs.find(d => isRealHardwareMic(d.label) && !isNoiseFilter(d.label) && d.deviceId !== 'default');
+  if (hwDev) return { device: hwDev, isLoopback: false, bypassedKrisp: inputs.some(d => isNoiseFilter(d.label)) };
+
+  const cleanDev = inputs.find(d => !isNoiseFilter(d.label) && d.deviceId !== 'default' && d.deviceId !== 'communications');
+  if (cleanDev) return { device: cleanDev, isLoopback: false, bypassedKrisp: inputs.some(d => isNoiseFilter(d.label)) };
+
+  return { device: inputs[0], isLoopback: false, bypassedKrisp: false };
 }
 
 async function refreshAudioDevices() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+  if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return [];
   try {
     const devs = await navigator.mediaDevices.enumerateDevices();
     const inputs = devs.filter(d => d.kind === 'audioinput');
     const sel = $('#micDeviceSelect');
     if (sel && inputs.length > 0) {
       const prevVal = sel.value;
-      sel.innerHTML = `<option value="">Default Audio Input (Mic / Mac BlackHole / Win Stereo Mix)</option>` +
-        inputs.map((d, i) => `<option value="${d.deviceId}">${d.label || ('Audio Input ' + (i + 1))}</option>`).join('');
+      sel.innerHTML = `<option value="">Auto-Select Best Music Input (Skips Krisp / Noise Filters)</option>` +
+        inputs.map((d, i) => {
+          const lbl = d.label || ('Audio Input ' + (i + 1));
+          const warn = /krisp|voice isolation/i.test(lbl) ? ' ⚠️ (Voice Filter - Blocks Music)' : '';
+          return `<option value="${d.deviceId}">${lbl}${warn}</option>`;
+        }).join('');
       if (prevVal && inputs.some(d => d.deviceId === prevVal)) sel.value = prevVal;
     }
-  } catch (e) {}
+    return inputs;
+  } catch (e) {
+    return [];
+  }
 }
 refreshAudioDevices();
 
@@ -2023,20 +2071,67 @@ async function startMic(preferredDeviceId) {
   ensureAudio();
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('unsupported');
-    const audioConstraint = {
+
+    // Step 1: Request initial audio permission with ALL voice/noise suppression disabled
+    const rawMusicFlags = {
       echoCancellation: false,
       noiseSuppression: false,
       autoGainControl: false,
-      channelCount: { ideal: 2 }
+      googEchoCancellation: false,
+      googNoiseSuppression: false,
+      googAutoGainControl: false,
+      googHighpassFilter: false,
+      channelCount: { ideal: 2 },
+      sampleRate: { ideal: 48000 }
     };
-    if (preferredDeviceId) audioConstraint.deviceId = { exact: preferredDeviceId };
-    const s = await navigator.mediaDevices.getUserMedia({ audio: audioConstraint, video: false });
-    const trackLabel = (s.getAudioTracks()[0] && s.getAudioTracks()[0].label) || 'Live Audio Input';
-    attachStream(s, 'mic', 'Live Input · ' + trackLabel);
-    refreshAudioDevices();
-    toast(`Connected live audio input: ${trackLabel}`);
+
+    let targetDeviceId = preferredDeviceId || '';
+    let bypassedNoiseFilter = false;
+    let isLoopbackDevice = false;
+
+    // Enumerate devices so we NEVER accidentally use "krisp microphone" (which strips out all music!)
+    let inputs = await refreshAudioDevices();
+    if (!inputs.length || !inputs.some(d => d.label)) {
+      // Unlock device labels first
+      const probe = await navigator.mediaDevices.getUserMedia({ audio: rawMusicFlags, video: false });
+      const probeLabel = (probe.getAudioTracks()[0] && probe.getAudioTracks()[0].label) || '';
+      inputs = await refreshAudioDevices();
+      const best = pickBestMusicDevice(inputs);
+      if (!targetDeviceId && best && best.device && best.device.deviceId && (/krisp|voice isolation|camo/i.test(probeLabel) || best.device.label !== probeLabel)) {
+        probe.getTracks().forEach(t => t.stop());
+        targetDeviceId = best.device.deviceId;
+        bypassedNoiseFilter = best.bypassedKrisp || /krisp/i.test(probeLabel);
+        isLoopbackDevice = best.isLoopback;
+      } else {
+        // Probe already landed on the clean hardware/loopback device!
+        const boost = /blackhole|stereo mix|loopback|vb-audio/i.test(probeLabel) ? 1.45 : 2.35;
+        attachStream(probe, 'music_mic', `🎧 Live Music · ${probeLabel || 'Hardware Input'}`, boost);
+        toast(`🎧 Listening to Live Music via ${probeLabel || 'Audio Input'} (No Screen Share · Raw Hi-Fi Mode)`);
+        return;
+      }
+    } else if (!targetDeviceId) {
+      const best = pickBestMusicDevice(inputs);
+      if (best && best.device) {
+        targetDeviceId = best.device.deviceId;
+        bypassedNoiseFilter = best.bypassedKrisp;
+        isLoopbackDevice = best.isLoopback;
+        if ($('#micDeviceSelect')) $('#micDeviceSelect').value = targetDeviceId;
+      }
+    }
+
+    const finalConstraints = { ...rawMusicFlags };
+    if (targetDeviceId) finalConstraints.deviceId = { exact: targetDeviceId };
+
+    const s = await navigator.mediaDevices.getUserMedia({ audio: finalConstraints, video: false });
+    const trackLabel = (s.getAudioTracks()[0] && s.getAudioTracks()[0].label) || 'Live Music Input';
+    const boost = (isLoopbackDevice || /blackhole|stereo mix|loopback|vb-audio/i.test(trackLabel)) ? 1.45 : 2.35;
+    const prefix = bypassedNoiseFilter ? '🎧 Live Music (Bypassed Krisp) · ' : '🎧 Live Music · ';
+    attachStream(s, 'music_mic', prefix + trackLabel, boost);
+    toast(bypassedNoiseFilter
+      ? `🎧 Connected ${trackLabel} (Automatically bypassed Krisp noise filter so full music & bass come through!)`
+      : `🎧 Connected ${trackLabel} in Raw Hi-Fi Music Mode (Zero Screen Share!)`);
   } catch (e) {
-    toast('Microphone / Loopback access requires permission on http://localhost or HTTPS.');
+    toast('Audio Input requires microphone permission on http://localhost or HTTPS.');
   }
 }
 
@@ -2046,12 +2141,11 @@ async function startSystemAudio() {
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) throw new Error('unsupported');
     // Request Chrome/Edge Tab or Windows/macOS System Audio.
-    // IMPORTANT: Keep a lightweight video constraint AND DO NOT stop the video track while capturing!
-    // In Chromium on both Windows and macOS, stopping the video track returned by getDisplayMedia
-    // immediately terminates the entire capture session and kills the audio track.
-    // Also set suppressLocalAudioPlayback: false so music in the other tab/app keeps playing out loud.
+    // Note: Browser security requires the user to pick the Chrome tab playing YouTube/Spotify (or Entire Screen).
+    // If you prefer ZERO picker dialog, click "🎧 Listen to Music" instead!
     const s = await navigator.mediaDevices.getDisplayMedia({
       video: {
+        displaySurface: 'browser',
         width: { ideal: 320, max: 640 },
         height: { ideal: 180, max: 360 },
         frameRate: { ideal: 5, max: 15 }
@@ -2060,6 +2154,9 @@ async function startSystemAudio() {
         echoCancellation: false,
         noiseSuppression: false,
         autoGainControl: false,
+        googEchoCancellation: false,
+        googNoiseSuppression: false,
+        googAutoGainControl: false,
         suppressLocalAudioPlayback: false,
         channelCount: { ideal: 2 },
         sampleRate: { ideal: 48000 }
@@ -2072,27 +2169,16 @@ async function startSystemAudio() {
 
     const audioTracks = s.getAudioTracks();
     if (!audioTracks.length) {
-      // User forgot to toggle "Also share tab audio" or "Share system audio" in the picker
       s.getTracks().forEach(t => t.stop());
-      const osHint = isWin
-        ? 'On Windows: select a Chrome/Edge Tab (with "Also share tab audio" ON) OR select "Entire Screen" (with "Share system audio" ON).'
-        : 'On macOS: select a Chrome Tab (with "Also share tab audio" ON) or select Entire Screen (macOS 13+ with "Share system audio" ON).';
-      toast(`No audio track detected! ${osHint}`);
+      toast('No tab audio track shared! Pick your YouTube Chrome Tab and keep "Also share tab audio" ON — or click "🎧 Listen to Music" for zero screen sharing!');
       return;
     }
 
-    const rawLabel = audioTracks[0].label || (s.getVideoTracks()[0] && s.getVideoTracks()[0].label) || 'Live Music Stream';
-    attachStream(s, 'sys', 'System / Tab Audio · ' + rawLabel);
-    toast(`Listening to live System / Tab Audio (${rawLabel}). Press F for Fullscreen Monitor!`);
+    const rawLabel = audioTracks[0].label || (s.getVideoTracks()[0] && s.getVideoTracks()[0].label) || 'Chrome Tab Audio';
+    attachStream(s, 'sys', '🔊 Direct Tab Audio · ' + rawLabel, 1.55);
+    toast(`🔊 Connected Direct Tab Audio (${rawLabel})! Full sub-bass & style depth active.`);
   } catch (e) {
-    if (e && e.name === 'NotAllowedError') {
-      const cancelHint = isWin
-        ? 'Click "🔊 System / Tab Audio", pick your music tab or "Entire Screen" (Windows System Audio), and keep "Share audio" ON.'
-        : 'Click "🔊 System / Tab Audio", pick the Chrome tab playing your music (or Entire Screen), and keep "Share audio" ON.';
-      toast(`Audio capture cancelled. ${cancelHint}`);
-    } else {
-      toast('To capture Chrome/Edge Tab or Windows/macOS System Audio, select a tab or screen and ensure "Share audio" is enabled.');
-    }
+    toast('Tip: Click "🎧 Listen to Music" to visualize music playing on your speakers with ZERO screen sharing!');
   }
 }
 
@@ -2392,33 +2478,33 @@ vec2 quantumField(vec3 q) {
   float n2 = snoise(q * 2.75 + vec3(uT * 0.48, -uT * 0.31, 0.0) + yPrimary * 0.45);
   float n3 = snoise(q * uSharp - vec3(0.0, uT * 0.95, uT * 0.4));
 
-  float baseHarm = yPrimary * (0.10 + uBass * 0.25) + yOvertone * (0.045 + uMid * 0.15) + symTerm;
-  float fluidNoise = n1 * (0.04 + uBass * 0.15) + n2 * (0.02 + uMid * 0.08) + n3 * (0.006 + uTreb * 0.045);
+  float baseHarm = yPrimary * (0.08 + uBass * 0.56) + yOvertone * (0.04 + uMid * 0.34) + symTerm;
+  float fluidNoise = n1 * (0.03 + uBass * 0.28) + n2 * (0.02 + uMid * 0.18) + n3 * (0.008 + uTreb * 0.14);
 
   float dispVal = 0.0;
   float phaseVal = yPrimary * 2.4 + yOvertone * 1.45 + n2 * 0.85 + symTerm * 4.0;
 
   if (uVisMode < 0.5) {
     // 0: Noether Eigen-Orb (True Legendre Spherical Eigenmodes + Superfluid Condensate)
-    dispVal = (baseHarm * 1.18 + fluidNoise * 0.82) * uFreeRoom + uBeat * 0.068 * cos(uHarmL * theta);
+    dispVal = (baseHarm * 1.25 + fluidNoise * 0.92) * uFreeRoom + uBeat * 0.14 * cos(uHarmL * theta);
   } else if (uVisMode < 1.5) {
     // 1: Cymatic Chladni Shell (Crisp Standing-Wave Nodal Ridges)
-    dispVal = (chladni * (0.085 + uBass * 0.21 + uMid * 0.14) + baseHarm * 0.65 + n2 * 0.03) * uFreeRoom + uBeat * 0.06;
-    phaseVal = chladni * 3.2 + yPrimary;
+    dispVal = (chladni * (0.09 + uBass * 0.42 + uMid * 0.28) + baseHarm * 0.72 + n2 * 0.06) * uFreeRoom + uBeat * 0.12;
+    phaseVal = chladni * 3.4 + yPrimary;
   } else if (uVisMode < 2.5) {
     // 2: Hopf Torus Attractor (Villarceau Spiral Undulation along Clifford Torus)
     float villarceau = sin(uHarmL * (2.0 * theta + phi) - uT * 1.35);
-    dispVal = (villarceau * (0.09 + uBass * 0.20) + yOvertone * (0.05 + uMid * 0.12) + fluidNoise * 0.42) * uFreeRoom + uBeat * 0.06;
+    dispVal = (villarceau * (0.10 + uBass * 0.38) + yOvertone * (0.06 + uMid * 0.24) + fluidNoise * 0.55) * uFreeRoom + uBeat * 0.12;
     phaseVal = villarceau * 2.8 + phi + theta * 2.0;
   } else if (uVisMode < 3.5) {
-    // 3: Dirac Ferrofluid Crown (Magnetized Harmonic Multipole Peaks)
-    float peak = pow(abs(yPrimary * 0.78 + n1 * 0.42), 1.62) * sign(yPrimary + 0.001);
-    dispVal = (peak * (0.14 + uBass * 0.34 + uMid * 0.16) + n3 * 0.03 + symTerm) * uFreeRoom + uBeat * 0.085;
-    phaseVal = peak * 3.5;
+    // 3: Dirac Ferrofluid Crown (Magnetized Harmonic Multipole Peaks for Heavy Bass)
+    float peak = pow(abs(yPrimary * 0.82 + n1 * 0.46), 1.48) * sign(yPrimary + 0.001);
+    dispVal = (peak * (0.14 + uBass * 0.64 + uMid * 0.30) + n3 * 0.08 + symTerm * 1.5) * uFreeRoom + uBeat * 0.18;
+    phaseVal = peak * 3.8;
   } else {
     // 4: Superfluid Vortex Nebula (Quantized Swirling Condensate)
     float vortex = sin(uHarmM * phi - uT * 1.85 + 2.5 * cos(uHarmL * theta)) * sinT;
-    dispVal = (vortex * (0.105 + uBass * 0.26) + fluidNoise * 1.12 + symTerm) * uFreeRoom + uBeat * 0.072;
+    dispVal = (vortex * (0.11 + uBass * 0.46) + fluidNoise * 1.28 + symTerm) * uFreeRoom + uBeat * 0.14;
     phaseVal = vortex * 3.3 + n1 * 1.5;
   }
   return vec2(dispVal, phaseVal);
@@ -3341,6 +3427,7 @@ resize();
 
 let last = performance.now() / 1000, tAcc = 0, spinAcc = 0, procPulse = 0, hudTick = 0;
 const gainEl = $('#sens');
+const depthEl = $('#slMusicDepth');
 const accentEl = $('#slAccentPop');
 const bgGlowEl = $('#slBgGlow');
 const fibEl = $('#slFibroid');
@@ -3362,24 +3449,10 @@ function tick() {
   K.spin = lerp(K.spin, st.spin, k);
   K.inward = lerp(K.inward, st.inward, k);
   K.proc = lerp(K.proc, st.proc, k);
-  K.vis = lerp(K.vis, visMode, k * 1.4);
-  K.torusMorph = lerp(K.torusMorph, visMode === 2 ? 0.88 : 0.0, k * 1.3);
-
-  const pTgt = getActivePaletteTarget();
-  tgt.core.set(...pTgt.core); tgt.mid.set(...pTgt.mid); tgt.rim.set(...pTgt.rim); tgt.fib.set(...pTgt.fib);
-  pal.core.lerp(tgt.core, k); pal.mid.lerp(tgt.mid, k); pal.rim.lerp(tgt.rim, k); pal.fib.lerp(tgt.fib, k);
-  orbU.uMono.value = pTgt.mono || 0;
-  tokamakU.uMono.value = pTgt.mono || 0;
-
-  if (turnActive && turnStageDur > 0) {
-    const elapsed = Math.max(0, now - turnStageStart);
-    const prog = clamp(elapsed / turnStageDur, 0, 1);
-    const rem = Math.max(0, turnStageDur - elapsed);
-    updateTurnTimelineUI(stateName, prog, `${rem.toFixed(1)}s`);
-  }
 
   const live = A.ctx && A.src !== 'none';
   const gain = gainEl ? parseFloat(gainEl.value) : 1.15;
+  const musicDepth = depthEl ? parseFloat(depthEl.value) : 1.45;
   const accentBoost = accentEl ? parseFloat(accentEl.value) : 1.30;
   const bgGlowVal = bgGlowEl ? parseFloat(bgGlowEl.value) : 0.16;
   const fibInt = fibEl ? parseFloat(fibEl.value) : 0.85;
@@ -3394,32 +3467,63 @@ function tick() {
   } else {
     AN.bands.forEach((v, i) => AN.bands[i] = v * 0.92);
     AN.level *= 0.92;
+    AN.subBass = (AN.subBass || 0) * 0.90;
+    AN.kickPunch = (AN.kickPunch || 0) * 0.88;
+    AN.depth = (AN.depth || 0) * 0.92;
   }
 
-  // Smoothly adapt Spherical Harmonic numbers (l, m) to live vocal formants (F1, F2) + user sliders
+  // Real-time Auto-Style surface topology adaptation based on musical genre & depth
+  const targetVis = (autoStyleVis && live) ? (AN.styleTargetVis ?? 0) : visMode;
+  K.vis = lerp(K.vis, targetVis, k * (autoStyleVis ? 0.95 : 1.4));
+  const wantTorus = autoStyleVis ? (Math.abs(K.vis - 2.0) < 0.45 ? 0.88 : 0.0) : (visMode === 2 ? 0.88 : 0.0);
+  K.torusMorph = lerp(K.torusMorph, wantTorus, k * 1.2);
+
+  const pTgt = getActivePaletteTarget();
+  tgt.core.set(...pTgt.core); tgt.mid.set(...pTgt.mid); tgt.rim.set(...pTgt.rim); tgt.fib.set(...pTgt.fib);
+  pal.core.lerp(tgt.core, k); pal.mid.lerp(tgt.mid, k); pal.rim.lerp(tgt.rim, k); pal.fib.lerp(tgt.fib, k);
+  orbU.uMono.value = pTgt.mono || 0;
+  tokamakU.uMono.value = pTgt.mono || 0;
+
+  if (turnActive && turnStageDur > 0) {
+    const elapsed = Math.max(0, now - turnStageDur > 0 ? now - turnStageStart : 0);
+    const prog = clamp(elapsed / turnStageDur, 0, 1);
+    const rem = Math.max(0, turnStageDur - elapsed);
+    updateTurnTimelineUI(stateName, prog, `${rem.toFixed(1)}s`);
+  }
+
+  // Smoothly adapt Spherical Harmonic numbers (l, m) to live musical depth, sub-bass & vocal formants (F1, F2)
   const f1Norm = clamp((AN.formantF1 - 260) / 600, 0, 1);
   const f2Norm = clamp((AN.formantF2 - 900) / 1800, 0, 1);
-  const targetL = userL + (live ? (f1Norm * 1.4 + AN.centroid * 1.1) : 0.35 * Math.sin(now * 0.4));
-  const targetM = Math.max(0.0, Math.min(targetL, userM + (live ? (f2Norm * 1.6 + AN.bands[1] * 0.8) : 0)));
-  K.l = lerp(K.l, targetL, k * 0.85);
-  K.m = lerp(K.m, targetM, k * 0.85);
+  const depthMod = live ? ((AN.depth || 0) * 1.35 + (AN.subBass || 0) * 0.95) * (musicDepth / 1.45) : 0;
+  const targetL = clamp(userL + (live ? (f1Norm * 1.1 + AN.centroid * 1.25 + depthMod) : 0.35 * Math.sin(now * 0.4)), 2.0, 7.0);
+  const targetM = Math.max(0.0, Math.min(targetL, userM + (live ? (f2Norm * 1.3 + AN.bands[1] * 0.95 + depthMod * 0.65) : 0)));
+  K.l = lerp(K.l, targetL, k * 0.95);
+  K.m = lerp(K.m, targetM, k * 0.95);
 
   const procW = live ? K.proc : 1;
   const pb = 0.18 + 0.14 * Math.sin(now * 1.1) + (stateName === 'thinking' ? 0.22 * Math.sin(now * 2.3) : 0);
   const pm = 0.25 + 0.20 * Math.sin(now * 1.7 + 1) + (stateName === 'thinking' ? 0.30 * Math.abs(Math.sin(now * 3.1)) : 0);
   const pt = 0.20 + 0.20 * Math.sin(now * 2.9 + 2) + (stateName === 'thinking' ? 0.35 * Math.abs(Math.sin(now * 4.7)) : 0);
 
-  const rawBass = lerp(AN.bands[0], pb, procW) * K.amp;
-  const rawMid  = lerp(AN.bands[1], pm, procW) * K.amp;
-  const rawTreb = lerp(AN.bands[2], pt, procW) * K.amp;
-  const rawLvl  = Math.max(AN.level, procW * 0.25) * K.amp;
+  const depthBoost = live ? (0.72 + musicDepth * 0.52) : 1.0;
+  const liveBass = clamp(AN.bands[0] * 0.78 + (AN.subBass || 0) * 0.38 + (AN.kickPunch || 0) * 0.28, 0, 1.85) * depthBoost;
+  const liveMid  = clamp(AN.bands[1] * depthBoost, 0, 1.75);
+  const liveTreb = clamp(AN.bands[2] * depthBoost, 0, 1.75);
+  const rawBass = lerp(liveBass, pb, procW) * K.amp;
+  const rawMid  = lerp(liveMid,  pm, procW) * K.amp;
+  const rawTreb = lerp(liveTreb, pt, procW) * K.amp;
+  const rawLvl  = Math.max(AN.level * depthBoost, procW * 0.25) * K.amp;
+
+  // Dynamic Free Room & Symmetry Breaking scaled by live musical depth
+  const effFreeRoom = clamp(freeRoom * (live ? (0.78 + (AN.depth || 0.3) * 0.68 * musicDepth) : 1.0), 0.15, 2.2);
+  const effSymBreak = clamp(symBreak + (live ? ((AN.depth || 0) * 0.32 + (AN.kickPunch || 0) * 0.22) * (musicDepth * 0.7) : 0), 0.0, 1.25);
 
   // Step 2nd-Order Symplectic Hamiltonian Oscillator Bank
-  stepHamiltonian(dt, [rawBass, rawMid, rawTreb, rawLvl], freeRoom);
-  const bass = Math.max(0.02, lerp(rawBass, HAM.q[0], 0.55));
-  const mid  = Math.max(0.02, lerp(rawMid,  HAM.q[1], 0.55));
-  const treb = Math.max(0.02, lerp(rawTreb, HAM.q[2], 0.50));
-  const level = Math.max(0.05, lerp(rawLvl, HAM.q[3], 0.50));
+  stepHamiltonian(dt, [rawBass, rawMid, rawTreb, rawLvl], effFreeRoom);
+  const bass = Math.max(0.02, lerp(rawBass, HAM.q[0], 0.48));
+  const mid  = Math.max(0.02, lerp(rawMid,  HAM.q[1], 0.50));
+  const treb = Math.max(0.02, lerp(rawTreb, HAM.q[2], 0.48));
+  const level = Math.max(0.05, lerp(rawLvl, HAM.q[3], 0.48));
 
   if (!AN.locked) {
     procPulse -= dt;
@@ -3433,12 +3537,16 @@ function tick() {
   const period = AN.locked ? AN.period : 0.5;
   beatEnv *= Math.exp(-dt / (period * 0.32));
   burst   *= Math.exp(-dt / (period * 0.55));
-  punch   *= Math.exp(-dt / 0.12);
-  const tempoK = AN.locked ? AN.bpm / 120 : 1;
+  punch   *= Math.exp(-dt / 0.14);
+  const tempoK = AN.locked ? AN.bpm / 120 : (live ? 0.85 + (AN.depth || 0.2) * 0.45 : 1);
   const phase = live ? beatPhase(audioTime) : 0;
 
-  tAcc += dt * (0.52 + level * 1.05 + mid * 0.42) * tempoK;
+  tAcc += dt * (0.48 + level * 1.18 + mid * 0.48) * tempoK;
   spinAcc += dt * K.spin * tempoK * (reduceMotion ? 0.4 : 1);
+
+  // Physical 3D Sub-Bass Core Expansion (breathes deeply on heavy bass drops & kick transients)
+  const bassPulseR = live ? clamp(((AN.subBass || 0) * 0.22 + (AN.kickPunch || 0) * 0.16 + punch * 0.14 + beatEnv * 0.10) * (0.65 + musicDepth * 0.45), 0, 0.42) : 0.04;
+  orbU.uR.value = lerp(orbU.uR.value, 0.84 + bassPulseR, 0.38);
 
   // Update Shared Orb & Fibroid Uniforms
   orbU.uT.value = tAcc;
@@ -3449,14 +3557,14 @@ function tick() {
   orbU.uLevel.value = level;
   orbU.uHarmL.value = K.l;
   orbU.uHarmM.value = K.m;
-  orbU.uFreeRoom.value = freeRoom;
-  orbU.uSymBreak.value = symBreak;
+  orbU.uFreeRoom.value = effFreeRoom;
+  orbU.uSymBreak.value = effSymBreak;
   orbU.uVisMode.value = K.vis;
   orbU.uTorusMorph.value = K.torusMorph;
   orbU.uFibIntensity.value = fibInt;
   orbU.uAccentBoost.value = accentBoost;
   orbU.uShowSurfFib.value = showOnBlobFib ? 1.0 : 0.0;
-  orbU.uSharp.value = stateName === 'listening' ? 8.0 : 6.2;
+  orbU.uSharp.value = stateName === 'listening' ? 8.0 : (5.4 + (AN.depth || 0) * 3.2);
   orbitalFibMat.uniforms.uInward.value = K.inward;
 
   orbit.yaw = lerp(orbit.yaw, orbit.tyaw, 0.12);
@@ -3795,13 +3903,14 @@ function tick() {
     if ($('#bpm')) $('#bpm').textContent = AN.locked ? Math.round(AN.bpm) : '—';
     const lock = $('#lock');
     const isVoice = (A.src === 'voice' || A.src === 'mic');
-    const lt = !live ? 'Harmonic' : AN.locked ? 'Locked' : (isVoice ? `Voice · F1 ${Math.round(AN.formantF1)}Hz` : 'Live');
-    if (lock && lock.textContent !== lt) { lock.textContent = lt; lock.dataset.on = AN.locked ? '1' : '0'; }
+    const styleTag = AN.styleLabel || 'Live';
+    const lt = !live ? 'Harmonic' : (isVoice ? `Voice · F1 ${Math.round(AN.formantF1)}Hz` : (AN.locked ? styleTag : `${styleTag} · ${Math.round((AN.depth || 0) * 100)}%`));
+    if (lock && lock.textContent !== lt) { lock.textContent = lt; lock.dataset.on = (AN.locked || (live && (AN.depth || 0) > 0.12)) ? '1' : '0'; }
     meterEls.forEach((el, i) => { if (el) el.style.width = (clamp([bass, mid, treb][i], 0, 1) * 100).toFixed(1) + '%'; });
     if (!AN.locked) $$('#bar i').forEach(el => el.classList.remove('on'));
-    if (qTelemEl) qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
+    if (qTelemEl) qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${effSymBreak.toFixed(2)}`;
     if ($('#activeAudioBadge')) {
-      const badgeMap = { none: 'Standby', sys: 'System / Tab', mic: 'Live Mic', file: 'Audio File', voice: 'Neural Voice', thinking: 'AI Synth' };
+      const badgeMap = { none: 'Standby', music_mic: '🎧 Live Music', sys: 'Tab / Screen', mic: 'Voice Mic', file: 'Audio File', voice: 'Neural Voice', thinking: 'AI Synth' };
       $('#activeAudioBadge').textContent = badgeMap[A.src] || 'Live';
     }
 
@@ -3813,6 +3922,7 @@ function tick() {
     if ($('#valFree')) $('#valFree').textContent = freeRoom.toFixed(2);
     if ($('#valSym')) $('#valSym').textContent = symBreak.toFixed(2);
     if ($('#valGain')) $('#valGain').textContent = gain.toFixed(2);
+    if ($('#valDepth')) $('#valDepth').textContent = musicDepth.toFixed(2);
     if ($('#xyReadout')) $('#xyReadout').textContent = `ℓ ${userL.toFixed(1)} · m ${userM.toFixed(1)} · ε ${symBreak.toFixed(2)}`;
     if ($('#xyPuck') && !xyDragging) {
       const xPct = clamp(((userL - 2.0) / 5.0) * 100, 6, 94);
@@ -4433,7 +4543,7 @@ if ($('#mediaSeek')) {
 }
 if ($('#micDeviceSelect')) {
   $('#micDeviceSelect').onchange = e => {
-    if (A.src === 'mic') startMic(e.target.value);
+    if (A.src === 'mic' || A.src === 'music_mic') startMic(e.target.value);
   };
 }
 
@@ -4451,9 +4561,14 @@ function toggleHelp(force) {
 if (bHelp) bHelp.onclick = () => toggleHelp();
 if ($('#bCloseHelp')) $('#bCloseHelp').onclick = () => toggleHelp(false);
 
-// Visualizer Surface Style (Field Mode) buttons
+// Visualizer Surface Style (Field Mode) buttons (including Auto-Style)
 $$('[data-vismode]').forEach(b => b.onclick = () => {
-  visMode = parseInt(b.dataset.vismode, 10);
+  if (b.dataset.vismode === 'auto') {
+    autoStyleVis = true;
+  } else {
+    autoStyleVis = false;
+    visMode = parseInt(b.dataset.vismode, 10);
+  }
   $$('[data-vismode]').forEach(x => x.setAttribute('aria-pressed', String(x === b)));
 });
 
