@@ -166,14 +166,14 @@
       iframe,
       sendCommand(cmdObj) {
         if (iframe.contentWindow) {
-          iframe.contentWindow.postMessage({ type: 'noether_plugin_cmd', ...cmdObj }, '*');
+          iframe.contentWindow.postMessage({ type: 'noether:command', ...cmdObj }, '*');
         }
       }
     };
   }
 
   return {
-    version: '9.0.0',
+    version: '11.0.0',
     NoetherVoiceSession,
     createVoiceSession: opts => new NoetherVoiceSession(opts),
     mount

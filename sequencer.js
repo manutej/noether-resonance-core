@@ -1,18 +1,18 @@
 /**
  * @file sequencer.js
  * @module NoetherSoundSequencer
+ * @version 11.0.0
  *
- * Modular Sound Timing Sequencer, PLL Beat/Bar Clock Sync, Vocal Formant (F1/F2) Tracker,
- * Conversational Turn State Machine, and 2nd-Order Symplectic Hamiltonian Field Coupler.
+ * Modular Sound Timing Sequencer, PLL Beat/Bar Clock Sync, 2048-Point Spectral/Formant (F1/F2)
+ * Analyser, and 2nd-Order Symplectic Hamiltonian Field Coupler for Noether Resonance Core.
  *
- * Designed for repeatability and zero-dependency plug-and-play across any 3D WebGL / Three.js
- * or Canvas visualizer archetype.
+ * Zero-dependency UMD module usable across browser (`window.NoetherSoundSequencer`),
+ * Node.js (`require('./sequencer.js')`), or external visualizers.
  *
- * Usage:
- *   const seq = createNoetherSequencer({ onBeat, onDownbeat, onOnset, onStateChange, onSourceChange });
- *   // In requestAnimationFrame loop:
- *   const frame = seq.step(dt, { gain, freeRoom, userL, symBreak });
- *   activeVisualizerBranch.update(frame);
+ * Public Factory API:
+ *   const seq = NoetherSoundSequencer.createNoetherSequencer({ onBeat, onDownbeat, onOnset });
+ *   seq.analyseAudio(audioTime, dt, gain, analyserNode, freqBuf, prevBuf, timeBuf, sampleRate);
+ *   const frame = seq.step(dt, audioTime, forces, freeRoom);
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) {
@@ -29,68 +29,27 @@
   const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 
   /* ─────────────────────────────────────────────────────────────────────────────
-   * 1. BUILT-IN OFFLINE PROCEDURAL COMPOSITIONS & FORMANT VOWEL TABLE
+   * 1. CANONICAL VOWEL FORMANT TABLE (F1 Hz, F2 Hz, F3 Hz, target l, target m)
+   *    Used by Speech Mode & Interactive Vowel Formant Articulator (/a/ /e/ /i/ /o/ /u/)
    * ───────────────────────────────────────────────────────────────────────────── */
-  const TRACK_LIBRARY = [
-    {
-      id: 'progression',
-      name: 'I. Noether Progression · Harmonic & tempo shifts (98→122→134→110 BPM)',
-      sections: [{ bpm: 98, bars: 8 }, { bpm: 122, bars: 8 }, { bpm: 134, bars: 8 }, { bpm: 110, bars: 8 }],
-      prog: [[57, 60, 64], [53, 57, 60], [48, 52, 55], [55, 59, 62]],
-      roots: [33, 29, 36, 31],
-      style: 'progression'
-    },
-    {
-      id: 'cathedral',
-      name: 'II. Göttingen 1918 · Harmonic cathedral choral fifths (76 BPM)',
-      sections: [{ bpm: 76, bars: 16 }],
-      prog: [[50, 57, 62, 69], [48, 55, 60, 67], [45, 52, 57, 64], [46, 53, 58, 65]],
-      roots: [26, 24, 33, 34],
-      style: 'cathedral'
-    },
-    {
-      id: 'idm',
-      name: 'III. Hopf Fibration Arp · 124 BPM IDM & crystalline overtones',
-      sections: [{ bpm: 124, bars: 16 }],
-      prog: [[60, 63, 67, 70], [58, 62, 65, 69], [56, 60, 63, 67], [55, 59, 62, 67]],
-      roots: [36, 34, 32, 31],
-      style: 'idm'
-    },
-    {
-      id: 'dub',
-      name: 'IV. Superfluid Vortex Dub · 88 BPM deep quantized sub-bass',
-      sections: [{ bpm: 88, bars: 16 }],
-      prog: [[51, 55, 58], [48, 51, 55], [46, 50, 53], [49, 53, 56]],
-      roots: [27, 24, 22, 25],
-      style: 'dub'
-    },
-    {
-      id: 'etude',
-      name: 'V. Broken Symmetry Etude · 112 BPM polymetric gauge study',
-      sections: [{ bpm: 112, bars: 16 }],
-      prog: [[54, 58, 61, 65], [52, 56, 59, 64], [49, 54, 57, 61], [51, 55, 60, 63]],
-      roots: [30, 28, 33, 27],
-      style: 'etude'
-    }
-  ];
-
-  // Formant vowel table: [F1 Hz, F2 Hz, F3 Hz, target l, target m]
-  const VOWELS = [
-    [730, 1090, 2440, 2, 1], // /a/
-    [530, 1840, 2480, 3, 2], // /e/
-    [270, 2290, 3010, 4, 3], // /i/
-    [570, 840, 2410, 3, 1],  // /o/
-    [300, 870, 2240, 2, 0],  // /u/
-    [660, 1720, 2410, 4, 2], // /ae/
-    [490, 1350, 1690, 3, 3]  // /er/
-  ];
+  const VOWEL_PRESETS = {
+    a: { id: 'a', label: '/a/', f1: 730, f2: 1090, f3: 2440, l: 2.2, m: 1.0 },
+    e: { id: 'e', label: '/e/', f1: 530, f2: 1840, f3: 2480, l: 3.4, m: 2.0 },
+    i: { id: 'i', label: '/i/', f1: 270, f2: 2290, f3: 3010, l: 4.8, m: 3.2 },
+    o: { id: 'o', label: '/o/', f1: 570, f2: 840,  f3: 2410, l: 3.0, m: 1.2 },
+    u: { id: 'u', label: '/u/', f1: 300, f2: 870,  f3: 2240, l: 2.0, m: 0.6 }
+  };
 
   /* ─────────────────────────────────────────────────────────────────────────────
-   * 2. MODULAR PLL BEAT / BAR CLOCK SYNC ENGINE
+   * 2. MODULAR PLL BEAT / BAR CLOCK SYNC & SPECTRAL / FORMANT ANALYSER
    * ───────────────────────────────────────────────────────────────────────────── */
   function createClockSync(callbacks = {}) {
-    const histBins = new Float32Array(81); // 80..160 BPM
+    const histBins = new Float32Array(81); // 80..160 BPM histogram
     const state = {
+      bands: [0, 0, 0],
+      peaks: [0.25, 0.25, 0.25],
+      level: 0,
+      fullFlux: 0,
       fluxHist: [],
       f1: 0,
       f2: 0,
@@ -110,20 +69,18 @@
       beatInBar: 0,
       accent: [0, 0, 0, 0],
       downOff: 0,
+      centroid: 0.35,
+      formantF1: 500,
+      formantF2: 1500,
       beatEnv: 0,
       downbeatEnv: 0,
       burst: 0,
-      punch: 0,
-      fullFlux: 0
+      punch: 0
     };
 
     function reset() {
       Object.assign(state, {
         fluxHist: [],
-        f1: 0,
-        f2: 0,
-        t1: 0,
-        lastOnset: -1,
         onsets: [],
         bpm: 0,
         cand: 0,
@@ -132,12 +89,15 @@
         locked: false,
         deterministicLock: false,
         nextBeat: 0,
-        period: 0.5,
         beatCount: 0,
         barCount: 0,
         beatInBar: 0,
         accent: [0, 0, 0, 0],
-        downOff: 0
+        downOff: 0,
+        lastOnset: -1,
+        f1: 0,
+        f2: 0,
+        t1: 0
       });
     }
 
@@ -149,9 +109,10 @@
       if (callbacks.onBeat) {
         callbacks.onBeat({
           strength,
-          locked: isLockedBeat,
+          locked: !!isLockedBeat,
           downbeat: !!isDownbeat,
           bpm: state.bpm,
+          period: state.period,
           beatCount: state.beatCount,
           beatInBar: state.beatInBar,
           barCount: state.barCount
@@ -162,7 +123,6 @@
       }
     }
 
-    // Allows internal sequencers (like Demo Track or Thinking Pulse) to lock tempo deterministically
     function setDeterministicTempo(bpm, audioTime, isDownbeat) {
       state.bpm = bpm;
       state.period = 60 / bpm;
@@ -171,9 +131,7 @@
       state.deterministicLock = true;
       state.lastOnset = audioTime;
       state.nextBeat = audioTime + state.period;
-      if (isDownbeat) {
-        state.downOff = state.beatCount % 4;
-      }
+      if (isDownbeat) state.downOff = state.beatCount % 4;
       state.beatInBar = ((state.beatCount - state.downOff) % 4 + 4) % 4;
       if (state.beatInBar === 0) state.barCount++;
       triggerPulse(isDownbeat ? 1.0 : 0.78, true, isDownbeat);
@@ -203,7 +161,7 @@
           total += w;
         }
       }
-      if (total <= 0 || o.length < 4) {
+      if (total <= 0 || o.length < 5) {
         state.conf *= 0.9;
         state.locked = state.bpm > 0 && state.conf > 0.14;
         return;
@@ -221,18 +179,18 @@
       state.conf = state.conf * 0.6 + (win / total) * 0.4;
 
       if (!state.bpm) {
-        if (state.conf > 0.15) {
+        if (state.conf > 0.16) {
           state.bpm = est;
           state.nextBeat = now + 60 / est;
         }
       } else if (Math.abs(est - state.bpm) < 3.5) {
-        state.bpm += (est - state.bpm) * 0.22;
+        state.bpm += (est - state.bpm) * 0.2;
         state.cand = 0;
       } else {
         if (!state.cand || Math.abs(est - state.cand) > 3) {
           state.cand = est;
           state.candSince = now;
-        } else if (now - state.candSince > 1.3) {
+        } else if (now - state.candSince > 1.4) {
           state.bpm = est;
           state.cand = 0;
           state.nextBeat = now + 60 / est;
@@ -259,8 +217,91 @@
       }
     }
 
-    function feedSpectralFlux(now, flux, fullFlux, bassBand) {
-      state.fullFlux = fullFlux;
+    function beatClock(now) {
+      if (state.deterministicLock) return;
+      if (state.locked && now - state.lastOnset > 2.5) state.locked = false;
+      if (!state.locked || !state.bpm) return;
+      state.period = 60 / state.bpm;
+      if (now - state.nextBeat > state.period * 2) state.nextBeat = state.lastOnset + state.period;
+      while (now >= state.nextBeat) {
+        const slot = state.beatCount % 4;
+        state.accent[slot] = state.accent[slot] * 0.8 + (state.fullFlux + state.bands[0] * 0.5) * 0.2;
+        state.downOff = state.accent.indexOf(Math.max(...state.accent));
+        state.beatInBar = ((state.beatCount - state.downOff) % 4 + 4) % 4;
+        const down = state.beatInBar === 0;
+        if (down) state.barCount++;
+        triggerPulse(down ? 1.0 : 0.75, true, down);
+        state.beatCount++;
+        state.nextBeat += state.period;
+      }
+    }
+
+    function beatPhase(now) {
+      if (state.locked && state.bpm) return clamp(1 - (state.nextBeat - now) / state.period, 0, 1);
+      return (now % 0.5) / 0.5;
+    }
+
+    function analyseAudio(now, dt, gain, analyser, freqBuf, prevBuf, timeBuf, sampleRate) {
+      analyser.getByteFrequencyData(freqBuf);
+      analyser.getFloatTimeDomainData(timeBuf);
+
+      const fftSize = analyser.fftSize;
+      const binLen = freqBuf.length;
+      const binOf = hz => clamp(Math.round(hz / (sampleRate / fftSize)), 1, binLen - 1);
+      const bandAvg = (lo, hi) => {
+        const a = binOf(lo), b = binOf(hi);
+        let s = 0;
+        for (let i = a; i <= b; i++) s += freqBuf[i];
+        return s / ((b - a + 1) * 255);
+      };
+
+      const raw = [bandAvg(25, 180), bandAvg(180, 2200), bandAvg(2200, 12000)];
+      const decay = Math.pow(0.5, dt / 4);
+      for (let i = 0; i < 3; i++) {
+        state.peaks[i] = Math.max(raw[i], state.peaks[i] * decay, 0.11);
+        const v = clamp((raw[i] / state.peaks[i]) * gain, 0, 1.45);
+        state.bands[i] += (v - state.bands[i]) * (v > state.bands[i] ? 0.55 : 0.13);
+      }
+
+      let rms = 0;
+      for (let i = 0; i < timeBuf.length; i += 4) rms += timeBuf[i] * timeBuf[i];
+      rms = Math.sqrt(rms / (timeBuf.length / 4));
+      state.level += (clamp(rms * 4.2 * gain, 0, 1.25) - state.level) * 0.32;
+
+      // Extract Live Speech Formants F1 (250–900 Hz) & F2 (900–2800 Hz) + Spectral Centroid
+      const hzPerBin = sampleRate / fftSize;
+      const f1Lo = binOf(250), f1Hi = binOf(900);
+      let maxF1 = 0, binF1 = f1Lo;
+      for (let i = f1Lo; i <= f1Hi; i++) {
+        if (freqBuf[i] > maxF1) { maxF1 = freqBuf[i]; binF1 = i; }
+      }
+      const f2Lo = binOf(900), f2Hi = binOf(2800);
+      let maxF2 = 0, binF2 = f2Lo;
+      for (let i = f2Lo; i <= f2Hi; i++) {
+        if (freqBuf[i] > maxF2) { maxF2 = freqBuf[i]; binF2 = i; }
+      }
+      if (maxF1 > 18) state.formantF1 = lerp(state.formantF1, binF1 * hzPerBin, 0.22);
+      if (maxF2 > 14) state.formantF2 = lerp(state.formantF2, binF2 * hzPerBin, 0.22);
+
+      const bLo = binOf(200), bHi = binOf(3400);
+      let num = 0, den = 0.001;
+      for (let i = bLo; i <= bHi; i++) {
+        const w = freqBuf[i] / 255;
+        num += ((i - bLo) / (bHi - bLo)) * w;
+        den += w;
+      }
+      state.centroid = lerp(state.centroid, clamp(num / den, 0, 1), 0.16);
+
+      const loEnd = binOf(220), midEnd = binOf(2400);
+      let flux = 0, full = 0;
+      for (let i = 1; i < midEnd; i++) {
+        const d = freqBuf[i] - prevBuf[i];
+        if (d > 0) { flux += d * (i < loEnd ? 1 : 0.32); full += d; }
+        prevBuf[i] = freqBuf[i];
+      }
+      flux /= (loEnd + (midEnd - loEnd) * 0.32) * 255;
+      state.fullFlux = full / (midEnd * 255);
+
       state.fluxHist.push({ t: now, v: flux });
       while (state.fluxHist.length && now - state.fluxHist[0].t > 1.0) state.fluxHist.shift();
       let m = 0;
@@ -268,70 +309,19 @@
       m /= Math.max(1, state.fluxHist.length);
       let sd = 0;
       for (let i = 0; i < state.fluxHist.length; i++) {
-        const d = state.fluxHist[i].v - m;
-        sd += d * d;
+        const diff = state.fluxHist[i].v - m;
+        sd += diff * diff;
       }
       sd = Math.sqrt(sd / Math.max(1, state.fluxHist.length));
-      const thr = m + 1.32 * sd + 0.011;
-      if (state.f1 > thr && state.f1 >= flux && state.f1 > state.f2 && state.t1 - state.lastOnset > 0.16) {
-        const strength = clamp((state.f1 - m) / (sd * 4 + 1e-4), 0.25, 1.0);
-        onOnset(state.t1, strength);
+      const thr = m + 1.35 * sd + 0.012;
+      if (state.f1 > thr && state.f1 >= flux && state.f1 > state.f2 && state.t1 - state.lastOnset > 0.17) {
+        onOnset(state.t1, clamp((state.f1 - m) / (sd * 4 + 1e-4), 0.25, 1));
       }
       state.f2 = state.f1;
       state.f1 = flux;
       state.t1 = now;
 
-      if (!state.deterministicLock) {
-        if (state.locked && now - state.lastOnset > 2.5) state.locked = false;
-        if (state.locked && state.bpm > 0) {
-          state.period = 60 / state.bpm;
-          if (now - state.nextBeat > state.period * 2) state.nextBeat = state.lastOnset + state.period;
-          while (now >= state.nextBeat) {
-            const slot = state.beatCount % 4;
-            state.accent[slot] = state.accent[slot] * 0.8 + (state.fullFlux + bassBand * 0.5) * 0.2;
-            state.downOff = state.accent.indexOf(Math.max(...state.accent));
-            state.beatInBar = ((state.beatCount - state.downOff) % 4 + 4) % 4;
-            const down = state.beatInBar === 0;
-            if (down) state.barCount++;
-            triggerPulse(down ? 1.0 : 0.75, true, down);
-            state.beatCount++;
-            state.nextBeat += state.period;
-          }
-        }
-      }
-    }
-
-    function stepEnvelopes(dt, now, isLive) {
-      const period = state.locked && state.bpm > 0 ? 60 / state.bpm : 0.5;
-      state.period = period;
-      state.beatEnv *= Math.exp(-dt / (period * 0.34));
-      state.downbeatEnv *= Math.exp(-dt / (period * 0.85));
-      state.burst *= Math.exp(-dt / (period * 0.55));
-      state.punch *= Math.exp(-dt / 0.13);
-
-      const beatPhase = (isLive && state.locked && state.bpm > 0)
-        ? clamp(1 - (state.nextBeat - now) / period, 0, 1)
-        : (now % 0.5) / 0.5;
-      const barPhase = (state.beatInBar + beatPhase) / 4;
-      const tempoScale = state.locked && state.bpm > 0 ? state.bpm / 120 : 1.0;
-
-      return {
-        locked: state.locked,
-        deterministicLock: state.deterministicLock,
-        bpm: state.locked ? state.bpm : 0,
-        confidence: state.conf,
-        period,
-        beatPhase,
-        barPhase,
-        beatInBar: state.beatInBar,
-        beatCount: state.beatCount,
-        barCount: state.barCount,
-        beatEnv: state.beatEnv,
-        downbeatEnv: state.downbeatEnv,
-        burst: state.burst,
-        punch: state.punch,
-        tempoScale
-      };
+      beatClock(now);
     }
 
     return {
@@ -339,8 +329,9 @@
       reset,
       triggerPulse,
       setDeterministicTempo,
-      feedSpectralFlux,
-      stepEnvelopes
+      analyseAudio,
+      beatClock,
+      beatPhase
     };
   }
 
@@ -349,37 +340,32 @@
    * ───────────────────────────────────────────────────────────────────────────── */
   function createSymplecticCoupler() {
     const H = {
-      q: [0.18, 0.22, 0.18, 0.20],
-      p: [0.0, 0.0, 0.0, 0.0],
-      omega: [2.5, 4.1, 6.4, 3.2],
-      zeta: [0.30, 0.26, 0.24, 0.28],
-      energy: 0.25,
-      actionPhase: 0.0
+      q: [0, 0, 0, 0], // Low, Mid, High, Radial Breathing canonical coordinates
+      v: [0, 0, 0, 0], // Canonical conjugate velocities
+      omega: [8.5, 13.0, 19.5, 5.2],
+      zeta: [0.34, 0.38, 0.42, 0.26],
+      energy: 0.42
     };
 
     function step(dt, forces, freeRoom = 1.0) {
       const subDt = Math.min(dt, 0.033) * 0.5;
-      const stiffScale = 1.0 / Math.max(0.35, freeRoom * 0.85);
-      let totalE = 0;
-
-      for (let stepIdx = 0; stepIdx < 2; stepIdx++) {
+      const invFree = 1.0 / Math.max(0.35, freeRoom);
+      let totalH = 0;
+      for (let s = 0; s < 2; s++) {
         for (let i = 0; i < 4; i++) {
-          const w = H.omega[i] * stiffScale;
-          const z = H.zeta[i];
-          const f = forces[i] * w * w * (0.78 + 0.36 * freeRoom);
-          const acc = f - (w * w) * H.q[i] - 2.0 * z * w * H.p[i];
-          H.p[i] += acc * subDt;
-          H.q[i] = clamp(H.q[i] + H.p[i] * subDt, 0.01, 2.2);
+          const w = H.omega[i] * Math.sqrt(invFree);
+          const acc = forces[i] * w * w - 2.0 * H.zeta[i] * w * H.v[i] - w * w * H.q[i];
+          H.v[i] += acc * subDt;
+          H.q[i] += H.v[i] * subDt;
+          H.q[i] = clamp(H.q[i], -0.45, 1.65);
         }
       }
       for (let i = 0; i < 4; i++) {
-        const ke = 0.5 * H.p[i] * H.p[i];
-        const pe = 0.5 * H.omega[i] * H.q[i] * H.q[i];
-        totalE += ke + pe;
-        // Lagrangian L = T - V integrated for Noether action phase S
-        H.actionPhase += (ke - pe) * dt * 0.25;
+        const kinetic = 0.5 * Math.pow(H.v[i] / H.omega[i], 2);
+        const potential = 0.5 * Math.pow(H.q[i], 2);
+        totalH += (kinetic + potential) * 0.45;
       }
-      H.energy = lerp(H.energy, clamp(totalE * 0.42, 0.05, 1.95), 0.16);
+      H.energy = lerp(H.energy, clamp(0.18 + totalH, 0.12, 2.40), 0.18);
       return H;
     }
 
@@ -392,19 +378,18 @@
     return {
       clock,
       coupler,
-      TRACK_LIBRARY,
-      VOWELS,
-      step(dt, audioTime, forces, freeRoom = 1.0) {
-        const env = clock.stepEnvelopes(dt, audioTime, opts.live !== false);
-        const ham = coupler.step(dt, forces || [0.1, 0.1, 0.1, 0.1], freeRoom);
-        return { clock: clock.state, env, ham };
-      }
+      VOWEL_PRESETS,
+      analyseAudio: clock.analyseAudio,
+      stepHamiltonian: coupler.step,
+      resetTempo: clock.reset,
+      lockDeterministicClock: clock.setDeterministicTempo,
+      beatPhase: clock.beatPhase
     };
   }
 
   return {
-    TRACK_LIBRARY,
-    VOWELS,
+    version: '11.0.0',
+    VOWEL_PRESETS,
     createClockSync,
     createSymplecticCoupler,
     createNoetherSequencer,

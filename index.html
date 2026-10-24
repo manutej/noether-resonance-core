@@ -258,7 +258,8 @@ body.ui-off .hud {
   background: rgba(255,255,255,0.06);
   color: var(--fg);
   font: 600 9.5px/1 var(--mono);
-  padding: 3px 6px;
+  min-height: 29px;
+  padding: 4px 8px;
   border-radius: 999px;
   cursor: pointer;
 }
@@ -289,7 +290,7 @@ body.ui-off .hud {
 .grp {
   display: flex;
   flex-wrap: wrap;
-  gap: 2px;
+  gap: 3px;
   align-items: center;
 }
 .grp + .grp {
@@ -301,12 +302,12 @@ body.ui-off .hud {
   border: 1px solid transparent;
   background: transparent;
   color: var(--fg-dim);
-  font: 500 11.5px/1 var(--mono);
+  font: 500 11px/1 var(--mono);
   min-height: 29px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 10px;
+  padding: 5px 10px;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
@@ -393,7 +394,7 @@ body.ui-off .hud {
   box-shadow: 0 0 10px var(--wada-fib);
 }
 body.drawer-open .settings-edge-tab {
-  right: min(415px, 92vw);
+  right: min(420px, 94vw);
   background: rgba(14, 18, 30, 0.96);
   border-color: var(--wada-fib);
 }
@@ -404,13 +405,13 @@ body.drawer-open .settings-edge-tab {
   top: 0;
   right: 0;
   bottom: 0;
-  width: min(415px, 92vw);
+  width: min(420px, 94vw);
   background: rgba(7, 9, 16, 0.94);
   border-left: 1px solid var(--line-bright);
-  padding: calc(env(safe-area-inset-top, 0px) + 14px) 14px calc(env(safe-area-inset-bottom, 0px) + 18px);
+  padding: calc(env(safe-area-inset-top, 0px) + 12px) 13px calc(env(safe-area-inset-bottom, 0px) + 18px);
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
   overflow-y: auto;
   scrollbar-width: thin;
   backdrop-filter: blur(26px);
@@ -432,12 +433,12 @@ body.drawer-open .settings-edge-tab {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding-bottom: 8px;
+  padding-bottom: 7px;
   border-bottom: 1px solid var(--line-bright);
 }
 .drawer-top-title {
   font: 700 11px/1.2 var(--mono);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--wada-rim);
   display: flex;
@@ -455,11 +456,11 @@ body.drawer-open .settings-edge-tab {
 .ctrl-card {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  padding: 10px 11px;
+  gap: 6px;
+  padding: 9px 10px;
   background: rgba(255, 255, 255, 0.028);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 11px;
   flex-shrink: 0;
 }
 .ctrl-card-head {
@@ -472,7 +473,7 @@ body.drawer-open .settings-edge-tab {
 }
 .ctrl-card-title {
   font: 600 9.5px/1.1 var(--mono);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
   color: var(--wada-rim);
   display: inline-flex;
@@ -509,6 +510,7 @@ body.drawer-open .settings-edge-tab {
   display: flex;
   align-items: center;
   gap: 5px;
+  min-height: 29px;
   padding: 4px 6px;
   background: rgba(5, 6, 11, 0.62);
   border: 1px solid var(--line);
@@ -561,8 +563,8 @@ body.drawer-open .settings-edge-tab {
   align-items: center;
   justify-content: flex-start;
   gap: 4px;
-  min-height: 26px;
-  padding: 3px 6px;
+  min-height: 29px;
+  padding: 4px 6px;
   border-radius: 6px;
   border: 1px solid var(--line);
   background: rgba(255, 255, 255, 0.03);
@@ -600,7 +602,7 @@ body.drawer-open .settings-edge-tab {
   gap: 4px;
 }
 .elem-grid .btn, .ctrl-subrow .btn {
-  min-height: 26px;
+  min-height: 29px;
   padding: 4px 7px;
   font-size: 10px;
   border-radius: 6px;
@@ -657,7 +659,7 @@ body.drawer-open .settings-edge-tab {
   grid-template-columns: 74px 1fr 30px;
   align-items: center;
   gap: 6px;
-  min-height: 19px;
+  min-height: 22px;
   font: 400 9.5px/1 var(--mono);
   color: var(--fg-dim);
   font-variant-numeric: tabular-nums;
@@ -681,8 +683,8 @@ body.drawer-open .settings-edge-tab {
   border: 1px solid var(--line);
   border-radius: 6px;
   font: 400 10px var(--mono);
-  min-height: 27px;
-  padding: 3px 7px;
+  min-height: 29px;
+  padding: 4px 8px;
   width: 100%;
   cursor: pointer;
 }
@@ -816,7 +818,7 @@ body.dragging .drop { opacity: 1; }
   border-radius: 999px;
   padding: 5px 11px;
   font-size: 11px;
-  min-height: 27px;
+  min-height: 29px;
 }
 
 /* Compact Live Conversational AI Caption Banner (Only shows when conversing with Noether) */
@@ -836,7 +838,7 @@ body.dragging .drop { opacity: 1; }
   box-shadow: 0 14px 36px rgba(0, 0, 0, 0.52);
   transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.voice-studio-card.active {
+.voice-studio-card.active, .voice-studio-card.visible {
   display: flex;
 }
 .voice-studio-head {
@@ -862,7 +864,8 @@ body.dragging .drop { opacity: 1; }
   color: var(--fg);
   border: 1px solid var(--line);
   border-radius: 6px;
-  padding: 3px 8px;
+  min-height: 29px;
+  padding: 4px 9px;
   font: 500 10px/1.2 var(--mono);
   cursor: pointer;
 }
@@ -898,6 +901,7 @@ body.dragging .drop { opacity: 1; }
 .voice-prompt-input {
   flex: 1;
   min-width: 0;
+  min-height: 29px;
   background: rgba(5, 6, 11, 0.78);
   border: 1px solid var(--line-bright);
   border-radius: 8px;
@@ -917,13 +921,14 @@ body.dragging .drop { opacity: 1; }
   border-top: 1px solid var(--line);
 }
 .dock-jarvis-input {
-  width: clamp(160px, 20vw, 260px);
+  width: clamp(160px, 20vw, 250px);
+  min-height: 29px;
   background: rgba(5, 6, 11, 0.75);
   border: 1px solid var(--line-bright);
   border-radius: 999px;
   color: var(--fg);
   font: 400 11.5px/1.2 var(--sans);
-  padding: 6px 12px;
+  padding: 5px 12px;
   outline: none;
 }
 .dock-jarvis-input:focus {
@@ -941,16 +946,16 @@ body.dragging .drop { opacity: 1; }
 @media (min-width: 900px) {
   body.drawer-open .tree-bar,
   body.drawer-open .toast {
-    left: calc((100vw - 415px) * 0.54);
+    left: calc((100vw - 420px) * 0.54);
   }
   body.drawer-open .dock {
-    left: calc((100vw - 415px) * 0.5);
-    max-width: calc(100vw - 440px);
+    left: calc((100vw - 420px) * 0.5);
+    max-width: calc(100vw - 445px);
     padding: 5px 8px;
     gap: 4px;
   }
   body.drawer-open .dock .dock-jarvis-input {
-    width: clamp(120px, 14vw, 185px);
+    width: clamp(115px, 13vw, 180px);
   }
 }
 /* When user is idle for >2.8s (and settings drawer is closed), fade out dock, top bar, toast, and cursor for pure monitor immersion */
@@ -983,22 +988,77 @@ body.idle-monitor.hide-hud-idle .tempo {
   pointer-events: none;
 }
 
+/* ───────────────────────── Mobile Ergonomics & Non-Overlapping Bottom Sheet (<= 760px) ───────────────────────── */
 @media (max-width: 760px) {
-  .meters, .q-telem, .hud-wada-strip { display: none; }
+  .meters, .q-telem, .hud-wada-strip, .id .src { display: none; }
+  .id { top: calc(env(safe-area-inset-top, 0px) + 12px); left: 14px; }
+  .state { font-size: 24px; gap: 7px; }
+  .tempo { top: calc(env(safe-area-inset-top, 0px) + 12px); right: 14px; gap: 3px; }
+  .bpm b { font-size: 24px; }
+  .bar { display: none; }
   .tree-bar {
-    top: calc(env(safe-area-inset-top, 0px) + 74px);
-    padding: 4px 7px;
+    top: calc(env(safe-area-inset-top, 0px) + 66px);
+    left: 10px;
+    right: 10px;
+    transform: none;
+    max-width: calc(100vw - 20px);
+    padding: 4px 6px;
+    justify-content: flex-start;
+  }
+  .tree-bar .btn {
+    padding: 4px 9px;
+    font-size: 10.5px;
+    min-height: 29px;
+  }
+  .settings-edge-tab {
+    top: auto;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 114px);
+    transform: none;
+    padding: 10px 7px;
+  }
+  body.drawer-open .settings-edge-tab {
+    right: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .tweak-drawer {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    max-height: 56vh;
+    border-left: none;
+    border-top: 1px solid var(--line-bright);
+    border-radius: 18px 18px 0 0;
+    transform: translateY(105%);
+    padding: 12px 12px calc(env(safe-area-inset-bottom, 0px) + 16px);
+  }
+  .tweak-drawer.open {
+    transform: translateY(0);
+  }
+  body.drawer-open .dock {
+    opacity: 0;
+    pointer-events: none;
   }
   .dock {
     width: calc(100vw - 16px);
+    max-width: calc(100vw - 16px);
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
     padding: 5px 6px;
-    gap: 3px;
+    gap: 4px;
   }
+  .grp {
+    width: 100%;
+    justify-content: center;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .grp::-webkit-scrollbar { display: none; }
   .grp + .grp { padding-left: 0; border-left: 0; }
-  .btn { padding: 6px 8px; font-size: 10.5px; min-height: 29px; }
-  .tweak-drawer {
-    width: min(380px, 94vw);
-  }
+  .dock-jarvis-input { width: 135px; flex: 1; }
+  .btn { padding: 5px 8px; font-size: 10.5px; min-height: 29px; }
 }
 </style>
 </head>
@@ -1015,7 +1075,7 @@ body.idle-monitor.hide-hud-idle .tempo {
   <div class="voice-studio-card" id="voiceStudioCard" aria-label="Noether Live Conversational Intelligence">
     <div class="voice-studio-head">
       <span class="voice-speaker-badge" id="voiceSpeakerBadge">✦ NOETHER · LIVE VOICE</span>
-      <button class="btn" id="bCloseVoiceCard" style="min-height:20px;padding:2px 6px;font-size:9.5px" title="Hide voice transcript card">✕</button>
+      <button class="btn" id="bCloseVoiceCard" style="padding:4px 8px;font-size:9.5px" title="Hide voice transcript card">✕</button>
     </div>
     <div class="jarvis-user-line" id="jarvisUserLine"></div>
     <div class="voice-caption-box" id="voiceCaptionBox">Listening...</div>
@@ -1066,8 +1126,8 @@ body.idle-monitor.hide-hud-idle .tempo {
   <div class="drawer-top-bar">
     <span class="drawer-top-title">Studio Settings &amp; Styles</span>
     <div style="display:flex;gap:5px">
-      <button class="btn primary" id="bFullscreenDrawer" style="min-height:24px;padding:3px 9px;font-size:10px" title="Enter Fullscreen Monitor Mode (Shortcut: F)">⛶ Fullscreen</button>
-      <button class="btn" id="bCloseDrawer" style="min-height:24px;padding:3px 8px;font-size:10px" title="Close Settings Tab (Tab / Esc)">Close ›</button>
+      <button class="btn primary" id="bFullscreenDrawer" style="padding:4px 10px;font-size:10px" title="Enter Fullscreen Monitor Mode (Shortcut: F)">⛶ Fullscreen</button>
+      <button class="btn" id="bCloseDrawer" style="padding:4px 9px;font-size:10px" title="Close Settings Tab (Tab / Esc)">Close ›</button>
     </div>
   </div>
 
@@ -1088,7 +1148,7 @@ body.idle-monitor.hide-hud-idle .tempo {
       <option value="">Default Audio Input (Mic / Mac BlackHole / Win Stereo Mix)</option>
     </select>
     <div class="media-scrub" id="mediaScrubWrap">
-      <button class="btn" id="bMediaPause" style="min-height:22px;padding:2px 7px;font-size:10px">Pause</button>
+      <button class="btn" id="bMediaPause" style="padding:4px 8px;font-size:10px">Pause</button>
       <input id="mediaSeek" type="range" min="0" max="1000" step="1" value="0" title="Seek audio file">
       <span id="mediaTime">0:00 / 0:00</span>
     </div>
@@ -1105,9 +1165,9 @@ body.idle-monitor.hide-hud-idle .tempo {
   <section class="ctrl-card" aria-label="Sanzo Wada 4-Pigment Palette and Custom Colors">
     <div class="ctrl-card-head">
       <span class="ctrl-card-title"><i></i>II · Colors &amp; Sanzo Wada Palettes</span>
-      <div style="display:flex;gap:3px">
-        <button class="btn" id="bRotateWada" style="min-height:21px;padding:2px 6px;font-size:9.5px" title="Rotate which pigment drives Ground, Body, Crest, and Accent">↻ Rotate</button>
-        <button class="btn" id="bBeatRotateWada" aria-pressed="true" style="min-height:21px;padding:2px 6px;font-size:9.5px" title="Automatically rotate Wada pigment roles every 4 bars on the beat">Beat-Sync</button>
+      <div style="display:flex;gap:4px">
+        <button class="btn" id="bRotateWada" style="padding:4px 8px;font-size:9.5px" title="Rotate which pigment drives Ground, Body, Crest, and Accent">↻ Rotate</button>
+        <button class="btn" id="bBeatRotateWada" aria-pressed="true" style="padding:4px 8px;font-size:9.5px" title="Automatically rotate Wada pigment roles every 4 bars on the beat">Beat-Sync</button>
       </div>
     </div>
     <div class="wada-role-matrix" id="wadaRoleMatrix">
@@ -1205,11 +1265,11 @@ body.idle-monitor.hide-hud-idle .tempo {
     </div>
   </section>
 
-  <!-- SECTION IV: Quantum Physics Sliders & 2D XY Symplectic Morph Pad -->
-  <section class="ctrl-card" aria-label="Quantum Physics and 2D XY Symplectic Pad">
+  <!-- SECTION IV: Quantum Physics Sliders, 2D XY Pad, Vowel Formants & Touch Harmonic Synth -->
+  <section class="ctrl-card" aria-label="Quantum Physics, 2D XY Pad, Vowel Formants and Touch Harmonic Synth">
     <div class="ctrl-card-head">
-      <span class="ctrl-card-title"><i></i>IV · Physics &amp; 2D XY Symplectic Pad</span>
-      <span class="ctrl-lbl" id="xyReadout" style="margin:0">ℓ 3.0 · ε 0.18</span>
+      <span class="ctrl-card-title"><i></i>IV · Physics, Formants &amp; Synth</span>
+      <span class="ctrl-lbl" id="xyReadout" style="margin:0">ℓ 3.0 · m 2.0 · ε 0.18</span>
     </div>
     <div class="phys-split">
       <div class="xy-pad" id="xyMorphPad" title="Drag in 2D to sweep Harmonic Order ℓ (X-axis) and Symmetry Breaking ε + Free Room (Y-axis)">
@@ -1219,6 +1279,9 @@ body.idle-monitor.hide-hud-idle .tempo {
       <div class="sl-stack">
         <label class="sl-wrap" title="Spherical Harmonic Multipole Order (l)">
           Harmonic ℓ <input id="slHarmonic" type="range" min="2" max="7" step="0.2" value="3"><b id="valHarm">3.0</b>
+        </label>
+        <label class="sl-wrap" title="Azimuthal Spin Quantum Number (m)">
+          Azimuthal m <input id="slHarmM" type="range" min="0" max="6" step="0.2" value="2"><b id="valHarmM">2.0</b>
         </label>
         <label class="sl-wrap" title="Noether Second Theorem Free-Room Elasticity">
           Free Room <input id="slFreeRoom" type="range" min="0.3" max="1.6" step="0.05" value="1.05"><b id="valFree">1.05</b>
@@ -1231,9 +1294,27 @@ body.idle-monitor.hide-hud-idle .tempo {
         </label>
       </div>
     </div>
+    <div class="ctrl-subrow" role="group" aria-label="Speech Vowel Formant Articulator">
+      <span class="ctrl-lbl">Formant</span>
+      <button class="btn" data-vowel="a" style="flex:1" title="Sculpt /a/ Vowel Formant (F1=730Hz, F2=1090Hz → ℓ=2.2, m=1.0)">/a/</button>
+      <button class="btn" data-vowel="e" style="flex:1" title="Sculpt /e/ Vowel Formant (F1=530Hz, F2=1840Hz → ℓ=3.4, m=2.0)">/e/</button>
+      <button class="btn" data-vowel="i" style="flex:1" title="Sculpt /i/ Vowel Formant (F1=270Hz, F2=2290Hz → ℓ=4.8, m=3.2)">/i/</button>
+      <button class="btn" data-vowel="o" style="flex:1" title="Sculpt /o/ Vowel Formant (F1=570Hz, F2=840Hz → ℓ=3.0, m=1.2)">/o/</button>
+      <button class="btn" data-vowel="u" style="flex:1" title="Sculpt /u/ Vowel Formant (F1=300Hz, F2=870Hz → ℓ=2.0, m=0.6)">/u/</button>
+    </div>
+    <div class="ctrl-subrow" role="group" aria-label="Touch Harmonic Chime Keyboard">
+      <span class="ctrl-lbl">Chimes</span>
+      <button class="btn" data-chime="57" style="flex:1" title="Play A3 Harmonic Chime (Key A)">A</button>
+      <button class="btn" data-chime="60" style="flex:1" title="Play C4 Harmonic Chime (Key S)">C</button>
+      <button class="btn" data-chime="62" style="flex:1" title="Play D4 Harmonic Chime (Key D)">D</button>
+      <button class="btn" data-chime="64" style="flex:1" title="Play E4 Harmonic Chime (Key F)">E</button>
+      <button class="btn" data-chime="67" style="flex:1" title="Play G4 Harmonic Chime (Key G)">G</button>
+      <button class="btn" data-chime="69" style="flex:1" title="Play A4 Harmonic Chime (Key H)">A4</button>
+      <button class="btn" data-chime="72" style="flex:1" title="Play C5 Harmonic Chime (Key J)">C5</button>
+    </div>
   </section>
 
-  <!-- SECTION V: Noether Voice AI Assistant & Preset Export -->
+  <!-- SECTION V: Noether Voice AI Assistant, Cognitive States & Preset Export -->
   <section class="ctrl-card" aria-label="Noether Conversational AI and Studio Export">
     <div class="ctrl-card-head">
       <span class="ctrl-card-title"><i></i>V · Noether Voice AI &amp; Export</span>
@@ -1241,6 +1322,12 @@ body.idle-monitor.hide-hud-idle .tempo {
         <option value="Kore">Voice · Kore</option>
         <option value="Puck">Voice · Puck</option>
       </select>
+    </div>
+    <div class="ctrl-subrow" role="group" aria-label="Conversational Cognitive States">
+      <button class="btn" data-state="idle" aria-pressed="true" style="flex:1" title="Contemplating / Idle State (Key 1)">◎ Idle</button>
+      <button class="btn" data-state="listening" aria-pressed="false" style="flex:1" title="Listening State (Key 2)">◈ Listen</button>
+      <button class="btn" data-state="thinking" aria-pressed="false" style="flex:1" title="Reasoning / Symmetry Search State (Key 3)">❖ Think</button>
+      <button class="btn" data-state="speaking" aria-pressed="false" style="flex:1" title="Speaking State (Key 4)">✦ Speak</button>
     </div>
     <div class="ctrl-subrow">
       <button class="btn" id="bHandsFreeJarvis" aria-pressed="true" style="flex:1" title="Continuous conversation loop when speaking to Noether">∞ Hands-Free Loop</button>
@@ -1423,7 +1510,7 @@ let jarvisRecognition = null;
 
 const K = { amp: 0.48, spin: 0.22, inward: 0, proc: 0.52, l: 3.0, m: 2.0, vis: 0.0, torusMorph: 0.0 };
 
-/* ── 2nd-Order Symplectic Hamiltonian Oscillator Bank (Modular Coupler) ── */
+/* ── 2nd-Order Symplectic Hamiltonian Oscillator Bank (Modular Coupler via sequencer.js) ── */
 const HAM = {
   q: [0, 0, 0, 0], // Low, Mid, High, Radial Breathing coordinates
   v: [0, 0, 0, 0], // Canonical conjugate velocities
@@ -1433,6 +1520,15 @@ const HAM = {
 };
 
 function stepHamiltonian(dt, forces, freeRoom) {
+  if (typeof SEQ !== 'undefined' && SEQ && typeof SEQ.stepHamiltonian === 'function') {
+    const hState = SEQ.stepHamiltonian(dt, forces, freeRoom);
+    for (let i = 0; i < 4; i++) {
+      HAM.q[i] = hState.q[i];
+      HAM.v[i] = hState.v[i];
+    }
+    HAM.energy = hState.energy;
+    return;
+  }
   const subDt = Math.min(dt, 0.033) * 0.5;
   const invFree = 1.0 / Math.max(0.35, freeRoom);
   let totalH = 0;
@@ -2043,9 +2139,10 @@ async function runCustomAiTurn(userPrompt) {
   turnActive = true;
 
   // Show Voice HUD when user interacts with Noether AI
-  const voiceHud = $('#jarvisVoiceHud');
+  const voiceHud = $('#voiceStudioCard') || $('#jarvisVoiceHud');
   if (voiceHud) voiceHud.classList.add('visible');
   if ($('#bVoiceHudToggle')) $('#bVoiceHudToggle').setAttribute('aria-pressed', 'true');
+  if ($('#bVoiceHudDrawer')) $('#bVoiceHudDrawer').setAttribute('aria-pressed', 'true');
 
   const speaker = ($('#jarvisVoiceSelect') && $('#jarvisVoiceSelect').value) || 'Kore';
   const userLineEl = $('#jarvisUserLine');
@@ -2128,8 +2225,14 @@ async function runCustomAiTurn(userPrompt) {
   }
 }
 
-/* ───────────────────────── Modular ClockSync & Spectral/Formant Analyser ───────────────────────── */
-const AN = {
+/* ───────────────────────── Modular ClockSync & Spectral/Formant Analyser (via sequencer.js) ───────────────────────── */
+const SEQ = (window.NoetherSoundSequencer && window.NoetherSoundSequencer.createNoetherSequencer)
+  ? window.NoetherSoundSequencer.createNoetherSequencer({
+      onBeat: ({ strength, locked, downbeat }) => fireBeat(strength, locked, downbeat)
+    })
+  : null;
+
+const AN = SEQ ? SEQ.clock.state : {
   bands: [0, 0, 0], peaks: [0.25, 0.25, 0.25], level: 0, fullFlux: 0,
   fluxHist: [], f1: 0, f2: 0, t1: 0, lastOnset: -1, onsets: [],
   bpm: 0, cand: 0, candSince: 0, conf: 0, locked: false, deterministicLock: false,
@@ -2138,6 +2241,7 @@ const AN = {
 };
 
 function resetTempo() {
+  if (SEQ) return SEQ.resetTempo();
   Object.assign(AN, {
     fluxHist: [], onsets: [], bpm: 0, cand: 0, conf: 0, locked: false, deterministicLock: false,
     nextBeat: 0, beatCount: 0, accent: [0, 0, 0, 0], downOff: 0, lastOnset: -1
@@ -2145,159 +2249,23 @@ function resetTempo() {
 }
 
 function lockDeterministicClock(bpm, audioTime, isDownbeat) {
-  AN.bpm = bpm;
-  AN.period = 60 / bpm;
-  AN.conf = 1.0;
-  AN.locked = true;
-  AN.deterministicLock = true;
-  AN.lastOnset = audioTime;
-  AN.nextBeat = audioTime + AN.period;
-  if (isDownbeat) AN.downOff = AN.beatCount % 4;
-  fireBeat(isDownbeat ? 1.0 : 0.78, true, isDownbeat);
-  AN.beatCount++;
+  if (SEQ) return SEQ.lockDeterministicClock(bpm, audioTime, isDownbeat);
 }
 
 function binOf(hz) { return clamp(Math.round(hz / (A.ctx.sampleRate / A.analyser.fftSize)), 1, A.freq.length - 1); }
-function bandAvg(lo, hi) {
-  const a = binOf(lo), b = binOf(hi); let s = 0;
-  for (let i = a; i <= b; i++) s += A.freq[i];
-  return s / ((b - a + 1) * 255);
-}
 
 function analyse(now, dt, gain) {
-  A.analyser.getByteFrequencyData(A.freq);
-  A.analyser.getFloatTimeDomainData(A.time);
-
-  const raw = [bandAvg(25, 180), bandAvg(180, 2200), bandAvg(2200, 12000)];
-  const decay = Math.pow(0.5, dt / 4);
-  for (let i = 0; i < 3; i++) {
-    AN.peaks[i] = Math.max(raw[i], AN.peaks[i] * decay, 0.11);
-    const v = clamp((raw[i] / AN.peaks[i]) * gain, 0, 1.45);
-    AN.bands[i] += (v - AN.bands[i]) * (v > AN.bands[i] ? 0.55 : 0.13);
+  if (SEQ) {
+    SEQ.analyseAudio(now, dt, gain, A.analyser, A.freq, A.prev, A.time, A.ctx.sampleRate);
   }
-
-  let rms = 0;
-  for (let i = 0; i < A.time.length; i += 4) rms += A.time[i] * A.time[i];
-  rms = Math.sqrt(rms / (A.time.length / 4));
-  AN.level += (clamp(rms * 4.2 * gain, 0, 1.25) - AN.level) * 0.32;
-
-  // Extract Live Speech Formants F1 (250–900 Hz) & F2 (900–2800 Hz) + Spectral Centroid
-  const hzPerBin = A.ctx.sampleRate / A.analyser.fftSize;
-  const f1Lo = binOf(250), f1Hi = binOf(900);
-  let maxF1 = 0, binF1 = f1Lo;
-  for (let i = f1Lo; i <= f1Hi; i++) {
-    if (A.freq[i] > maxF1) { maxF1 = A.freq[i]; binF1 = i; }
-  }
-  const f2Lo = binOf(900), f2Hi = binOf(2800);
-  let maxF2 = 0, binF2 = f2Lo;
-  for (let i = f2Lo; i <= f2Hi; i++) {
-    if (A.freq[i] > maxF2) { maxF2 = A.freq[i]; binF2 = i; }
-  }
-  if (maxF1 > 18) AN.formantF1 = lerp(AN.formantF1, binF1 * hzPerBin, 0.22);
-  if (maxF2 > 14) AN.formantF2 = lerp(AN.formantF2, binF2 * hzPerBin, 0.22);
-
-  const bLo = binOf(200), bHi = binOf(3400);
-  let num = 0, den = 0.001;
-  for (let i = bLo; i <= bHi; i++) {
-    const w = A.freq[i] / 255;
-    num += ((i - bLo) / (bHi - bLo)) * w;
-    den += w;
-  }
-  AN.centroid = lerp(AN.centroid, clamp(num / den, 0, 1), 0.16);
-
-  const loEnd = binOf(220), midEnd = binOf(2400);
-  let flux = 0, full = 0;
-  for (let i = 1; i < midEnd; i++) {
-    const d = A.freq[i] - A.prev[i];
-    if (d > 0) { flux += d * (i < loEnd ? 1 : 0.32); full += d; }
-    A.prev[i] = A.freq[i];
-  }
-  flux /= (loEnd + (midEnd - loEnd) * 0.32) * 255;
-  AN.fullFlux = full / (midEnd * 255);
-
-  AN.fluxHist.push({ t: now, v: flux });
-  while (AN.fluxHist.length && now - AN.fluxHist[0].t > 1.0) AN.fluxHist.shift();
-  let m = 0; AN.fluxHist.forEach(h => m += h.v); m /= AN.fluxHist.length;
-  let sd = 0; AN.fluxHist.forEach(h => sd += (h.v - m) * (h.v - m)); sd = Math.sqrt(sd / AN.fluxHist.length);
-  const thr = m + 1.35 * sd + 0.012;
-  if (AN.f1 > thr && AN.f1 >= flux && AN.f1 > AN.f2 && AN.t1 - AN.lastOnset > 0.17) {
-    onOnset(AN.t1, clamp((AN.f1 - m) / (sd * 4 + 1e-4), 0.25, 1));
-  }
-  AN.f2 = AN.f1; AN.f1 = flux; AN.t1 = now;
-}
-
-function onOnset(t, strength) {
-  AN.lastOnset = t;
-  AN.onsets.push({ t, s: strength });
-  while (AN.onsets.length && t - AN.onsets[0].t > 8) AN.onsets.shift();
-  if (AN.deterministicLock) return;
-  estimateTempo(t);
-  if (AN.locked) {
-    const p = AN.period, prev = AN.nextBeat - p;
-    const near = Math.abs(t - prev) < Math.abs(t - AN.nextBeat) ? prev : AN.nextBeat;
-    const e = t - near;
-    if (Math.abs(e) < 0.3 * p) AN.nextBeat += e * 0.32;
-  } else {
-    fireBeat(strength * 0.85, false);
-  }
-}
-
-const HIST = new Float32Array(81);
-function estimateTempo(now) {
-  if (AN.deterministicLock) return;
-  HIST.fill(0);
-  const o = AN.onsets; let total = 0;
-  for (let i = 0; i < o.length; i++) for (let j = i + 1; j < o.length; j++) {
-    const d = o[j].t - o[i].t; if (d < 0.25 || d > 3.2) continue;
-    let bpm = 60 / d; while (bpm < 80) bpm *= 2; while (bpm >= 160) bpm /= 2;
-    const n = Math.max(1, Math.round(d * bpm / 60));
-    const age = Math.exp(-(now - o[j].t) / 4);
-    const w = o[i].s * o[j].s * age / (1 + 0.45 * (n - 1));
-    const x = bpm - 80, k = Math.floor(x), f = x - k;
-    HIST[k] += w * (1 - f); if (k + 1 < 81) HIST[k + 1] += w * f;
-    total += w;
-  }
-  if (total <= 0 || o.length < 5) { AN.conf *= 0.9; AN.locked = AN.bpm > 0 && AN.conf > 0.14; return; }
-  let best = 0, bi = 0;
-  for (let i = 1; i < 80; i++) {
-    const v = HIST[i - 1] * 0.25 + HIST[i] * 0.5 + HIST[i + 1] * 0.25;
-    if (v > best) { best = v; bi = i; }
-  }
-  const a = HIST[bi - 1], b = HIST[bi], c = HIST[bi + 1] || 0;
-  const off = (a - c) / (2 * (a - 2 * b + c) || 1);
-  const est = 80 + bi + clamp(off, -0.5, 0.5);
-  let win = 0; for (let i = Math.max(0, bi - 2); i <= Math.min(80, bi + 2); i++) win += HIST[i];
-  AN.conf = AN.conf * 0.6 + (win / total) * 0.4;
-
-  if (!AN.bpm) { if (AN.conf > 0.16) { AN.bpm = est; AN.nextBeat = now + 60 / est; } }
-  else if (Math.abs(est - AN.bpm) < 3.5) { AN.bpm += (est - AN.bpm) * 0.2; AN.cand = 0; }
-  else {
-    if (!AN.cand || Math.abs(est - AN.cand) > 3) { AN.cand = est; AN.candSince = now; }
-    else if (now - AN.candSince > 1.4) { AN.bpm = est; AN.cand = 0; AN.nextBeat = now + 60 / est; }
-  }
-  const recent = o.filter(x => now - x.t < 3).length;
-  AN.locked = AN.bpm > 0 && AN.conf > 0.14 && recent >= 3;
 }
 
 function beatClock(now) {
-  if (AN.deterministicLock) return;
-  if (AN.locked && now - AN.lastOnset > 2.5) AN.locked = false;
-  if (!AN.locked || !AN.bpm) return;
-  AN.period = 60 / AN.bpm;
-  if (now - AN.nextBeat > AN.period * 2) AN.nextBeat = AN.lastOnset + AN.period;
-  while (now >= AN.nextBeat) {
-    const slot = AN.beatCount % 4;
-    AN.accent[slot] = AN.accent[slot] * 0.8 + (AN.fullFlux + AN.bands[0] * 0.5) * 0.2;
-    AN.downOff = AN.accent.indexOf(Math.max(...AN.accent));
-    const down = ((AN.beatCount - AN.downOff) % 4 + 4) % 4 === 0;
-    fireBeat(down ? 1 : 0.75, true, down);
-    AN.beatCount++;
-    AN.nextBeat += AN.period;
-  }
+  if (SEQ) SEQ.clock.beatClock(now);
 }
+
 function beatPhase(now) {
-  if (AN.locked && AN.bpm) return clamp(1 - (AN.nextBeat - now) / AN.period, 0, 1);
-  return (now % 0.5) / 0.5;
+  return SEQ ? SEQ.beatPhase(now) : (now % 0.5) / 0.5;
 }
 
 /* ───────────────────────── Three.js WebGL2 Quantum Field Scene ───────────────────────── */
@@ -3377,6 +3345,7 @@ const accentEl = $('#slAccentPop');
 const bgGlowEl = $('#slBgGlow');
 const fibEl = $('#slFibroid');
 const harmEl = $('#slHarmonic');
+const harmMEl = $('#slHarmM');
 const freeEl = $('#slFreeRoom');
 const symEl = $('#slSymBreak');
 const meterEls = [$('#mLow'), $('#mMid'), $('#mHigh')];
@@ -3415,23 +3384,23 @@ function tick() {
   const bgGlowVal = bgGlowEl ? parseFloat(bgGlowEl.value) : 0.16;
   const fibInt = fibEl ? parseFloat(fibEl.value) : 0.85;
   const userL = harmEl ? parseFloat(harmEl.value) : 3.0;
+  const userM = harmMEl ? parseFloat(harmMEl.value) : 2.0;
   const freeRoom = freeEl ? parseFloat(freeEl.value) : 0.90;
   const symBreak = symEl ? parseFloat(symEl.value) : 0.18;
 
   const audioTime = live ? A.ctx.currentTime : now;
   if (live) {
     analyse(audioTime, dt, gain);
-    beatClock(audioTime);
   } else {
     AN.bands.forEach((v, i) => AN.bands[i] = v * 0.92);
     AN.level *= 0.92;
   }
 
-  // Smoothly adapt Spherical Harmonic numbers (l, m) to live vocal formants (F1, F2) + user slider
+  // Smoothly adapt Spherical Harmonic numbers (l, m) to live vocal formants (F1, F2) + user sliders
   const f1Norm = clamp((AN.formantF1 - 260) / 600, 0, 1);
   const f2Norm = clamp((AN.formantF2 - 900) / 1800, 0, 1);
-  const targetL = userL + (live ? (f1Norm * 1.4 + AN.centroid * 1.1) : 0.4 * Math.sin(now * 0.4));
-  const targetM = Math.max(1.0, Math.min(targetL, st.mTarget + (live ? (f2Norm * 1.8 + AN.bands[1] * 0.9) : 0)));
+  const targetL = userL + (live ? (f1Norm * 1.4 + AN.centroid * 1.1) : 0.35 * Math.sin(now * 0.4));
+  const targetM = Math.max(0.0, Math.min(targetL, userM + (live ? (f2Norm * 1.6 + AN.bands[1] * 0.8) : 0)));
   K.l = lerp(K.l, targetL, k * 0.85);
   K.m = lerp(K.m, targetM, k * 0.85);
 
@@ -3766,12 +3735,12 @@ function tick() {
     m.material.color.setRGB(pal.fib.x, pal.fib.y, pal.fib.z);
   });
 
-  // Center 3D visual cleanly when Right Settings Drawer is open or closed
+  // Center 3D visual cleanly when Right Settings Drawer (or Mobile Bottom Sheet) is open or closed
   const drawerOpen = $('#tweakDrawer') && $('#tweakDrawer').classList.contains('open');
   const isMobile = window.innerWidth < 760;
   const targetX = (drawerOpen && !isMobile) ? -0.44 : 0.0;
-  const targetY = isMobile ? 0.16 : 0.04;
-  const targetScale = drawerOpen ? (isMobile ? 0.78 : 0.90) : (isMobile ? 0.88 : 1.0);
+  const targetY = (drawerOpen && isMobile) ? 0.44 : (isMobile ? 0.12 : 0.04);
+  const targetScale = drawerOpen ? (isMobile ? 0.72 : 0.90) : (isMobile ? 0.86 : 1.0);
   world.position.x = lerp(world.position.x, targetX, 0.14);
   world.position.y = lerp(world.position.y, targetY, 0.14);
   world.scale.setScalar(lerp(world.scale.x, targetScale, 0.14));
@@ -3780,7 +3749,7 @@ function tick() {
   bgClearColor.setRGB(pal.core.x * bgGlowVal, pal.core.y * bgGlowVal, pal.core.z * (bgGlowVal * 1.16));
   renderer.setClearColor(bgClearColor, 1);
 
-  // 4-Mode 3D Camera Choreography + Mouse-Wheel Zoom
+  // 4-Mode 3D Camera Choreography + Mouse-Wheel / Touch Pinch Zoom
   const baseZ = clamp(camera.userData.z + zoomOffset, 3.2, 11.5);
   const sway = reduceMotion ? 0 : 1;
   let camX = Math.sin(now * 0.11) * 0.42 * sway;
@@ -3831,15 +3800,20 @@ function tick() {
     meterEls.forEach((el, i) => { if (el) el.style.width = (clamp([bass, mid, treb][i], 0, 1) * 100).toFixed(1) + '%'; });
     if (!AN.locked) $$('#bar i').forEach(el => el.classList.remove('on'));
     if (qTelemEl) qTelemEl.innerHTML = `Y<sub>${K.l.toFixed(1)}</sub><sup>${K.m.toFixed(1)}</sup> · H ${HAM.energy.toFixed(2)} · ε ${symBreak.toFixed(2)}`;
+    if ($('#activeAudioBadge')) {
+      const badgeMap = { none: 'Standby', sys: 'System / Tab', mic: 'Live Mic', file: 'Audio File', voice: 'Neural Voice', thinking: 'AI Synth' };
+      $('#activeAudioBadge').textContent = badgeMap[A.src] || 'Live';
+    }
 
     if ($('#valAccent')) $('#valAccent').textContent = accentBoost.toFixed(2);
     if ($('#valBgGlow')) $('#valBgGlow').textContent = bgGlowVal.toFixed(2);
     if ($('#valFib')) $('#valFib').textContent = fibInt.toFixed(2);
     if ($('#valHarm')) $('#valHarm').textContent = userL.toFixed(1);
+    if ($('#valHarmM')) $('#valHarmM').textContent = userM.toFixed(1);
     if ($('#valFree')) $('#valFree').textContent = freeRoom.toFixed(2);
     if ($('#valSym')) $('#valSym').textContent = symBreak.toFixed(2);
     if ($('#valGain')) $('#valGain').textContent = gain.toFixed(2);
-    if ($('#xyReadout')) $('#xyReadout').textContent = `l=${userL.toFixed(1)} · ε=${symBreak.toFixed(2)}`;
+    if ($('#xyReadout')) $('#xyReadout').textContent = `ℓ ${userL.toFixed(1)} · m ${userM.toFixed(1)} · ε ${symBreak.toFixed(2)}`;
     if ($('#xyPuck') && !xyDragging) {
       const xPct = clamp(((userL - 2.0) / 5.0) * 100, 6, 94);
       const yPct = clamp((1.0 - symBreak / 1.0) * 100, 8, 92);
@@ -3951,7 +3925,7 @@ function toggleVideoRecord() {
   }
 }
 
-/* ───────────────────────── Preset Persistence (URL Hash + LocalStorage v10) ───────────────────────── */
+/* ───────────────────────── Preset Persistence (URL Hash + LocalStorage v11) ───────────────────────── */
 function saveAndSharePreset() {
   const params = new URLSearchParams();
   params.set('branch', activeBranch);
@@ -3963,6 +3937,7 @@ function saveAndSharePreset() {
   if (bgGlowEl) params.set('bg', bgGlowEl.value);
   if (fibEl) params.set('fib', fibEl.value);
   if (harmEl) params.set('l', harmEl.value);
+  if (harmMEl) params.set('m', harmMEl.value);
   if (freeEl) params.set('free', freeEl.value);
   if (symEl) params.set('eps', symEl.value);
   params.set('core', showCoreSurface ? '1' : '0');
@@ -3974,7 +3949,7 @@ function saveAndSharePreset() {
   const hash = '#' + params.toString();
   try {
     history.replaceState(null, '', hash);
-    localStorage.setItem('noether_resonance_preset_v10', params.toString());
+    localStorage.setItem('noether_resonance_preset_v11', params.toString());
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(location.href).catch(() => {});
     }
@@ -3990,7 +3965,9 @@ function loadPresetFromHashOrStorage() {
       paletteMode = urlParams.get('palette');
       $$('[data-pal]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.pal === paletteMode)));
     }
-    const raw = location.hash.length > 1 ? location.hash.slice(1) : localStorage.getItem('noether_resonance_preset_v10');
+    const raw = location.hash.length > 1
+      ? location.hash.slice(1)
+      : (localStorage.getItem('noether_resonance_preset_v11') || localStorage.getItem('noether_resonance_preset_v10'));
     if (!raw) return;
     const p = new URLSearchParams(raw);
     if (p.has('branch')) setActiveBranch(p.get('branch'));
@@ -4014,6 +3991,7 @@ function loadPresetFromHashOrStorage() {
     if (p.has('bg') && bgGlowEl) bgGlowEl.value = p.get('bg');
     if (p.has('fib') && fibEl) fibEl.value = p.get('fib');
     if (p.has('l') && harmEl) harmEl.value = p.get('l');
+    if (p.has('m') && harmMEl) harmMEl.value = p.get('m');
     if (p.has('free') && freeEl) freeEl.value = p.get('free');
     if (p.has('eps') && symEl) symEl.value = p.get('eps');
     if (p.has('core') && $('#bCoreSurfaceToggle')) {
@@ -4140,9 +4118,9 @@ window.addEventListener('pointerdown', wakeIdleMonitor, { passive: true });
 window.addEventListener('keydown', wakeIdleMonitor, { passive: true });
 wakeIdleMonitor();
 
-// Voice HUD Visibility Toggle
+// Voice HUD Visibility Toggle (#voiceStudioCard)
 function toggleVoiceHud(force) {
-  const hud = $('#jarvisVoiceHud');
+  const hud = $('#voiceStudioCard') || $('#jarvisVoiceHud');
   if (!hud) return;
   const show = typeof force === 'boolean' ? force : !hud.classList.contains('visible');
   hud.classList.toggle('visible', show);
@@ -4151,6 +4129,7 @@ function toggleVoiceHud(force) {
 }
 if ($('#bVoiceHudToggle')) $('#bVoiceHudToggle').onclick = () => toggleVoiceHud();
 if ($('#bVoiceHudDrawer')) $('#bVoiceHudDrawer').onclick = () => toggleVoiceHud();
+if ($('#bCloseVoiceCard')) $('#bCloseVoiceCard').onclick = () => toggleVoiceHud(false);
 if ($('#bCloseVoiceHud')) $('#bCloseVoiceHud').onclick = () => toggleVoiceHud(false);
 
 // Plugin & Setup Modal
@@ -4351,7 +4330,7 @@ function initSseControlBridge() {
     es.onmessage = ev => {
       try {
         const msg = JSON.parse(ev.data);
-        if (msg.type === 'cli_turn' && msg.payload) {
+        if ((msg.type === 'cli_turn' || msg.type === 'remote_turn') && msg.payload) {
           const p = msg.payload;
           const aiBlobUrl = p.aiAudio ? `data:${p.aiAudio.mimeType};base64,${p.aiAudio.audioBase64}` : null;
           if (aiBlobUrl) {
@@ -4365,7 +4344,7 @@ function initSseControlBridge() {
               ai_duration: 12.0
             });
           }
-        } else if (msg.type === 'cli_speak' && msg.payload && msg.payload.audioBase64) {
+        } else if ((msg.type === 'cli_speak' || msg.type === 'remote_speak') && msg.payload && msg.payload.audioBase64) {
           const p = msg.payload;
           const blobUrl = `data:${p.mimeType || 'audio/mpeg'};base64,${p.audioBase64}`;
           toggleVoiceHud(true);
@@ -4376,7 +4355,7 @@ function initSseControlBridge() {
             ai_audio: blobUrl,
             ai_duration: 10.0
           });
-        } else if (msg.type === 'cli_control' && msg.payload) {
+        } else if ((msg.type === 'cli_control' || msg.type === 'remote_control') && msg.payload) {
           const c = msg.payload;
           if (c.branch) setActiveBranch(c.branch);
           if (c.palette && (WADA_PALETTES[c.palette] || c.palette === 'wada_auto')) {
@@ -4577,9 +4556,11 @@ if (xyMorphPad) {
     const nx = clamp((e.clientX - rect.left) / Math.max(1, rect.width), 0, 1);
     const ny = clamp((e.clientY - rect.top) / Math.max(1, rect.height), 0, 1);
     const newL = 2.0 + nx * 5.0;
+    const newM = clamp(1.0 + nx * 3.8, 0, newL);
     const newEps = (1.0 - ny) * 1.0;
     const newFree = 0.45 + (nx * 0.45 + (1.0 - ny) * 0.65);
     if (harmEl) harmEl.value = newL.toFixed(1);
+    if (harmMEl) harmMEl.value = newM.toFixed(1);
     if (symEl) symEl.value = newEps.toFixed(2);
     if (freeEl) freeEl.value = clamp(newFree, 0.3, 1.8).toFixed(2);
     if ($('#xyPuck')) {
@@ -4587,7 +4568,7 @@ if (xyMorphPad) {
       $('#xyPuck').style.top = `${(ny * 86 + 7).toFixed(1)}%`;
     }
     if ($('#xyReadout')) {
-      $('#xyReadout').textContent = `l=${newL.toFixed(1)} · ε=${newEps.toFixed(2)}`;
+      $('#xyReadout').textContent = `ℓ ${newL.toFixed(1)} · m ${newM.toFixed(1)} · ε ${newEps.toFixed(2)}`;
     }
   };
   xyMorphPad.addEventListener('pointerdown', e => {
@@ -4603,6 +4584,61 @@ if (xyMorphPad) {
   xyMorphPad.addEventListener('pointerup', endXY);
   xyMorphPad.addEventListener('pointercancel', endXY);
 }
+
+// Interactive Speech Vowel Formant Articulator (/a/, /e/, /i/, /o/, /u/) & Touch Harmonic Chimes
+const VOWEL_PRESET_MAP = (window.NoetherSoundSequencer && window.NoetherSoundSequencer.VOWEL_PRESETS) || {
+  a: { id: 'a', label: '/a/', f1: 730, f2: 1090, l: 3.2, m: 1.8, midi: 57 },
+  e: { id: 'e', label: '/e/', f1: 530, f2: 1840, l: 4.4, m: 2.8, midi: 60 },
+  i: { id: 'i', label: '/i/', f1: 270, f2: 2290, l: 5.8, m: 4.2, midi: 64 },
+  o: { id: 'o', label: '/o/', f1: 570, f2: 840,  l: 2.8, m: 1.4, midi: 62 },
+  u: { id: 'u', label: '/u/', f1: 300, f2: 870,  l: 2.4, m: 1.0, midi: 55 }
+};
+
+function playVowelFormant(vowelId) {
+  const vp = VOWEL_PRESET_MAP[vowelId] || VOWEL_PRESET_MAP.a;
+  if (harmEl) harmEl.value = vp.l.toFixed(1);
+  if (harmMEl) harmMEl.value = vp.m.toFixed(1);
+  K.l = vp.l;
+  K.m = vp.m;
+  AN.formantF1 = vp.f1;
+  AN.formantF2 = vp.f2;
+  $$('[data-vowel]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.vowel === vowelId)));
+  playHarmonicChime(vp.midi || 60, vp.l, vp.m);
+  toast(`Vowel Formant ${vp.label} · F1 ${vp.f1}Hz · F2 ${vp.f2}Hz → Y(${vp.l.toFixed(1)}, ${vp.m.toFixed(1)})`);
+}
+
+$$('[data-vowel]').forEach(b => {
+  b.onclick = () => playVowelFormant(b.dataset.vowel);
+});
+
+$$('[data-chime]').forEach(b => {
+  b.onclick = () => {
+    const midi = parseInt(b.dataset.chime, 10) || 60;
+    playHarmonicChime(midi, K.l, K.m);
+  };
+});
+
+// Multi-Touch 2-Finger Pinch-to-Zoom on 3D Stage (Mobile / Tablet)
+let pinchStartDist = 0;
+let pinchStartZoom = 0;
+canvas.addEventListener('touchstart', e => {
+  if (e.touches && e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    pinchStartDist = Math.hypot(dx, dy);
+    pinchStartZoom = zoomOffset;
+  }
+}, { passive: true });
+canvas.addEventListener('touchmove', e => {
+  if (e.touches && e.touches.length === 2 && pinchStartDist > 12) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.hypot(dx, dy);
+    const delta = (pinchStartDist - dist) * 0.015;
+    zoomOffset = clamp(pinchStartZoom + delta, -2.1, 3.8);
+  }
+}, { passive: true });
+canvas.addEventListener('touchend', () => { pinchStartDist = 0; }, { passive: true });
 
 // Keyboard Shortcuts:
 // Q/W/E/R/Y = 5 Topologies, F = Fullscreen Monitor, T = Settings Drawer, H/U = Pure Monitor, 1-4 = States, A-L = Harmonic Chimes
@@ -4650,7 +4686,8 @@ function initWebMIDI() {
             playHarmonicChime(d1, K.l, K.m);
           } else if (cmd === 0xb0) {
             const norm = d2 / 127;
-            if ((d1 === 1 || d1 === 74) && harmEl) harmEl.value = (2 + norm * 6).toFixed(1);
+            if ((d1 === 1 || d1 === 74) && harmEl) harmEl.value = (2 + norm * 5).toFixed(1);
+            else if (d1 === 75 && harmMEl) harmMEl.value = (norm * 6).toFixed(1);
             else if (d1 === 71 && freeEl) freeEl.value = (0.3 + norm * 1.5).toFixed(2);
             else if (d1 === 73 && symEl) symEl.value = (norm * 1.0).toFixed(2);
             else if (d1 === 72 && fibEl) fibEl.value = (norm * 1.4).toFixed(2);
@@ -4693,6 +4730,7 @@ window.noetherResonance = {
   setCamera: (c) => { if (['front', 'iso', 'orbit', 'macro'].includes(c)) { camMode = c; $$('[data-cam]').forEach(x => x.setAttribute('aria-pressed', String(x.dataset.cam === c))); } },
   snapshotPng: downloadPngSnapshot,
   playChime: (midi, l, m) => playHarmonicChime(midi || 64, l || K.l, m || K.m),
+  playVowel: (vowelId) => playVowelFormant(vowelId),
   connectStream: (stream, kind, label) => attachStream(stream, kind || 'sys', label || 'Live Audio Stream'),
   connectNode: node => { ensureAudio(); node.connect(A.analyser); setSource('node', 'External audio node'); },
   sequencer: window.NoetherSoundSequencer || null,
